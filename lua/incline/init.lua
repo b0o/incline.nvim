@@ -23,7 +23,12 @@ M.update = Debounce(function(opts)
 end, { threshold = 100 })
 
 M.register_autocmds = function()
-  util.autocmd({ 'WinScrolled', 'WinNew', 'WinClosed', 'TabEnter' }, {
+  util.autocmd({
+    'WinScrolled', -- WinScrolled is used to detect window resize
+    'WinNew',
+    'WinClosed',
+    'TabEnter',
+  }, {
     callback = function()
       vim.schedule(function()
         M.update { refresh = true }
