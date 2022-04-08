@@ -1,0 +1,45 @@
+*incline.txt*       Lightweight floating statuslines.       *incline* *incline.nvim*
+
+Author:         Maddison Hellstrom <https://github.com/b0o/>
+Licence:        MIT
+Homepage:       https://github.com/b0o/incline.nvim
+Version:        0.0.1
+
+==============================================================================
+CONTENTS                                                      *incline-contents*
+
+    1. Intro ................................ |incline-intro|
+    2. Changelog ............................ |incline-changelog|
+    3. License .............................. |incline-license|
+
+==============================================================================
+1. Intro                                                         *incline-intro*
+
+incline.nvim is a Neovim Lua plugin providing access to the
+incline catalog (https://github.com/incline/incline).
+
+==============================================================================
+2. Usage                                                         *incline-usage*
+
+To use incline:
+>
+  require('incline').setup()
+<
+==============================================================================
+3. Changelog                                                 *incline-changelog*
+
+07 Apr 2022                                                             v0.0.1
+  Initial Release
+
+==============================================================================
+4. License                                                     *incline-license*
+>
+  MIT License
+
+  © 2022 Maddison Hellstrom <github.com/b0o>
+
+  Full license information is available in the LICENSE file at the root of
+  this repository.
+<
+ vim:tw=78:ts=8:ft=help:norl:
+

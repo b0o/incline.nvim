@@ -1,0 +1,5 @@
+Describe('the incline.init module', function()
+  It('should be required as "incline"', function()
+    Expect({ require, 'incline' }).To.Evaluate()
+  end)
+end)
