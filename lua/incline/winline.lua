@@ -28,8 +28,9 @@ function Winline:win_config(opts)
   end
   local c = {
     win = self.parent.win,
-    width = a.nvim_win_get_width(self.parent.win),
+    width = a.nvim_win_get_width(self.parent.win) - 2,
     row = 0,
+    col = 2,
     bufpos = { 1000000, 0 },
     relative = 'win',
     style = 'minimal',

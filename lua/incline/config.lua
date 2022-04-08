@@ -1,6 +1,6 @@
 local defaults = {
   render = function(buf)
-    return vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':t')
+    return ' ' .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':t')
   end,
 
   -- Control which windows and buffers aerial should ignore.
