@@ -1,5 +1,4 @@
 local config = require 'incline.config'
-local util = require 'incline.util'
 
 local a = vim.api
 

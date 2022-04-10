@@ -24,7 +24,7 @@ function Tabpage:load_wins()
       children[win] = child
     end
   end
-  for win, child in pairs(self.children) do
+  for _, child in pairs(self.children) do
     child:destroy()
   end
   self.children = children
