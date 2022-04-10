@@ -4,7 +4,7 @@ Lightweight floating statuslines, intended for use with Neovim's new global stat
 
 **This plugin is very early in development**. It's currently just a proof-of-concept and is very buggy.
 
-![Screenshot of incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/162370562-18dbf6d1-de3f-40a8-ae3e-bbf528cacdb1.png)
+![Screenshot of incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/162643136-194cd444-3f85-42a3-8ff8-93384d69e923.png)
 
 ## Install
 
