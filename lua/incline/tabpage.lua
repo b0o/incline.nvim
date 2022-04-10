@@ -5,59 +5,53 @@ local a = vim.api
 
 local Tabpage = {}
 
-function Tabpage:render(opts)
-  opts = opts or {}
-  if not self.initialized then
-    self:update()
-  end
-  if self.dirty then
-    opts.refresh = true
-  end
+function Tabpage:render()
   for _, winline in pairs(self.children) do
-    winline:render(opts)
+    winline:render()
   end
 end
 
-function Tabpage:update(opts)
-  local wins = {}
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(self.tab)) do
+function Tabpage:load_wins()
+  local children = {}
+  local wins = a.nvim_tabpage_list_wins(self.tab)
+  for _, win in ipairs(wins) do
+    local child = self.children[win]
+    self.children[win] = nil
     if not util.is_ignored_win(win) then
-      wins[win] = true -- 'true' is a placeholder
+      if child == nil then
+        child = Winline(win)
+      end
+      children[win] = child
     end
   end
   for win, child in pairs(self.children) do
-    if not wins[win] then
-      child:destroy()
-      self.children[win] = nil
-    else
-      wins[win] = child
-    end
+    child:destroy()
   end
-  for win, child in pairs(wins) do
-    if child == true then
-      child = Winline(win)
-    end
-    self.children[win] = child
-  end
-  for _, child in pairs(self.children) do
-    child:update(opts)
-  end
+  self.children = children
+end
 
-  self.initialized = true
-  self.dirty = true
+function Tabpage:update(changes)
+  changes = changes or {}
+  if changes.windows then
+    self:load_wins()
+  end
+  for _, winline in pairs(self.children) do
+    winline:render { refresh = changes.layout }
+  end
 end
 
 local function make(tab)
   if tab == nil or tab == 0 then
     tab = vim.api.nvim_get_current_tabpage()
   end
-  assert(a.nvim_tabpage_is_valid(tab), 'invalid tabpage: ' .. tab)
-  return setmetatable({
-    initialized = false,
-    dirty = true,
+  local self = setmetatable({
     tab = tab,
+    -- NOTE: do not maintain a persistent reference to the children table.
+    -- The table is discarded and re-created after each call to load_wins().
     children = {},
   }, { __index = Tabpage })
+  self:update { windows = true, layout = true }
+  return self
 end
 
 return make

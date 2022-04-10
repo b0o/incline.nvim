@@ -1,19 +1,28 @@
 local defaults = {
-  render = function(buf)
-    return ' ' .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ':t')
+
+  -- Function to render the statusline content.
+  -- The function is called with a single argument which is a table containing
+  -- the following properties:
+  --  - buf: the buffer handle for the target window's buffer
+  --  - win: the window handle for the target window
+  render = function(props)
+    local bufname = vim.api.nvim_buf_get_name(props.buf)
+    if bufname == '' then
+      return ' [No name]'
+    end
+    return ' ' .. vim.fn.fnamemodify(bufname, ':t')
   end,
 
-  -- Control which windows and buffers aerial should ignore.
-  -- If close_behavior is "global", focusing an ignored window/buffer will
-  -- not cause the aerial window to update.
-  -- If open_automatic is true, focusing an ignored window/buffer will not
-  -- cause an aerial window to open.
-  -- If open_automatic is a function, ignore rules have no effect on aerial
-  -- window opening behavior; it's entirely handled by the open_automatic
-  -- function.
+  -- Number of milliseconds to wait between updates/renders.
+  update_interval = 50,
+
+  -- Control which windows Incline should ignore.
   ignore = {
     -- Ignore unlisted buffers. See :help buflisted
     unlisted_buffers = true,
+
+    -- Ignore floating windows.
+    floating_wins = false,
 
     -- List of filetypes to ignore.
     filetypes = {},

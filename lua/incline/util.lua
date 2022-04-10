@@ -1,18 +1,8 @@
-local M = {}
-
 local config = require 'incline.config'
 
 local a = vim.api
 
-M.get_non_ignored_fixed_wins = function(bufnr)
-  return vim.tbl_filter(function(winid)
-    return not M.is_ignored_win(winid)
-  end, M.get_fixed_wins(bufnr))
-end
-
-M.is_floating_win = function(winid)
-  return a.nvim_win_get_config(winid or 0).relative ~= ''
-end
+local M = {}
 
 M.is_ignored_filetype = function(filetype)
   local ignore = config.ignore
@@ -48,6 +38,10 @@ M.is_ignored_buf = function(bufnr)
   return false
 end
 
+M.is_floating_win = function(winid)
+  return a.nvim_win_get_config(winid or 0).relative ~= ''
+end
+
 M.is_ignored_win = function(winid)
   winid = winid or 0
   local bufnr = a.nvim_win_get_buf(winid)
@@ -55,6 +49,9 @@ M.is_ignored_win = function(winid)
     return true
   end
   local ignore = config.ignore
+  if ignore.floating and M.is_floating_win(winid) then
+    return true
+  end
   if ignore.wintypes then
     local wintype = vim.fn.win_gettype(winid)
     if ignore.wintypes == 'special' and wintype ~= '' then
@@ -66,12 +63,6 @@ M.is_ignored_win = function(winid)
     end
   end
   return false
-end
-
-M.invert_fn = function(fn)
-  return function(...)
-    return not fn(...)
-  end
 end
 
 local augroup = a.nvim_create_augroup('incline', { clear = true })
