@@ -2,7 +2,7 @@
 
 Lightweight floating statuslines, intended for use with Neovim's new global statusline (`set laststatus=3`).
 
-**This plugin is very early in development**. It's currently just a proof-of-concept and is very buggy.
+**This plugin is very early in development**. It's currently just a proof-of-concept. **Expect bugs and breaking changes.**
 
 ![Screenshot of incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/162644089-7f1ff22b-dedf-4bbf-a0ac-6dc6bf2f602b.png)
 
