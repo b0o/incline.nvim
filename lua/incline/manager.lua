@@ -35,7 +35,7 @@ local update = Debounce(function()
   end
   state.tabpages[state.current_tab]:update(changes)
   state.events = {}
-end, { threshold = config.update_interval })
+end, { threshold = config.debounce_threshold })
 
 M.setup = function()
   if state.initialized then

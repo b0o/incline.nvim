@@ -13,8 +13,9 @@ local defaults = {
     return ' ' .. vim.fn.fnamemodify(bufname, ':t')
   end,
 
-  -- Number of milliseconds to wait between updates/renders.
-  update_interval = 50,
+  -- Minimum number of milliseconds between updates/renders.
+  -- If multiple events occur within the threshold, they are batched into a single render.
+  debounce_threshold = 30,
 
   -- Control which windows Incline should ignore.
   ignore = {
