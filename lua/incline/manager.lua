@@ -16,8 +16,9 @@ local M = {
 
 local state = M.state
 
-local update = Debounce(function()
-  local changes = { layout = false, windows = false }
+local update = Debounce(function(opts)
+  opts = opts or {}
+  local changes = opts.refresh and { layout = true, windows = true } or { layout = false, windows = false }
   local events = state.events
   if not state.current_tab or events.TabEnter then
     state.current_tab = a.nvim_get_current_tabpage()
@@ -39,6 +40,7 @@ end, { threshold = config.debounce_threshold })
 
 M.setup = function()
   if state.initialized then
+    update:immediate { refresh = true }
     return
   end
   for _, event in ipairs {
