@@ -58,9 +58,7 @@ local function make(fn, opts)
     phase = 0,
   }, {
     __index = Debounce,
-    __call = function(self, ...)
-      return self:call(...)
-    end,
+    __call = Debounce.call,
   })
 end
 
