@@ -6,7 +6,7 @@
 -- It's still alpha software. Don't rely on it, it's not fully tested and
 -- surely has bugs. You've been warned.
 --
--- Copyright 2021 Maddison Hellstrom
+-- Copyright 2021-2022 Maddison Hellstrom
 -- Released under the MIT License
 
 local operators = {}
@@ -234,6 +234,16 @@ matchers.Nil = id(nil)
 matchers.Empty = function(actual)
   return #actual == 0
 end
+
+matchers.EmptyString = {
+  operators.A.String,
+  matchers.Empty,
+}
+
+matchers.EmptyTable = {
+  operators.A.Table,
+  matchers.Empty,
+}
 
 ---- Booleans
 
@@ -528,7 +538,14 @@ local function compare(op, actual, expected, name, desc, ctx)
   end
 
   local s = indent(4, ('%s<%s> = %s'):format(name, type(actual), inspect(actual)), '  ')
-  msg = vim.list_extend(msg, { '      but got', s })
+  vim.list_extend(msg, { '      but got', s })
+  vim.list_extend(
+    msg,
+    vim.tbl_map(function(l)
+      return string.gsub(l, '\t', '  ')
+    end, vim.split(debug.traceback('', 2), '\n'))
+  )
+  table.insert(msg, '')
   log(ctx, indent(1, table.concat(msg, '\n')))
 
   return false
