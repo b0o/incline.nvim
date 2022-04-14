@@ -162,7 +162,7 @@ end)
 
 return setmetatable({
   setup = function(config)
-    M.config = M.schema:parse(config)
+    M.config = M.schema:parse(config, M.config)
   end,
 }, {
   __index = function(_, k)

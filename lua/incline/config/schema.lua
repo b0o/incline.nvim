@@ -21,32 +21,36 @@ function Schema:validate(path, val)
   return target.validate(val)
 end
 
-function Schema:parse(data, base, path)
+local function _parse(self, data, fallback, schema, path)
   data = data or {}
-  base = base or self.schema
+  fallback = fallback or {}
+  schema = schema or {}
   path = path or ''
   local keys = {}
-  for _, k in ipairs(vim.list_extend(vim.tbl_keys(data), vim.tbl_keys(base))) do
+  for _, k in ipairs(vim.list_extend(vim.tbl_keys(data), vim.tbl_keys(schema))) do
     keys[k] = true
   end
   local res = {}
   for k in pairs(keys) do
     local p = path ~= '' and (path .. '.' .. k) or k
-    local vd = data[k]
-    local vb = base[k]
-    assert(type(vb) == 'table', 'invalid field: ' .. p)
-    if vb.parent == self then
-      if vd ~= nil then
-        assert(vb.validate(vd), 'invalid value for field ' .. p)
-        if vb.transform then
-          vd = vb.transform(vd)
+    local val_data = data[k]
+    local val_schema = schema[k]
+    local val_fallback = fallback[k]
+    assert(type(val_schema) == 'table', 'invalid field: ' .. p)
+    if val_schema.parent == self then
+      if val_data ~= nil then
+        assert(val_schema.validate(val_data), 'invalid value for field ' .. p)
+        if val_schema.transform then
+          val_data = val_schema.transform(val_data)
         end
-        res[k] = vd
+        res[k] = val_data
+      elseif val_fallback ~= nil then
+        res[k] = val_fallback
       else
-        res[k] = vb.default
+        res[k] = val_schema.default
       end
     else
-      res[k] = self:parse(vd, vb, p)
+      res[k] = _parse(self, val_data, val_fallback, val_schema, p)
     end
   end
   return setmetatable(res, {
@@ -54,6 +58,10 @@ function Schema:parse(data, base, path)
       error(('%s: invalid key: %s'):format(self.name, k))
     end,
   })
+end
+
+function Schema:parse(data, fallback)
+  return _parse(self, data, fallback, self.schema)
 end
 
 function Schema:default()

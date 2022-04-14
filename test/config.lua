@@ -282,5 +282,30 @@ Describe('the incline.config module', function()
       Expect(c.config.ignore.wintypes).To.DeepEqual(cfg.ignore.wintypes)
       Expect(c.config.window).To.DeepEqual(default.window)
     end)
+
+    It('should use the previous config as the fallback', function()
+      local cfgs = {
+        { ignore = { wintypes = { 'autocmd' } } },
+        { debounce_threshold = 1337 },
+      }
+      local default = c.schema:default()
+
+      Expect({ c.setup, cfgs[1] }).To.Evaluate()
+      Expect(c.config).To.Not.DeepEqual(default)
+      Expect(c.config.ignore.wintypes).To.DeepEqual(cfgs[1].ignore.wintypes)
+      Expect(c.config.ignore.wintypes).To.Not.DeepEqual(default.ignore.wintypes)
+      Expect(c.config.debounce_threshold).To.Not.Equal(cfgs[1].debounce_threshold)
+
+      local cfg1 = vim.deepcopy(c.config)
+
+      Expect({ c.setup, cfgs[2] }).To.Evaluate()
+      Expect(c.config).To.Not.DeepEqual(default)
+      Expect(c.config).To.Not.DeepEqual(cfg1)
+      Expect(c.config.ignore.wintypes).To.DeepEqual(cfgs[1].ignore.wintypes)
+      Expect(c.config.ignore.wintypes).To.DeepEqual(cfg1.ignore.wintypes)
+      Expect(c.config.ignore.wintypes).To.Not.DeepEqual(default.ignore.wintypes)
+      Expect(c.config.debounce_threshold).To.Not.Equal(cfgs[1].debounce_threshold)
+      Expect(c.config.debounce_threshold).To.Equal(cfgs[2].debounce_threshold)
+    end)
   end)
 end)
