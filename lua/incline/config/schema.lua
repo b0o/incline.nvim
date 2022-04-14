@@ -49,15 +49,19 @@ function Schema:parse(data, base, path)
       res[k] = self:parse(vd, vb, p)
     end
   end
-  return res
+  return setmetatable(res, {
+    __index = function(_, k)
+      error(('%s: invalid key: %s'):format(self.name, k))
+    end,
+  })
 end
 
 function Schema:default()
   return self:parse()
 end
 
-local make = function(schema)
-  local self = setmetatable({}, { __index = Schema })
+local make = function(name, schema)
+  local self = setmetatable({ name = name }, { __index = Schema })
   self.schema = schema(self)
   return self
 end

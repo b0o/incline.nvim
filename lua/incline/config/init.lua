@@ -3,7 +3,7 @@ local vx = require 'incline.config.validate'
 
 local M = {}
 
-M.schema = Schema(function(s)
+M.schema = Schema('config', function(s)
   return {
     -- Function to render the statusline content.
     -- The function is called with a single argument which is a table containing
