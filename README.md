@@ -62,6 +62,13 @@ See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.tx
 ## Changelog
 
 ```
+14 Apr 2022                                                             v0.0.2
+  Add documentation
+  Make position, size, and content configurable
+  Validate user configuration against schema
+  Add tests for configuration and schema
+  Refactor, fix bugs, and improve stability
+
 07 Apr 2022                                                             v0.0.1
   Initial Release
 ```

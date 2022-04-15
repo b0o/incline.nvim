@@ -3,7 +3,7 @@
 Author:         Maddison Hellstrom <https://github.com/b0o/>
 Licence:        MIT
 Homepage:       https://github.com/b0o/incline.nvim
-Version:        0.0.1
+Version:        0.0.2
 
 ==============================================================================
 CONTENTS                                                      *incline-contents*
@@ -244,6 +244,13 @@ Default:  "special"
 <
 ==============================================================================
 3. Changelog                                                 *incline-changelog*
+
+14 Apr 2022                                                             v0.0.2
+  Add documentation
+  Make position, size, and content configurable
+  Validate user configuration against schema
+  Add tests for configuration and schema
+  Refactor, fix bugs, and improve stability
 
 07 Apr 2022                                                             v0.0.1
   Initial Release
