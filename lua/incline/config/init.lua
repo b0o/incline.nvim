@@ -78,6 +78,9 @@ M.schema = Schema('config', function(s)
       padding_char = s:entry(' ', vx.string.length(1)),
       zindex = s:entry(50, vx.number.natural),
     },
+    hide = {
+      focused_win = s:entry(false, vx.bool),
+    },
     ignore = {
       unlisted_buffers = s:entry(true, vx.bool),
       floating_wins = s:entry(true, vx.bool),

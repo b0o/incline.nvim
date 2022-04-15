@@ -51,6 +51,7 @@ The `setup()` must be called to enable Incline:
     ignore.filetypes            |incline-config-ignore.filetypes|
     ignore.buftypes             |incline-config-ignore.buftypes|
     ignore.wintypes             |incline-config-ignore.wintypes|
+    hide.focused_win            |incline-config-hide.focused_win|
 
 Field:    render                         *incline-render*  *incline-config-render*
 Type:     function
@@ -213,6 +214,12 @@ Default:  "special"
   - If a function, it should accept two arguments, `winid` and `wintype`, and
     return `true` if the window should be ignored.
 
+Field:    hide.focused_win                     *incline-config-hide.focused_win*
+Type:     bool
+Default:  false
+
+  If true, Incline will hide the statusline for the focused window.
+
 ------------------------------------------------------------------------------
 2.2 Default Configuration                               *incline-default-config*
 >
@@ -244,6 +251,9 @@ Default:  "special"
       filetypes = {},
       buftypes = 'special',
       wintypes = 'special',
+    },
+    hide = {
+      focused_win = false,
     },
   }
 <

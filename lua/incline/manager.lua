@@ -18,14 +18,18 @@ local state = M.state
 
 local update = Debounce(function(opts)
   opts = opts or {}
-  local changes = opts.refresh and { layout = true, windows = true } or { layout = false, windows = false }
   local events = state.events
+
   if not state.current_tab or events.TabEnter then
     state.current_tab = a.nvim_get_current_tabpage()
   end
   if not state.tabpages[state.current_tab] then
     state.tabpages[state.current_tab] = Tabpage(state.current_tab)
-    return
+  end
+
+  local changes = {}
+  if opts.refresh then
+    changes = { layout = true, windows = true, focus = true }
   end
   if events.WinNew or events.WinClosed then
     changes.windows = true
@@ -34,7 +38,13 @@ local update = Debounce(function(opts)
   if events.WinScrolled or events.BufWinEnter or events.BufWinLeave or events.OptionSet then
     changes.layout = true
   end
-  state.tabpages[state.current_tab]:update(changes)
+  if events.WinEnter or events.WinLeave or events.TabEnter or events.TabNewEntered then
+    changes.focus = true
+  end
+
+  if changes.layout or changes.windows or changes.focus then
+    state.tabpages[state.current_tab]:update(changes)
+  end
   state.events = {}
 end, { threshold = config.debounce_threshold })
 
@@ -59,14 +69,18 @@ M.setup = function()
     update:immediate { refresh = true }
     return
   end
-  for _, event in ipairs {
+  local events = {
     'WinNew',
     'WinClosed',
+    'WinEnter',
+    'WinLeave',
     'WinScrolled', -- WinScrolled is used to detect window resizes
     'TabEnter',
+    'TabNewEntered',
     'BufWinEnter',
     'BufWinLeave',
-  } do
+  }
+  for _, event in ipairs(events) do
     util.autocmd(event, {
       callback = function()
         state.events[event] = true
@@ -74,7 +88,7 @@ M.setup = function()
       end,
     })
   end
-  update:immediate()
+  update:immediate { refresh = true }
   state.initialized = true
 end
 

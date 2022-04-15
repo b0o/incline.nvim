@@ -1,3 +1,4 @@
+local config = require 'incline.config'
 local util = require 'incline.util'
 local Winline = require 'incline.winline'
 
@@ -35,6 +36,18 @@ function Tabpage:update(changes)
   if changes.windows then
     self:load_wins()
   end
+  if changes.focus then
+    if self.focused_win and self.children[self.focused_win] then
+      self.children[self.focused_win]:show()
+    end
+    if config.hide.focused_win then
+      local foc = a.nvim_get_current_win()
+      if self.children[foc] then
+        self.children[foc]:hide()
+        self.focused_win = foc
+      end
+    end
+  end
   for _, winline in pairs(self.children) do
     winline:render { refresh = changes.layout }
   end
@@ -48,14 +61,13 @@ local function make(tab)
   if tab == nil or tab == 0 then
     tab = vim.api.nvim_get_current_tabpage()
   end
-  local self = setmetatable({
+  return setmetatable({
     tab = tab,
     -- NOTE: do not maintain a persistent reference to the children table.
     -- The table is discarded and re-created after each call to load_wins().
     children = {},
+    focused_win = nil,
   }, { __index = Tabpage })
-  self:update { windows = true, layout = true }
-  return self
 end
 
 return make

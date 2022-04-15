@@ -61,6 +61,9 @@ require('incline').setup {
     buftypes = 'special',
     wintypes = 'special',
   },
+  hide = {
+    focused_win = false,
+  },
 }
 ```
 
