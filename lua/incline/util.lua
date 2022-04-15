@@ -60,6 +60,10 @@ M.is_ignored_win = function(winid)
       if vim.tbl_contains(ignore.wintypes, wintype) then
         return true
       end
+    elseif type(ignore.wintypes) == 'function' then
+      if ignore.wintypes(winid, wintype) then
+        return true
+      end
     end
   end
   return false
