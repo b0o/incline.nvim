@@ -57,6 +57,7 @@ M.win_get_tabpage = function(win)
 end
 
 M.win_get_winline = function(win)
+  win = util.resolve_win(win)
   local tab = M.win_get_tabpage(win)
   if not tab then
     return
