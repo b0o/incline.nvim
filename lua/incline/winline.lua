@@ -73,6 +73,9 @@ function Winline:win_config(opts)
 end
 
 function Winline:win(opts)
+  if self.hidden then
+    return
+  end
   opts = opts or {}
 
   if self._win and a.nvim_win_is_valid(self._win) then
@@ -89,7 +92,7 @@ function Winline:win(opts)
 end
 
 function Winline:render(opts)
-  if not self:is_alive() then
+  if self.hidden or not self:is_alive() then
     return
   end
   opts = opts or {}
@@ -115,6 +118,26 @@ function Winline:render(opts)
   a.nvim_buf_set_lines(self:buf(), 0, -1, false, { self.content })
 end
 
+function Winline:hide()
+  self.hidden = true
+  if self._win and a.nvim_win_is_valid(self._win) then
+    a.nvim_win_close(self._win, false)
+  end
+end
+
+function Winline:show()
+  self.hidden = false
+  self:render { refresh = true }
+end
+
+function Winline:toggle()
+  if self.hidden then
+    self:show()
+  else
+    self:hide()
+  end
+end
+
 function Winline:destroy()
   if a.nvim_buf_is_valid(self._buf) then
     a.nvim_buf_delete(self._buf, { unload = false })
@@ -127,6 +150,7 @@ end
 local function make(target_win)
   return setmetatable({
     target_win = target_win,
+    hidden = false,
     content = nil,
     _win = nil,
     _buf = nil,
