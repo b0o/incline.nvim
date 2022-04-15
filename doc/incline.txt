@@ -9,21 +9,238 @@ Version:        0.0.1
 CONTENTS                                                      *incline-contents*
 
     1. Intro ................................ |incline-intro|
-    2. Changelog ............................ |incline-changelog|
-    3. License .............................. |incline-license|
+    2. Usage ................................ |incline-usage|
+      2.1. Configuration .................... |incline-config|
+      2.2. Default Configuration ............ |incline-default-config|
+    3. Changelog ............................ |incline-changelog|
+    4. License .............................. |incline-license|
 
 ==============================================================================
 1. Intro                                                         *incline-intro*
 
-incline.nvim is a Neovim Lua plugin providing access to the
-incline catalog (https://github.com/incline/incline).
+Incline provides lightweight floating statuslines, intended for use with
+Neovim's new global statusline.
 
 ==============================================================================
 2. Usage                                                         *incline-usage*
 
-To use incline:
+The `setup()` must be called to enable Incline:
+
+  incline.setup({config})                                      *incline.setup()*
+    `setup()` takes a `config` argument (see |incline-config|). The `setup()`
+    function can be called multiple times to change configuration options.
+
+------------------------------------------------------------------------------
+2.1 Configuration                                               *incline-config*
+
+  The `config` argument to |incline.setup()| is a table that can contain the
+  following fields and sub-fields:
+
+    render                      |incline-config-render|
+    debounce_threshold          |incline-config-debounce_threshold|
+    window.width                |incline-config-window.width|
+    window.placement.vertical   |incline-config-window.placement.vertical|
+    window.placement.horizontal |incline-config-window.placement.horizontal|
+    window.margin.vertical      |incline-config-window.margin.vertical|
+    window.margin.horizontal    |incline-config-window.margin.horizontal|
+    window.padding              |incline-config-window.padding|
+    window.padding_char         |incline-config-window.padding_char|
+    window.zindex               |incline-config-window.zindex|
+    ignore.unlisted_buffers     |incline-config-ignore.unlisted_buffers|
+    ignore.floating_wins        |incline-config-ignore.floating_wins|
+    ignore.filetypes            |incline-config-ignore.filetypes|
+    ignore.buftypes             |incline-config-ignore.buftypes|
+    ignore.wintypes             |incline-config-ignore.wintypes|
+
+Field:    render                         *incline-render*  *incline-config-render*
+Type:     function
+Valid:    function({ buf: number, win: number }) -> string
+Default:  See |incline-default-config|
+
+  The `render` function is evaluated on each update and its return value is
+  displayed in the Incline statusline.
+
+  The function is called for each Incline statusline in the current |tabpage|.
+  It is passed a single argument, `props`, which is a table containing the
+  following fields:
+
+    Field  Type     Description
+    `buf`    `number`   The buffer handle for the target window.
+    `win`    `number`   The window handle for the target window.
+
+  The function should return a string.
+
+Field:    debounce_threshold                 *incline-config-debounce_threshold*
+Type:     number
+Unit:     milliseconds
+Valid:    int >= 0
+Default:  30
+
+  When certain events occur, like opening a file, Incline re-renders all of
+  the floating statuslines on the current tabpage. Additionally, certain
+  events like resizing or opening windows cause Incline to re-calculate the
+  size and layout of the floating statuslines in the current tabpage.
+
+  If multiple events occur within a short period of time, they are batched
+  together into a single update. The `debounce_threshold` option controls the
+  minimum amount of time between updates.
+
+  When the first event arrives, Incline waits `debounce_threshold`
+  milliseconds and then performs the update. If an event occurs sooner than
+  `debounce_threshold` milliseconds after an update, Incline waits
+  `debounce_threshold` milliseconds before performing another update.
+
+Field:   window.width                              *incline-config-window.width*
+Type:    number | string
+Valid:   int >= 2 | 0.0 < float <= 1.0 | "fit" | "fill"
+Default: "fit"
+
+  Controls the width of Incline statuslines:
+  - If an int >= 2, each statusline is `width` columns wide.
+  - If a float > 0.0 and <= 1.0, the statusline width is calculated as a
+    percentage of the window width.
+  - If the string "fit", the statusline is as wide as its content.
+  - If the string "fill", the statusline is as wide as the window.
+
+Field:   window.placement.vertical    *incline-config-window.placement.vertical*
+Type:    string
+Valid:   "top" | "bottom"
+Default: "top"
+
+  Controls the vertical placement of Incline statuslines.
+
+Field:   window.placement.horizontal *incline-config-window.placement.horizontal*
+Type:    string
+Valid:   "left" | "center" | "right"
+Default: "right"
+
+  Controls the horizontal placement of Incline statuslines.
+
+Field:   window.margin.vertical          *incline-config-window.margin.vertical*
+Type:    number | table
+Valid:   int >= 0 | table { top: int >= 0, bottom: int >= 0 }
+Default: { top = 1, bottom = 0 }
+
+  Controls the margin between the statusline and the top/bottom edges of the
+  window.
+  - If an integer, the value is used for both the top and bottom margin.
+  - If a table, both `top` and `bottom` fields must be present.
+
+Field:   window.margin.horizontal      *incline-config-window.margin.horizontal*
+Type:    number | table
+Valid:   int >= 0 | table { left: int >= 0, right: int >= 0 }
+Default: { left = 1, right = 1 }
+
+  Controls the margin between the statusline and the left/right edges of the
+  window.
+  - If an integer, the value is used for both the left and right margin.
+  - If a table, both `left` and `right` fields must be present.
+
+Field:   window.padding                          *incline-config-window.padding*
+Type:    number | table
+Valid:   int >= 0 | table { left: int >= 0, right: int >= 0 }
+Default: { left = 1, right = 1 }
+
+  Controls the amount of padding inside the Incline statusline.
+  See |incline-config-window.padding_char|.
+
+Field:   window.padding_char                *incline-config-window.padding_char*
+Type:    string
+Valid:   length(padding_char) == 1
+Default: " "
+
+  Controls the character used for padding the Incline statusline.
+  See |incline-config-window.padding|.
+
+Field:    window.zindex                           *incline-config-window.zindex*
+Type:     number
+Valid:    int >= 1
+Default:  50
+
+  Controls the z-index of the floating statusline. See the zindex section of
+  |api-win_config| for more information.
+
+Field:    ignore.unlisted_buffers       *incline-config-ignore.unlisted_buffers*
+Type:     bool
+Default:  true
+
+  If true, Incline will not display statuslines on windows containing unlisted
+  buffers.
+
+Field:    ignore.floating_wins             *incline-config-ignore.floating_wins*
+Type:     bool
+Default:  true
+
+  If true, Incline will not display statuslines on floating windows.
+
+Field:    ignore.filetypes                     *incline-config-ignore.filetypes*
+Type:     list-like table
+Valid:    []string
+Default:  {}
+
+  Incline will not display a statusline on any window containing a buffer with
+  an ignored filetype.
+
+Field:    ignore.buftypes                       *incline-config-ignore.buftypes*
+Type:     string | table | function
+Valid:    "special" | []buftype | function(bufnr, buftype) -> bool
+Default:  "special"
+
+  Incline will not display a statusline on any window containing a buffer with
+  an ignored |'buftype'|.
+  - If the string "special", Incline will only display statuslines on windows
+    containing normal buffers (buffers that have a buftype of "").
+  - If a table, the table should be a list of buftypes to ignore. See |'buftype'|
+    for accepted values.
+  - If a function, it should accept two arguments, `bufnr` and `buftype`, and
+    return `true` if the buffer should be ignored.
+
+Field:    ignore.wintypes                       *incline-config-ignore.wintypes*
+Type:     string | table | function
+Valid:    "special" | []wintype | function(winid, wintype) -> bool
+Default:  "special"
+
+  Incline will not display a statusline on any window with an ignored wintype.
+  - If the string "special", Incline will only display statuslines on normal
+    windows (windows that have a wintype of "").
+  - If a table, the table should be a list of wintypes to ignore.
+    See |win_gettype()| for accepted values.
+  - If a function, it should accept two arguments, `winid` and `wintype`, and
+    return `true` if the window should be ignored.
+
+------------------------------------------------------------------------------
+2.2 Default Configuration                               *incline-default-config*
 >
-  require('incline').setup()
+  {
+    render = function(props)
+      local bufname = vim.api.nvim_buf_get_name(props.buf)
+      if bufname == '' then
+        return '[No name]'
+      else
+        bufname = vim.fn.fnamemodify(bufname, ':t')
+      end
+      return bufname
+    end,
+    debounce_threshold = 30,
+    window = {
+      width = 'fit',
+      placement = { horizontal = 'right', vertical = 'top' },
+      margin = {
+        horizontal = { left = 1, right = 1 },
+        vertical = { bottom = 0, top = 1 },
+      },
+      padding = { left = 1, right = 1 },
+      padding_char = ' ',
+      zindex = 50,
+    },
+    ignore = {
+      floating_wins = true,
+      unlisted_buffers = true,
+      filetypes = {},
+      buftypes = 'special',
+      wintypes = 'special',
+    },
+  }
 <
 ==============================================================================
 3. Changelog                                                 *incline-changelog*
@@ -42,4 +259,3 @@ To use incline:
   this repository.
 <
  vim:tw=78:ts=8:ft=help:norl:
-
