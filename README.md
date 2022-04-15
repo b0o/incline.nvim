@@ -13,7 +13,7 @@ I recommend pinning the version in your plugin manager so that you're not surpri
 
 ## Installation
 
-**Note:** Incline requires [Neovim nightly](https://github.com/neovim/neovim/releases/tag/nightly) or Neovim v0.7 (which is not yet released).
+**Note:** Incline requires Neovim v0.7 or [Neovim nightly](https://github.com/neovim/neovim/releases/tag/nightly).
 
 [Packer](https://github.com/wbthomason/packer.nvim):
 
