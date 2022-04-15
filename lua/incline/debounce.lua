@@ -1,3 +1,5 @@
+local config = require 'incline.config'
+
 local Debounce = {}
 
 function Debounce:cancel()
@@ -20,8 +22,8 @@ function Debounce:call(...)
         end
         self.waiting = false
         self.phase = 0
-      end, self.threshold.falling)
-    end, self.threshold.rising)
+      end, config.debounce_threshold.falling)
+    end, config.debounce_threshold.rising)
   elseif self.phase == 2 then
     self.waiting = true
   end
@@ -41,20 +43,11 @@ function Debounce:ref()
   end
 end
 
-local function make(fn, opts)
-  opts = opts or {}
-  opts.threshold = opts.threshold or 50
-  if type(opts.threshold) == 'number' then
-    opts.threshold = { rising = opts.threshold, falling = opts.threshold }
-  end
-  opts.threshold.rising = opts.threshold.rising or 50
-  opts.threshold.falling = opts.threshold.falling or 50
+local function make(fn)
   return setmetatable({
     fn = fn,
-    opts = opts,
     timedout = false,
     waiting = false,
-    threshold = opts.threshold,
     phase = 0,
   }, {
     __index = Debounce,

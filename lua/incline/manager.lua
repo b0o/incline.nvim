@@ -46,7 +46,7 @@ local update = Debounce(function(opts)
     state.tabpages[state.current_tab]:update(changes)
   end
   state.events = {}
-end, { threshold = config.debounce_threshold })
+end)
 
 M.win_get_tabpage = function(win)
   win = util.resolve_win(win)
@@ -66,6 +66,7 @@ end
 
 M.setup = function()
   if state.initialized then
+    update.threshold = config.debounce_threshold
     update:immediate { refresh = true }
     return
   end
