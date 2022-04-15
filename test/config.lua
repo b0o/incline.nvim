@@ -170,7 +170,7 @@ Describe('the incline.config module', function()
         Expect(default).To.Be.A.DictLike()
         Expect(default).To.HaveFieldPaths {
           { 'render', Which.Is.A.Function },
-          { 'debounce_threshold', Which.Is.A.Number },
+          { 'debounce_threshold', Which.Is.A.DictLike },
           { 'window', Which.Is.A.DictLike },
           { 'window.placement', Which.Is.A.DictLike },
           { 'window.placement.vertical' },
@@ -195,7 +195,7 @@ Describe('the incline.config module', function()
         Expect(parsed).To.Be.A.DictLike()
         Expect(parsed).To.HaveFieldPaths {
           { 'render', Which.Is.A.Function },
-          { 'debounce_threshold', Which.Is.A.Number },
+          { 'debounce_threshold', Which.Is.A.DictLike },
           { 'window', Which.Is.A.DictLike },
           { 'window.placement', Which.Is.A.DictLike },
           { 'window.placement.vertical' },
@@ -286,7 +286,7 @@ Describe('the incline.config module', function()
     It('should use the previous config as the fallback', function()
       local cfgs = {
         { ignore = { wintypes = { 'autocmd' } } },
-        { debounce_threshold = 1337 },
+        { debounce_threshold = { rising = 13, falling = 37 } },
       }
       local default = c.schema:default()
 

@@ -71,10 +71,10 @@ Default:  See |incline-default-config|
   The function should return a string.
 
 Field:    debounce_threshold                 *incline-config-debounce_threshold*
-Type:     number
+Type:     number | table
+Valid:    int >= 0 | table { rising: int >= 0, falling: int >= 0 }
 Unit:     milliseconds
-Valid:    int >= 0
-Default:  30
+Default:  { rising = 10, falling = 50 }
 
   When certain events occur, like opening a file, Incline re-renders all of
   the floating statuslines on the current tabpage. Additionally, certain
@@ -85,10 +85,15 @@ Default:  30
   together into a single update. The `debounce_threshold` option controls the
   minimum amount of time between updates.
 
-  When the first event arrives, Incline waits `debounce_threshold`
+  When the first event arrives, Incline waits `debounce_threshold.rising`
   milliseconds and then performs the update. If an event occurs sooner than
-  `debounce_threshold` milliseconds after an update, Incline waits
-  `debounce_threshold` milliseconds before performing another update.
+  `debounce_threshold.falling` milliseconds after an update, Incline waits
+  `debounce_threshold.falling` milliseconds before performing another update.
+
+  If `debounce_threshold` is set to an integer, that value is used for both
+  `rising` and `falling`.
+  If `debounce_threshold` is set to a table, both `rising` and `falling`
+  fields must be present.
 
 Field:   window.width                              *incline-config-window.width*
 Type:    number | string
@@ -221,7 +226,7 @@ Default:  "special"
       end
       return bufname
     end,
-    debounce_threshold = 30,
+    debounce_threshold = { rising = 10, falling = 50 },
     window = {
       width = 'fit',
       placement = { horizontal = 'right', vertical = 'top' },

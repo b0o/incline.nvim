@@ -12,7 +12,19 @@ M.schema = Schema('config', function(s)
       end
       return vim.fn.fnamemodify(bufname, ':t')
     end, vx.func),
-    debounce_threshold = s:entry(30, vx.number.whole),
+    debounce_threshold = s:entry(
+      { rising = 10, falling = 50 },
+      vx.any {
+        vx.number.whole,
+        vx.table.of { rising = vx.number.whole, falling = vx.number.whole },
+      },
+      function(v)
+        if type(v) == 'number' then
+          return { rising = v, falling = v }
+        end
+        return v
+      end
+    ),
     window = {
       width = s:entry('fit', vx.any { 'fit', 'fill', vx.number.natural, vx.number.percentage }),
       placement = {

@@ -42,7 +42,7 @@ require('incline').setup {
     end
     return bufname
   end,
-  debounce_threshold = 30,
+  debounce_threshold = { rising = 10, falling = 50 },
   window = {
     width = 'fit',
     placement = { horizontal = 'right', vertical = 'top' },
