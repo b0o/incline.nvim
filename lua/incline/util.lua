@@ -4,6 +4,14 @@ local a = vim.api
 
 local M = {}
 
+M.resolve_win = function(win)
+  win = win or 0
+  if win == 0 then
+    return a.nvim_get_current_win()
+  end
+  return win
+end
+
 M.is_ignored_filetype = function(filetype)
   local ignore = config.ignore
   return ignore.filetypes and vim.tbl_contains(ignore.filetypes, filetype)

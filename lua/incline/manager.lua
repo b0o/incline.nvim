@@ -38,6 +38,22 @@ local update = Debounce(function(opts)
   state.events = {}
 end, { threshold = config.debounce_threshold })
 
+M.win_get_tabpage = function(win)
+  win = util.resolve_win(win)
+  if not a.nvim_win_is_valid(win) then
+    return
+  end
+  return M.state.tabpages[a.nvim_win_get_tabpage(win)]
+end
+
+M.win_get_winline = function(win)
+  local tab = M.win_get_tabpage(win)
+  if not tab then
+    return
+  end
+  return tab:get_winline(win)
+end
+
 M.setup = function()
   if state.initialized then
     update:immediate { refresh = true }

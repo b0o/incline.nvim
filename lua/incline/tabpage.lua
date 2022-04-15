@@ -40,6 +40,10 @@ function Tabpage:update(changes)
   end
 end
 
+function Tabpage:get_winline(win)
+  return self.children[win]
+end
+
 local function make(tab)
   if tab == nil or tab == 0 then
     tab = vim.api.nvim_get_current_tabpage()
