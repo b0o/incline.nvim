@@ -49,7 +49,7 @@ M.is_ignored_win = function(winid)
     return true
   end
   local ignore = config.ignore
-  if ignore.floating and M.is_floating_win(winid) then
+  if ignore.floating_wins and M.is_floating_win(winid) then
     return true
   end
   if ignore.wintypes then
