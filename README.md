@@ -2,11 +2,18 @@
 
 Lightweight floating statuslines, intended for use with Neovim's new global statusline (`set laststatus=3`).
 
-**This plugin is very early in development**. It doesn't have a ton of features or testing yet. Please [open an issue](https://github.com/b0o/incline.nvim/issues/new) if you have a suggestion or encounter any problems!
+#### This plugin is still early in development &mdash; Please expect frequent breaking changes!
+
+Incline is still sparse on features, but it should now be stable enough for basic usage. New features are being added regularly.
+
+Once `v0.1.0` is reached, breaking changes will be limited to major releases. Until then, breaking changes may occur on patch-level versions.
+I recommend pinning the version in your plugin manager so that you're not surprised by a breaking change at an inconvenient time.
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/162644089-7f1ff22b-dedf-4bbf-a0ac-6dc6bf2f602b.png)
 
-## Install
+## Installation
+
+**Note:** Incline requires [Neovim nightly](https://github.com/neovim/neovim/releases/tag/nightly) or Neovim v0.7 (which is not yet released).
 
 [Packer](https://github.com/wbthomason/packer.nvim):
 
@@ -20,7 +27,7 @@ use "b0o/incline.nvim"
 require('incline').setup()
 ```
 
-## Configuration
+### Configuration
 
 Incline's default configuration:
 
