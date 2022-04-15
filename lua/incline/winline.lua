@@ -139,10 +139,10 @@ function Winline:toggle()
 end
 
 function Winline:destroy()
-  if a.nvim_buf_is_valid(self._buf) then
+  if self._buf and a.nvim_buf_is_valid(self._buf) then
     a.nvim_buf_delete(self._buf, { unload = false })
   end
-  if a.nvim_win_is_valid(self._win) then
+  if self._win and a.nvim_win_is_valid(self._win) then
     a.nvim_win_close(self._win, false)
   end
 end
