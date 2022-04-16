@@ -53,10 +53,11 @@ The `setup()` must be called to enable Incline:
     ignore.wintypes             |incline-config-ignore.wintypes|
     hide.focused_win            |incline-config-hide.focused_win|
 
-Field:    render                         *incline-render*  *incline-config-render*
-Type:     function
-Valid:    function({ buf: number, win: number }) -> string
-Default:  See |incline-default-config|
+                                         *incline-render*  *incline-config-render*
+render~
+  Type:     `function`
+  Valid:    `function({ buf: number, win: number }) -> string`
+  Default:  See |incline-default-config|
 
   The `render` function is evaluated on each update and its return value is
   displayed in the Incline statusline.
@@ -71,11 +72,11 @@ Default:  See |incline-default-config|
 
   The function should return a string.
 
-Field:    debounce_threshold                 *incline-config-debounce_threshold*
-Type:     number | table
-Valid:    int >= 0 | table { rising: int >= 0, falling: int >= 0 }
-Unit:     milliseconds
-Default:  { rising = 10, falling = 50 }
+                                             *incline-config-debounce_threshold*
+debounce_threshold~
+  Type:     `number` | `table`
+  Valid:    `int >= 0` | `table { rising: int >= 0, falling: int >= 0 }`
+  Default:  `{ rising = 10, falling = 50 }`
 
   When certain events occur, like opening a file, Incline re-renders all of
   the floating statuslines on the current tabpage. Additionally, certain
@@ -96,129 +97,143 @@ Default:  { rising = 10, falling = 50 }
   If `debounce_threshold` is set to a table, both `rising` and `falling`
   fields must be present.
 
-Field:   window.width                              *incline-config-window.width*
-Type:    number | string
-Valid:   int >= 2 | 0.0 < float <= 1.0 | "fit" | "fill"
-Default: "fit"
+                                                   *incline-config-window.width*
+window.width~
+  Type:    `number` | `string`
+  Valid:   `int >= 2` | `0.0 < float <= 1.0` | `"fit"` | `"fill"`
+  Default: `"fit"`
 
   Controls the width of Incline statuslines:
-  - If an int >= 2, each statusline is `width` columns wide.
-  - If a float > 0.0 and <= 1.0, the statusline width is calculated as a
-    percentage of the window width.
-  - If the string "fit", the statusline is as wide as its content.
-  - If the string "fill", the statusline is as wide as the window.
+  - If `int >= 2`, each statusline is `width` columns wide.
+  - If `0.0 < float <= 1.0`, the width is calculated as a percentage of the
+    window width.
+  - If `"fit"`, the statusline is as wide as its content.
+  - If `"fill"`, the statusline is as wide as the window.
 
-Field:   window.placement.vertical    *incline-config-window.placement.vertical*
-Type:    string
-Valid:   "top" | "bottom"
-Default: "top"
+                                      *incline-config-window.placement.vertical*
+window.placement.vertical~
+  Type:    `string`
+  Valid:   `"top"` | `"bottom"`
+  Default: `"top"`
 
   Controls the vertical placement of Incline statuslines.
 
-Field:   window.placement.horizontal *incline-config-window.placement.horizontal*
-Type:    string
-Valid:   "left" | "center" | "right"
-Default: "right"
+                                     *incline-config-window.placement.horizontal*
+window.placement.horizontal~
+  Type:    `string`
+  Valid:   `"left"` | `"center"` | `"right"`
+  Default: `"right"`
 
   Controls the horizontal placement of Incline statuslines.
 
-Field:   window.margin.vertical          *incline-config-window.margin.vertical*
-Type:    number | table
-Valid:   int >= 0 | table { top: int >= 0, bottom: int >= 0 }
-Default: { top = 1, bottom = 0 }
+                                         *incline-config-window.margin.vertical*
+window.margin.vertical~
+  Type:    `number` | `table`
+  Valid:   `int >= 0` | `table { top: int >= 0, bottom: int >= 0 }`
+  Default: `{ top = 1, bottom = 0 }`
 
   Controls the margin between the statusline and the top/bottom edges of the
   window.
-  - If an integer, the value is used for both the top and bottom margin.
+  - If an `int >= 0`, the value is used for both the top and bottom margin.
   - If a table, both `top` and `bottom` fields must be present.
 
-Field:   window.margin.horizontal      *incline-config-window.margin.horizontal*
-Type:    number | table
-Valid:   int >= 0 | table { left: int >= 0, right: int >= 0 }
-Default: { left = 1, right = 1 }
+                                       *incline-config-window.margin.horizontal*
+window.margin.horizontal~
+  Type:    `number` | `table`
+  Valid:   `int >= 0` | `table { left: int >= 0, right: int >= 0 }`
+  Default: `{ left = 1, right = 1 }`
 
   Controls the margin between the statusline and the left/right edges of the
   window.
-  - If an integer, the value is used for both the left and right margin.
+  - If an `int`, the value is used for both the left and right margin.
   - If a table, both `left` and `right` fields must be present.
 
-Field:   window.padding                          *incline-config-window.padding*
-Type:    number | table
-Valid:   int >= 0 | table { left: int >= 0, right: int >= 0 }
-Default: { left = 1, right = 1 }
+                                                 *incline-config-window.padding*
+window.padding~
+  Type:    `number` | `table`
+  Valid:   `int >= 0` | `table { left: int >= 0, right: int >= 0 }`
+  Default: `{ left = 1, right = 1 }`
 
   Controls the amount of padding inside the Incline statusline.
   See |incline-config-window.padding_char|.
 
-Field:   window.padding_char                *incline-config-window.padding_char*
-Type:    string
-Valid:   length(padding_char) == 1
-Default: " "
+                                            *incline-config-window.padding_char*
+window.padding_char~
+  Type:    `string`
+  Valid:   `length(padding_char) == 1`
+  Default: `" "`
 
   Controls the character used for padding the Incline statusline.
   See |incline-config-window.padding|.
 
-Field:    window.zindex                           *incline-config-window.zindex*
-Type:     number
-Valid:    int >= 1
-Default:  50
+                                                  *incline-config-window.zindex*
+window.zindex~
+  Type:     `number`
+  Valid:    `int >= 1`
+  Default:  `50`
 
   Controls the z-index of the floating statusline. See the zindex section of
   |api-win_config| for more information.
 
-Field:    ignore.unlisted_buffers       *incline-config-ignore.unlisted_buffers*
-Type:     bool
-Default:  true
+                                        *incline-config-ignore.unlisted_buffers*
+ignore.unlisted_buffers~
+  Type:     `bool`
+  Default:  `true`
 
-  If true, Incline will not display statuslines on windows containing unlisted
+  If `true`, Incline will not display statuslines on windows containing unlisted
   buffers.
 
-Field:    ignore.floating_wins             *incline-config-ignore.floating_wins*
-Type:     bool
-Default:  true
+                                           *incline-config-ignore.floating_wins*
+ignore.floating_wins~
+  Type:     `bool`
+  Default:  `true`
 
-  If true, Incline will not display statuslines on floating windows.
+  If `true`, Incline will not display statuslines on floating windows.
 
-Field:    ignore.filetypes                     *incline-config-ignore.filetypes*
-Type:     list-like table
-Valid:    []string
-Default:  {}
+                                               *incline-config-ignore.filetypes*
+ignore.filetypes~
+  Type:     `table`
+  Valid:    `[]string`
+  Default:  `{}`
 
   Incline will not display a statusline on any window containing a buffer with
   an ignored filetype.
 
-Field:    ignore.buftypes                       *incline-config-ignore.buftypes*
-Type:     string | table | function
-Valid:    "special" | []buftype | function(bufnr, buftype) -> bool
-Default:  "special"
+                                                *incline-config-ignore.buftypes*
+ignore.buftypes~
+  Type:     `string` | `table` | `function`
+  Valid:    `"special"` | `[]buftype` | `function(bufnr, buftype) -> bool`
+  Default:  `"special"`
 
   Incline will not display a statusline on any window containing a buffer with
-  an ignored |'buftype'|.
-  - If the string "special", Incline will only display statuslines on windows
-    containing normal buffers (buffers that have a buftype of "").
-  - If a table, the table should be a list of buftypes to ignore. See |'buftype'|
+  an ignored 'buftype'.
+  - If the string `"special"`, Incline will only display statuslines on windows
+    containing normal buffers (buffers that have a buftype of `""`).
+  - If a table, the table should be a list of buftypes to ignore. See 'buftype'
     for accepted values.
   - If a function, it should accept two arguments, `bufnr` and `buftype`, and
     return `true` if the buffer should be ignored.
 
-Field:    ignore.wintypes                       *incline-config-ignore.wintypes*
-Type:     string | table | function
-Valid:    "special" | []wintype | function(winid, wintype) -> bool
-Default:  "special"
+                                                *incline-config-ignore.wintypes*
+ignore.wintypes~
+  Type:     `string` | `table` | `function`
+  Valid:    `"special"` | `[]wintype` | `function(winid, wintype) -> bool`
+  Default:  `"special"`
 
   Incline will not display a statusline on any window with an ignored wintype.
-  - If the string "special", Incline will only display statuslines on normal
-    windows (windows that have a wintype of "").
+  - If the string `"special"`, Incline will only display statuslines on normal
+    windows (windows that have a wintype of `""`).
   - If a table, the table should be a list of wintypes to ignore.
     See |win_gettype()| for accepted values.
   - If a function, it should accept two arguments, `winid` and `wintype`, and
     return `true` if the window should be ignored.
 
-Field:    hide.focused_win                     *incline-config-hide.focused_win*
-Type:     bool
-Default:  false
+                                               *incline-config-hide.focused_win*
+hide.focused_win~
+  Type:     `bool`
+  Default:  `false`
 
-  If true, Incline will hide the statusline for the focused window.
+  If `true`, Incline will hide the statusline for the focused window.
 
 ------------------------------------------------------------------------------
 2.2 Default Configuration                               *incline-default-config*
