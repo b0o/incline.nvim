@@ -17,6 +17,10 @@ function Winline:buf()
   return self._buf
 end
 
+function Winline:win_opts()
+  return config.window.options
+end
+
 function Winline:win_config(opts)
   opts = opts or {}
   local cfg = {
@@ -72,22 +76,28 @@ function Winline:win_config(opts)
   return cfg
 end
 
+function Winline:refresh(opts)
+  opts = opts or {}
+  if not self._win or not a.nvim_win_is_valid(self._win) then
+    local wincfg = self:win_config { content_len = opts.content_len }
+    wincfg.noautocmd = true
+    self._win = a.nvim_open_win(self:buf(), false, wincfg)
+  else
+    a.nvim_win_set_config(self._win, self:win_config { content_len = opts.content_len })
+  end
+  for opt, val in pairs(self:win_opts()) do
+    a.nvim_win_set_option(self._win, opt, val)
+  end
+end
+
 function Winline:win(opts)
   if self.hidden then
     return
   end
   opts = opts or {}
-
-  if self._win and a.nvim_win_is_valid(self._win) then
-    if opts.refresh then
-      a.nvim_win_set_config(self._win, self:win_config { content_len = opts.content_len })
-    end
-    return self._win
+  if opts.refresh or not (self._win and a.nvim_win_is_valid(self._win)) then
+    self:refresh { content_len = opts.content_len }
   end
-
-  local wincfg = self:win_config { content_len = opts.content_len }
-  wincfg.noautocmd = true
-  self._win = a.nvim_open_win(self:buf(), false, wincfg)
   return self._win
 end
 

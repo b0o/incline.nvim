@@ -46,6 +46,7 @@ The `setup()` must be called to enable Incline:
     window.padding              |incline-config-window.padding|
     window.padding_char         |incline-config-window.padding_char|
     window.zindex               |incline-config-window.zindex|
+    window.options              |incline-config-window.options|
     ignore.unlisted_buffers     |incline-config-ignore.unlisted_buffers|
     ignore.floating_wins        |incline-config-ignore.floating_wins|
     ignore.filetypes            |incline-config-ignore.filetypes|
@@ -174,6 +175,14 @@ window.zindex~
 
   Controls the z-index of the floating statusline. See the zindex section of
   |api-win_config| for more information.
+
+                                                 *incline-config-window.options*
+window.options~
+  Type:     `table`
+  Valid:    `map[string]string`
+  Default:  `{}`
+
+  A dictionary-like table of |local-options| to set on Incline windows.
 
                                         *incline-config-ignore.unlisted_buffers*
 ignore.unlisted_buffers~

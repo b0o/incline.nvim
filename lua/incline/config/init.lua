@@ -77,6 +77,7 @@ M.schema = Schema('config', function(s)
       ),
       padding_char = s:entry(' ', vx.string.length(1)),
       zindex = s:entry(50, vx.number.natural),
+      options = s:entry({}, vx.table),
     },
     hide = {
       focused_win = s:entry(false, vx.bool),
