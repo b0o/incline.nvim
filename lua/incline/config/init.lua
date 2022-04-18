@@ -1,5 +1,6 @@
 local Schema = require 'incline.config.schema'
 local vx = require 'incline.config.validate'
+local tx = require 'incline.config.transform'
 
 local M = {}
 
@@ -132,6 +133,9 @@ return setmetatable({
   __index = function(_, k)
     if M[k] then
       return M[k]
+    end
+    if M.schema.transforms[k] then
+      return M.schema.transforms[k]
     end
     if M.config == nil then
       M.config = M.schema:default()

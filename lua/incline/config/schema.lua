@@ -1,11 +1,29 @@
+local tx = require 'incline.config.transform'
+
 local Schema = {}
 
-function Schema:entry(default, validate, transform)
+function Schema:entry(default, validate, opts)
+  opts = opts or {}
+  if type(opts) == 'function' then
+    opts = { transform = opts }
+  end
+  if type(opts.transform) == 'string' then
+    assert(tx[opts.transform] ~= nil, 'unknown transformer: ' .. opts.transform)
+    opts.transform = tx[opts.transform]
+  end
   return {
     parent = self,
     default = default,
     validate = validate,
-    transform = transform,
+    transform = opts.transform,
+  }
+end
+
+function Schema:transform(transform, val)
+  return {
+    parent = self,
+    transform = type(transform) == 'function' and transform or tx[transform],
+    val = val,
   }
 end
 
@@ -39,10 +57,18 @@ local function _parse(self, data, fallback, schema, path)
     assert(type(val_schema) == 'table', 'invalid field: ' .. p)
     if val_schema.parent == self then
       if val_data ~= nil then
-        assert(val_schema.validate(val_data), 'invalid value for field ' .. p)
-        if val_schema.transform then
-          val_data = val_schema.transform(val_data)
+        local transform
+        if type(val_data) == 'table' and val_data.parent == self then
+          if val_data.transform then
+            transform = val_data.transform
+          end
+          val_data = val_data.val
         end
+        transform = transform or val_schema.transform
+        if transform then
+          val_data = transform(val_data, val_schema, self)
+        end
+        assert(val_schema.validate(val_data), 'invalid value for field ' .. p)
         res[k] = val_data
       elseif val_fallback ~= nil then
         res[k] = val_fallback
@@ -70,6 +96,11 @@ end
 
 local make = function(name, schema)
   local self = setmetatable({ name = name }, { __index = Schema })
+  self.transforms = vim.tbl_map(function(t)
+    return function(...)
+      return self:transform(t, ...)
+    end
+  end, tx)
   self.schema = schema(self)
   return self
 end

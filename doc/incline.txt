@@ -8,12 +8,13 @@ Version:        0.0.2
 ==============================================================================
 CONTENTS                                                      *incline-contents*
 
-    1. Intro ................................ |incline-intro|
-    2. Usage ................................ |incline-usage|
-      2.1. Configuration .................... |incline-config|
-      2.2. Default Configuration ............ |incline-default-config|
-    3. Changelog ............................ |incline-changelog|
-    4. License .............................. |incline-license|
+  1. Intro ...................................... |incline-intro|
+  2. Usage ...................................... |incline-usage|
+    2.1. Configuration .......................... |incline-config|
+    2.2. Configuration Field Transforms ......... |incline-config-transforms|
+    2.3. Default Configuration .................. |incline-default-config|
+  3. Changelog .................................. |incline-changelog|
+  4. License .................................... |incline-license|
 
 ==============================================================================
 1. Intro                                                         *incline-intro*
@@ -245,7 +246,113 @@ hide.focused_win~
   If `true`, Incline will hide the statusline for the focused window.
 
 ------------------------------------------------------------------------------
-2.2 Default Configuration                               *incline-default-config*
+2.2 Configuration Field Transforms                   *incline-config-transforms*
+
+NOTE: Most users do not need to worry about transforms. The defaults will work
+fine for most cases.
+
+When assigning to configuration fields, the way your options are applied
+varies depending on the field. Some fields are replaced entirely by the value
+you pass, while other fields are extended by the value you pass. These
+behaviors are called transforms.
+
+If a configuration option uses a transform by default, the transform will be
+noted in the option's documentation. If the transform behavior is not
+specified, that means that the user-configured value will fully replace the
+default value.
+
+For example, the `window.options` field has a default transform of `extend`.
+This means that user-configured options extend the default options rather than
+replacing them. For example:
+>
+  > -- Before:
+  > -- Print out the default value of window.options
+  > print(vim.inspect(require'incline.config'.window.options)
+  {
+      signcolumn = "no",
+      winhighlight = "Search:None,EndOfBuffer:None",
+      wrap = false
+    }
+  >
+  > -- Call setup() to apply the configuration
+  > require'incline'.setup {
+      window = {
+        options = {
+          winblend = 10,
+        },
+      },
+    }
+  >
+  > -- After:
+  > -- Print out the updated value of window.options
+  > print(vim.inspect(require'incline.config'.window.options)
+  {
+    signcolumn = "no",
+    winblend = 10,
+    winhighlight = "Search:None,EndOfBuffer:None",
+    wrap = false
+  }
+<
+                                                    *incline-transform-override*
+Overriding default transforms~
+It is possible to override the default transform by explicity specifying the
+one you want to use. To do this, use one of the transform functions exported
+by `incline.config`.
+
+That is, instead of: >
+  local incline = require'incline'`
+  incline.setup { window = { options = { winblend = 10 } }`
+<
+You can use: >
+  local incline = require'incline'
+  local config = require'incline.config'
+  incline.setup { window = { options = config.replace { winblend = 10 } }
+<
+Another example, following the example from the previous section:
+>
+  > -- Before:
+  > -- Print out the default value of window.options
+  > print(vim.inspect(require'incline.config'.window.options)
+  {
+      signcolumn = "no",
+      winhighlight = "Search:None,EndOfBuffer:None",
+      wrap = false
+    }
+  >
+  > -- Call setup() to apply the configuration
+  > require'incline'.setup {
+      window = {
+        options = require'incline.config'.replace {
+          winblend = 10,
+        },
+      },
+    }
+  >
+  > -- After:
+  > -- Print out the updated value of window.options
+  > print(vim.inspect(require'incline.config'.window.options)
+  {
+    winblend = 10,
+  }
+<
+                                                    *incline-builtin-transforms*
+Built-in transforms~
+                                                     *incline-transform-replace*
+replace~
+  Fully replaces the default value of the configuration option. This is the
+  default transform if none is specified in the option's documentation.
+>
+    require'incline.config'.replace
+<
+                                                     *incline-transform-replace*
+extend~
+  Extends the default value of the option. Only valid for options with default
+  values that are list-like or dict-like tables.
+>
+    require'incline.config'.extend
+<
+------------------------------------------------------------------------------
+2.3 Default Configuration                               *incline-default-config*
 >
   {
     render = function(props)
