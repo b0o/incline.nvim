@@ -78,7 +78,11 @@ M.schema = Schema('config', function(s)
       ),
       padding_char = s:entry(' ', vx.string.length(1)),
       zindex = s:entry(50, vx.number.natural),
-      options = s:entry({}, vx.table),
+      options = s:entry({
+        winhighlight = 'Search:None,EndOfBuffer:None',
+        wrap = false,
+        signcolumn = 'no',
+      }, vx.table, { transform = tx.extend }),
     },
     hide = {
       focused_win = s:entry(false, vx.bool),

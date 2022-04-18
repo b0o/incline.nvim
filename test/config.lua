@@ -264,6 +264,39 @@ Describe('the incline.config module', function()
           c.schema:parse { window = { 'foo' } }
         end).To.ThrowError()
       end)
+
+      Describe('fields with default "extend" transformers', function()
+        It('should extend the default values', function()
+          local default = c.schema:default()
+          local parsed = c.schema:parse {
+            window = {
+              options = {
+                winblend = 22,
+              },
+            },
+          }
+          Expect(vim.tbl_keys(default.window.options)).To.Be.LongerThan(1)
+          Expect(vim.tbl_keys(parsed.window.options)).To.Have.Length(#vim.tbl_keys(default.window.options) + 1)
+          Expect(parsed.window.options.winblend).To.Equal(22) -- From extension
+        end)
+      end)
+
+      Describe('fields passed "replace" transforms', function()
+        It('should replace the default values', function()
+          local default = c.schema:default()
+          local options = {
+            winblend = 22,
+          }
+          local parsed = c.schema:parse {
+            window = {
+              options = c.schema.transforms.replace(options),
+            },
+          }
+          Expect(vim.tbl_keys(default.window.options)).To.Be.LongerThan(1)
+          Expect(vim.tbl_keys(parsed.window.options)).To.Have.Length(1)
+          Expect(parsed.window.options).To.DeepEqual(options)
+        end)
+      end)
     end)
   end)
 

@@ -17,10 +17,6 @@ function Winline:buf()
   return self._buf
 end
 
-function Winline:win_opts()
-  return config.window.options
-end
-
 function Winline:win_config(opts)
   opts = opts or {}
   local cfg = {
@@ -85,7 +81,7 @@ function Winline:refresh(opts)
   else
     a.nvim_win_set_config(self._win, self:win_config { content_len = opts.content_len })
   end
-  for opt, val in pairs(self:win_opts()) do
+  for opt, val in pairs(config.window.options) do
     a.nvim_win_set_option(self._win, opt, val)
   end
 end

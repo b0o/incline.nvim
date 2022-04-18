@@ -179,11 +179,20 @@ window.zindex~
 
                                                  *incline-config-window.options*
 window.options~
-  Type:     `table`
-  Valid:    `map[string]string`
-  Default:  `{}`
-
+  Type:      `table`
+  Valid:     `map[string]string`
+  Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
+  Default: >
+    {
+      winhighlight = 'Search:None,EndOfBuffer:None',
+      wrap = false,
+      signcolumn = false,
+    }
+<
   A dictionary-like table of |local-options| to set on Incline windows.
+
+  Note that, when setting this option, the map that you pass extends the
+  default values, rather than replacing them. See |incline-config-transforms|.
 
                                         *incline-config-ignore.unlisted_buffers*
 ignore.unlisted_buffers~
@@ -355,6 +364,15 @@ extend~
 2.3 Default Configuration                               *incline-default-config*
 >
   {
+    debounce_threshold = { falling = 50, rising = 10 },
+    hide = { focused_win = false, },
+    ignore = {
+      buftypes = "special",
+      filetypes = {},
+      floating_wins = true,
+      unlisted_buffers = true,
+      wintypes = "special",
+    },
     render = function(props)
       local bufname = vim.api.nvim_buf_get_name(props.buf)
       if bufname == '' then
@@ -364,27 +382,21 @@ extend~
       end
       return bufname
     end,
-    debounce_threshold = { rising = 10, falling = 50 },
     window = {
-      width = 'fit',
-      placement = { horizontal = 'right', vertical = 'top' },
       margin = {
         horizontal = { left = 1, right = 1 },
         vertical = { bottom = 0, top = 1 },
       },
+      options = {
+        signcolumn = "no",
+        winhighlight = "Search:None,EndOfBuffer:None",
+        wrap = false
+      },
       padding = { left = 1, right = 1 },
-      padding_char = ' ',
+      padding_char = " ",
+      placement = { horizontal = "right", vertical = "top", },
+      width = "fit",
       zindex = 50,
-    },
-    ignore = {
-      floating_wins = true,
-      unlisted_buffers = true,
-      filetypes = {},
-      buftypes = 'special',
-      wintypes = 'special',
-    },
-    hide = {
-      focused_win = false,
     },
   }
 <
