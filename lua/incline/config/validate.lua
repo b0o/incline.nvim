@@ -68,7 +68,7 @@ M.bool = M.type 'boolean'
 M.func = M.type 'function'
 
 M.table = wrapped(M.type 'table')
-M.table.of = function(fields)
+M.table.of_all = function(fields)
   return function(val)
     local keys = {}
     for k in pairs(val) do

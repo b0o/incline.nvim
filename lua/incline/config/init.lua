@@ -17,7 +17,7 @@ M.schema = Schema('config', function(s)
       { rising = 10, falling = 50 },
       vx.any {
         vx.number.whole,
-        vx.table.of { rising = vx.number.whole, falling = vx.number.whole },
+        vx.table.of_all { rising = vx.number.whole, falling = vx.number.whole },
       },
       function(v)
         if type(v) == 'number' then
@@ -37,7 +37,7 @@ M.schema = Schema('config', function(s)
           { left = 1, right = 1 },
           vx.any {
             vx.number.whole,
-            vx.table.of { left = vx.number.whole, right = vx.number.whole },
+            vx.table.of_all { left = vx.number.whole, right = vx.number.whole },
           },
           function(v)
             if type(v) == 'number' then
@@ -50,7 +50,7 @@ M.schema = Schema('config', function(s)
           { top = 1, bottom = 0 },
           vx.any {
             vx.number.whole,
-            vx.table.of { top = vx.number.whole, bottom = vx.number.whole },
+            vx.table.of_all { top = vx.number.whole, bottom = vx.number.whole },
           },
           function(v)
             if type(v) == 'number' then
@@ -64,7 +64,7 @@ M.schema = Schema('config', function(s)
         { left = 1, right = 1 },
         vx.any {
           vx.number.whole,
-          vx.table.of {
+          vx.table.of_all {
             left = vx.number.whole,
             right = vx.number.whole,
           },
