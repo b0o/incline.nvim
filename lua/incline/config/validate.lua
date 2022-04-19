@@ -84,10 +84,41 @@ M.table.of_all = function(fields)
   end
 end
 
+M.table.of_any = function(fields)
+  return function(val)
+    for k, v in pairs(val) do
+      if not fields[k] or not fields[k](v) then
+        return false
+      end
+    end
+    return true
+  end
+end
+
+M.dict = function(keys, vals)
+  return function(val)
+    if not M.table(val) then
+      return false
+    end
+    for k, v in pairs(val) do
+      if not (keys(k) and vals(v)) then
+        return false
+      end
+    end
+    return true
+  end
+end
+
 M.string = wrapped(M.type 'string')
 M.string.length = function(len)
   return function(val)
     return #val == len
+  end
+end
+
+M.string.match = function(pat)
+  return function(val)
+    return string.match(val, pat) ~= nil
   end
 end
 
@@ -171,5 +202,19 @@ M.list.of = function(of)
     return true
   end
 end
+
+M.highlight_args = M.table.of_any {
+  start = M.string,
+  stop = M.string,
+  cterm = M.string,
+  ctermfg = M.string,
+  ctermbg = M.string,
+  gui = M.string,
+  guifg = M.string,
+  guibg = M.string,
+  guisp = M.string,
+  blend = M.any { M.string, M.number.int },
+  font = M.string,
+}
 
 return M
