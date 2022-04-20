@@ -82,14 +82,12 @@ M.setup = function()
     'BufWinEnter',
     'BufWinLeave',
   }
-  for _, event in ipairs(events) do
-    util.autocmd(event, {
-      callback = function()
-        state.events[event] = true
-        update()
-      end,
-    })
-  end
+  util.autocmd(events, {
+    callback = function(e)
+      state.events[e.event] = true
+      update()
+    end,
+  })
   update:immediate { refresh = true }
   state.initialized = true
 end
