@@ -68,6 +68,20 @@ M.win_get_winline = function(win)
   return tab:get_winline(win)
 end
 
+M.destroy = function()
+  if not state.initialized then
+    return
+  end
+  util.clear_augroup()
+  for _, tabpage in ipairs(state.tabpages) do
+    tabpage:destroy()
+  end
+  state.current_tab = nil
+  state.tabpages = {}
+  state.events = {}
+  state.initialized = false
+end
+
 M.setup = function()
   if state.initialized then
     update.threshold = config.debounce_threshold

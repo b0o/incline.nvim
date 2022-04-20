@@ -10,8 +10,8 @@ CONTENTS                                                      *incline-contents*
 
   1. Intro ...................................... |incline-intro|
   2. Usage ...................................... |incline-usage|
-    2.1. Configuration .......................... |incline-config|
-    2.2. Configuration Field Transforms ......... |incline-config-transforms|
+    2.1. Functions .............................. |incline-functions|
+    2.2. Configuration .......................... |incline-config|
     2.3. Default Configuration .................. |incline-default-config|
   3. Changelog .................................. |incline-changelog|
   4. License .................................... |incline-license|
@@ -25,14 +25,31 @@ Neovim's new global statusline.
 ==============================================================================
 2. Usage                                                         *incline-usage*
 
-The `setup()` must be called to enable Incline:
-
-  incline.setup({config})                                      *incline.setup()*
-    `setup()` takes a `config` argument (see |incline-config|). The `setup()`
-    function can be called multiple times to change configuration options.
+Incline is disabled by default. To enable it, you must call either
+|incline.setup()| or |incline.enable()|.
 
 ------------------------------------------------------------------------------
-2.1 Configuration                                               *incline-config*
+2.1 Functions                                                *incline-functions*
+
+  `incline.setup({config})`                                      *incline.setup()*
+    Applies the configuration options and enables Incline.
+    Takes an optional `config` table (see |incline-config|).
+    Can be called multiple times to change configuration options.
+
+  `incline.enable()`                                            *incline.enable()*
+    Enables Incline.
+
+  `incline.disable()`                                          *incline.disable()*
+    Disables Incline.
+
+  `incline.toggle()`                                            *incline.toggle()*
+    Toggles Incline.
+
+  `incline.is_enabled()`                                    *incline.is_enabled()*
+    Returns `true` if Incline is enabled, else `false`.
+
+------------------------------------------------------------------------------
+2.2 Configuration                                               *incline-config*
 
   The `config` argument to |incline.setup()| is a table that can contain the
   following fields and sub-fields:
@@ -255,7 +272,45 @@ hide.focused_win~
   If `true`, Incline will hide the statusline for the focused window.
 
 ------------------------------------------------------------------------------
-2.2 Configuration Field Transforms                   *incline-config-transforms*
+2.3 Default Configuration                               *incline-default-config*
+>
+  {
+    debounce_threshold = { falling = 50, rising = 10 },
+    hide = { focused_win = false, },
+    ignore = {
+      buftypes = "special",
+      filetypes = {},
+      floating_wins = true,
+      unlisted_buffers = true,
+      wintypes = "special",
+    },
+    render = function(props)
+      local bufname = vim.api.nvim_buf_get_name(props.buf)
+      if bufname == '' then
+        return '[No name]'
+      else
+        bufname = vim.fn.fnamemodify(bufname, ':t')
+      end
+      return bufname
+    end,
+    window = {
+      margin = {
+        horizontal = { left = 1, right = 1 },
+        vertical = { bottom = 0, top = 1 },
+      },
+      options = {
+        signcolumn = "no",
+        winhighlight = "Search:None,EndOfBuffer:None",
+        wrap = false
+      },
+      padding = { left = 1, right = 1 },
+      padding_char = " ",
+      placement = { horizontal = "right", vertical = "top", },
+      width = "fit",
+      zindex = 50,
+    },
+  }
+<
 
 NOTE: Most users do not need to worry about transforms. The defaults will work
 fine for most cases.

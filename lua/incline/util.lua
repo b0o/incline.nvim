@@ -77,12 +77,26 @@ M.is_ignored_win = function(winid)
   return false
 end
 
-local augroup = a.nvim_create_augroup('incline', { clear = true })
+local augroup
+M.get_augroup = function()
+  if not augroup then
+    augroup = a.nvim_create_augroup('incline', { clear = true })
+  end
+  return augroup
+end
+
+M.clear_augroup = function()
+  if augroup then
+    a.nvim_del_augroup_by_id(augroup)
+    augroup = nil
+  end
+end
+
 M.autocmd = function(event, opts)
   return a.nvim_create_autocmd(
     event,
     vim.tbl_extend('force', {
-      group = augroup,
+      group = M.get_augroup(),
     }, opts)
   )
 end
