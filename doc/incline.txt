@@ -13,6 +13,7 @@ CONTENTS                                                      *incline-contents*
     2.1. Functions .............................. |incline-functions|
     2.2. Configuration .......................... |incline-config|
     2.3. Default Configuration .................. |incline-default-config|
+    2.4. Configuration Field Transforms ......... |incline-config-transforms|
   3. Changelog .................................. |incline-changelog|
   4. License .................................... |incline-license|
 
@@ -311,6 +312,8 @@ hide.focused_win~
     },
   }
 <
+------------------------------------------------------------------------------
+2.4 Configuration Field Transforms                   *incline-config-transforms*
 
 NOTE: Most users do not need to worry about transforms. The defaults will work
 fine for most cases.
@@ -414,46 +417,6 @@ extend~
   values that are list-like or dict-like tables.
 >
     require'incline.config'.extend
-<
-------------------------------------------------------------------------------
-2.3 Default Configuration                               *incline-default-config*
->
-  {
-    debounce_threshold = { falling = 50, rising = 10 },
-    hide = { focused_win = false, },
-    ignore = {
-      buftypes = "special",
-      filetypes = {},
-      floating_wins = true,
-      unlisted_buffers = true,
-      wintypes = "special",
-    },
-    render = function(props)
-      local bufname = vim.api.nvim_buf_get_name(props.buf)
-      if bufname == '' then
-        return '[No name]'
-      else
-        bufname = vim.fn.fnamemodify(bufname, ':t')
-      end
-      return bufname
-    end,
-    window = {
-      margin = {
-        horizontal = { left = 1, right = 1 },
-        vertical = { bottom = 0, top = 1 },
-      },
-      options = {
-        signcolumn = "no",
-        winhighlight = "Search:None,EndOfBuffer:None",
-        wrap = false
-      },
-      padding = { left = 1, right = 1 },
-      padding_char = " ",
-      placement = { horizontal = "right", vertical = "top", },
-      width = "fit",
-      zindex = 50,
-    },
-  }
 <
 ==============================================================================
 3. Changelog                                                 *incline-changelog*
