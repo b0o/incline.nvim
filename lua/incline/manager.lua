@@ -29,7 +29,7 @@ local update = Debounce(function(opts)
 
   local changes = {}
   if opts.refresh then
-    changes = { layout = true, windows = true, focus = true }
+    changes = { layout = true, windows = true, focus = true, render = true }
   end
   if events.WinNew or events.WinClosed then
     changes.windows = true
@@ -41,8 +41,11 @@ local update = Debounce(function(opts)
   if events.WinEnter or events.WinLeave or events.TabEnter or events.TabNewEntered then
     changes.focus = true
   end
+  if events.CursorHold or events.CursorHoldI or events.CursorMoved or events.CursorMovedI then
+    changes.render = true
+  end
 
-  if changes.layout or changes.windows or changes.focus then
+  if changes.layout or changes.windows or changes.focus or changes.render then
     state.tabpages[state.current_tab]:update(changes)
   end
   state.events = {}
@@ -81,6 +84,10 @@ M.setup = function()
     'TabNewEntered',
     'BufWinEnter',
     'BufWinLeave',
+    'CursorHold',
+    'CursorHoldI',
+    'CursorMoved',
+    'CursorMovedI',
   }
   util.autocmd(events, {
     callback = function(e)
