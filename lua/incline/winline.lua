@@ -159,7 +159,7 @@ function Winline:render(opts)
   opts = opts or {}
 
   local target_buf = a.nvim_win_get_buf(self.target_win)
-  local content = self:parse_content(config.render { buf = target_buf, win = self.target_win })
+  local content = self:parse_content(config.render { buf = target_buf, win = self.target_win, focused = self.focused })
 
   if self.content and not vim.deep_equal(content, self.content) then
     opts.refresh = true

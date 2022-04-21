@@ -97,9 +97,11 @@ render~
   It is passed a single argument, `props`, which is a table containing the
   following fields:
 
-    Field  Type     Description
-    `buf`    `number`   The buffer handle for the target window.
-    `win`    `number`   The window handle for the target window.
+    Field     Type     Description
+    `buf`       `number`   The buffer handle for the target window.
+    `win`       `number`   The window handle for the target window.
+    `focused`   `bool`     `true` if the target window is focused,
+                       else `false`.
 
   The return value can take several forms:
   a. A string. The string will be rendered literally.
