@@ -95,7 +95,7 @@ M.table.of_any = function(fields)
   end
 end
 
-M.dict = function(keys, vals)
+M.map = function(keys, vals)
   return function(val)
     if not M.table(val) then
       return false

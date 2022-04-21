@@ -2,17 +2,20 @@ local M = {}
 
 local config = require 'incline.config'
 local manager = require 'incline.manager'
+local highlight = require 'incline.highlight'
 
 M.is_enabled = function()
   return manager.state.initialized
 end
 
 M.enable = function()
+  highlight.setup()
   manager.setup()
 end
 
 M.disable = function()
   manager.destroy()
+  highlight.clear()
 end
 
 M.toggle = function()

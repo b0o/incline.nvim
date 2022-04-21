@@ -48,10 +48,7 @@ M.schema = Schema('config', function(s)
         ),
         vertical = s:entry(
           { top = 1, bottom = 0 },
-          vx.any {
-            vx.number.whole,
-            vx.table.of_all { top = vx.number.whole, bottom = vx.number.whole },
-          },
+          vx.any { vx.number.whole, vx.table.of_all { top = vx.number.whole, bottom = vx.number.whole } },
           function(v)
             if type(v) == 'number' then
               return { top = v, bottom = v }
@@ -64,10 +61,7 @@ M.schema = Schema('config', function(s)
         { left = 1, right = 1 },
         vx.any {
           vx.number.whole,
-          vx.table.of_all {
-            left = vx.number.whole,
-            right = vx.number.whole,
-          },
+          vx.table.of_all { left = vx.number.whole, right = vx.number.whole },
         },
         function(v)
           if type(v) == 'number' then
@@ -78,11 +72,29 @@ M.schema = Schema('config', function(s)
       ),
       padding_char = s:entry(' ', vx.string.length(1)),
       zindex = s:entry(50, vx.number.natural),
-      options = s:entry({
-        winhighlight = 'Search:None,EndOfBuffer:None',
-        wrap = false,
-        signcolumn = 'no',
-      }, vx.table, { transform = tx.extend }),
+      winhighlight = {
+        focused = s:entry({
+          Search = 'None',
+          EndOfBuffer = 'None',
+          Normal = 'InclineNormal',
+        }, vx.map(vx.string, vx.string), { transform = tx.extend }),
+        unfocused = s:entry({
+          Search = 'None',
+          EndOfBuffer = 'None',
+          Normal = 'InclineNormalNC',
+        }, vx.map(vx.string, vx.string), { transform = tx.extend }),
+      },
+      options = s:entry(
+        { wrap = false, signcolumn = 'no' },
+        vx.all {
+          vx.table,
+          function(val)
+            assert(val.winhighlight == nil, 'incline.config: use window.winhighlight, not window.options.winhighlight')
+            return true
+          end,
+        },
+        { transform = tx.extend }
+      ),
     },
     hide = {
       focused_win = s:entry(false, vx.bool),
@@ -125,6 +137,12 @@ M.schema = Schema('config', function(s)
           }),
         }
       ),
+    },
+    highlight = {
+      groups = s:entry({
+        InclineNormal = 'NormalFloat',
+        InclineNormalNC = 'NormalFloat',
+      }, vx.map(vx.string, vx.any { vx.highlight_args, vx.string }), { transform = tx.extend }),
     },
   }
 end)

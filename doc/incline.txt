@@ -1,6 +1,6 @@
-*incline.txt*       Lightweight floating statuslines.       *incline* *incline.nvim*
+*incline.txt*     Lightweight floating statuslines.         *incline* *incline.nvim*
 
-Author:         Maddison Hellstrom <https://github.com/b0o/>
+Author:         Maddison Hellstrom <https://github.com/b0o>
 Licence:        MIT
 Homepage:       https://github.com/b0o/incline.nvim
 Version:        0.0.2
@@ -20,7 +20,7 @@ CONTENTS                                                      *incline-contents*
 ==============================================================================
 1. Intro                                                         *incline-intro*
 
-Incline provides lightweight floating statuslines, intended for use with
+Incline provides lightweight floating statuslines intended for use with
 Neovim's new global statusline.
 
 ==============================================================================
@@ -52,32 +52,43 @@ Incline is disabled by default. To enable it, you must call either
 ------------------------------------------------------------------------------
 2.2 Configuration                                               *incline-config*
 
-  The `config` argument to |incline.setup()| is a table that can contain the
-  following fields and sub-fields:
+The |incline.setup()| function accepts a single argument, `config`, a table
+that can contain the following fields:
 
-    render                      |incline-config-render|
-    debounce_threshold          |incline-config-debounce_threshold|
-    window.width                |incline-config-window.width|
-    window.placement.vertical   |incline-config-window.placement.vertical|
-    window.placement.horizontal |incline-config-window.placement.horizontal|
-    window.margin.vertical      |incline-config-window.margin.vertical|
-    window.margin.horizontal    |incline-config-window.margin.horizontal|
-    window.padding              |incline-config-window.padding|
-    window.padding_char         |incline-config-window.padding_char|
-    window.zindex               |incline-config-window.zindex|
-    window.options              |incline-config-window.options|
-    ignore.unlisted_buffers     |incline-config-ignore.unlisted_buffers|
-    ignore.floating_wins        |incline-config-ignore.floating_wins|
-    ignore.filetypes            |incline-config-ignore.filetypes|
-    ignore.buftypes             |incline-config-ignore.buftypes|
-    ignore.wintypes             |incline-config-ignore.wintypes|
-    hide.focused_win            |incline-config-hide.focused_win|
+config~
+├─ render                  |incline-config-render|
+├─ window                  |incline-config-window|
+│  ├─ placement            |incline-config-window.placement|
+│  │  ├─ vertical          |incline-config-window.placement.vertical|
+│  │  └─ horizontal        |incline-config-window.placement.horizontal|
+│  ├─ margin               |incline-config-window.margin|
+│  │  ├─ vertical          |incline-config-window.margin.vertical|
+│  │  └─ horizontal        |incline-config-window.margin.horizontal|
+│  ├─ winhighlight         |incline-config-window.winhighlight|
+│  │  ├─ focused           |incline-config-window.winhighlight.focused|
+│  │  └─ unfocused         |incline-config-window.winhighlight.unfocused|
+│  ├─ width                |incline-config-window.width|
+│  ├─ padding              |incline-config-window.padding|
+│  ├─ padding_char         |incline-config-window.padding_char|
+│  ├─ options              |incline-config-window.options|
+│  └─ zindex               |incline-config-window.zindex|
+├─ ignore                  |incline-config-ignore|
+│  ├─ unlisted_buffers     |incline-config-ignore.unlisted_buffers|
+│  ├─ floating_wins        |incline-config-ignore.floating_wins|
+│  ├─ filetypes            |incline-config-ignore.filetypes|
+│  ├─ buftypes             |incline-config-ignore.buftypes|
+│  └─ wintypes             |incline-config-ignore.wintypes|
+├─ hide                    |incline-config-hide|
+│  └─ hide.focused_win     |incline-config-hide.focused_win|
+├─ highlight               |incline-config-highlight|
+│  └─ groups               |incline-config-highlight.groups|
+└─ debounce_threshold      |incline-config-debounce_threshold|
 
                                          *incline-render*  *incline-config-render*
 render~
   Type:     `function`
-  Valid:    `function({ buf: number, win: number }) -> string`
   Default:  See |incline-default-config|
+  Valid:    `function({ buf = number, win = number }) -> result`
 
   The `render` function is evaluated on each update and its return value is
   displayed in the Incline statusline.
@@ -90,7 +101,27 @@ render~
     `buf`    `number`   The buffer handle for the target window.
     `win`    `number`   The window handle for the target window.
 
-  The function should return a string.
+  The return value can take several forms:
+  a. A string. The string will be rendered literally.
+  b. A table where the value at index `1` is a string and the rest of the
+     keys are |highlight-args| and their values. The string at index `1` will
+     be rendered with the 'highlight' defined by the other keys.
+  c. A table where the value at index `1` is a string and the key `group` is
+     the name of an existing highlight group.
+  d. A list containing any combination of elements as specified in a-c above.
+
+  For example, to render `"foo"` with a blue foreground followed by `"bar"`
+  with a red background and italic font, followed by `"baz"` with no special
+  highlighting:
+>
+  render = function()
+    return {
+      { "foo", guifg = "blue" },
+      { "bar", guibg = "red", gui = "italic" },
+      "baz",
+    }
+  end
+<
 
                                              *incline-config-debounce_threshold*
 debounce_threshold~
@@ -117,19 +148,8 @@ debounce_threshold~
   If `debounce_threshold` is set to a table, both `rising` and `falling`
   fields must be present.
 
-                                                   *incline-config-window.width*
-window.width~
-  Type:    `number` | `string`
-  Valid:   `int >= 2` | `0.0 < float <= 1.0` | `"fit"` | `"fill"`
-  Default: `"fit"`
-
-  Controls the width of Incline statuslines:
-  - If `int >= 2`, each statusline is `width` columns wide.
-  - If `0.0 < float <= 1.0`, the width is calculated as a percentage of the
-    window width.
-  - If `"fit"`, the statusline is as wide as its content.
-  - If `"fill"`, the statusline is as wide as the window.
-
+                                      *incline-config-window*
+                                      *incline-config-window.placement*
                                       *incline-config-window.placement.vertical*
 window.placement.vertical~
   Type:    `string`
@@ -146,6 +166,7 @@ window.placement.horizontal~
 
   Controls the horizontal placement of Incline statuslines.
 
+                                         *incline-config-window.margin*
                                          *incline-config-window.margin.vertical*
 window.margin.vertical~
   Type:    `number` | `table`
@@ -168,6 +189,58 @@ window.margin.horizontal~
   - If an `int`, the value is used for both the left and right margin.
   - If a table, both `left` and `right` fields must be present.
 
+                                    *incline-config-window.winhighlight*
+                                    *incline-config-window.winhighlight.focused*
+window.winhighlight.focused~
+  Type:      `table`
+  Valid:     `map[string]string`
+  Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
+  Default: >
+    {
+      Search = 'None',
+      EndOfBuffer = 'None',
+      Normal = 'InclineNormal',
+    }
+<
+  Map of 'winhighlight' entries to be applied to the Incline window for the
+  focused window. Map keys should be the builtin highlight group name to be
+  overridden, map values are any highlight group to use as the override.
+
+  Note that, when setting this option, the list that you pass extends the
+  default values, rather than replacing them. See |incline-config-transforms|.
+
+                                  *incline-config-window.winhighlight.unfocused*
+window.winhighlight.unfocused~
+  Type:      `table`
+  Valid:     `map[string]string`
+  Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
+  Default: >
+    {
+      Search = 'None',
+      EndOfBuffer = 'None',
+      Normal = 'InclineNormalNC',
+    }
+<
+  Map of 'winhighlight' entries to be applied to the Incline windows for
+  unfocused windows. Map keys should be the builtin highlight group name to be
+  overridden, map values are any highlight group to use as the override.
+
+  Note that, when setting this option, the list that you pass extends the
+  default values, rather than replacing them. See |incline-config-transforms|.
+
+                                                   *incline-config-window.width*
+window.width~
+  Type:    `number` | `string`
+  Valid:   `int >= 2` | `0.0 < float <= 1.0` | `"fit"` | `"fill"`
+  Default: `"fit"`
+
+  Controls the width of Incline statuslines:
+  - If `int >= 2`, each statusline is `width` columns wide.
+  - If `0.0 < float <= 1.0`, the width is calculated as a percentage of the
+    window width.
+  - If `"fit"`, the statusline is as wide as its content.
+  - If `"fill"`, the statusline is as wide as the window.
+
                                                  *incline-config-window.padding*
 window.padding~
   Type:    `number` | `table`
@@ -186,15 +259,6 @@ window.padding_char~
   Controls the character used for padding the Incline statusline.
   See |incline-config-window.padding|.
 
-                                                  *incline-config-window.zindex*
-window.zindex~
-  Type:     `number`
-  Valid:    `int >= 1`
-  Default:  `50`
-
-  Controls the z-index of the floating statusline. See the zindex section of
-  |api-win_config| for more information.
-
                                                  *incline-config-window.options*
 window.options~
   Type:      `table`
@@ -202,7 +266,6 @@ window.options~
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
   Default: >
     {
-      winhighlight = 'Search:None,EndOfBuffer:None',
       wrap = false,
       signcolumn = false,
     }
@@ -212,6 +275,16 @@ window.options~
   Note that, when setting this option, the map that you pass extends the
   default values, rather than replacing them. See |incline-config-transforms|.
 
+                                                  *incline-config-window.zindex*
+window.zindex~
+  Type:     `number`
+  Valid:    `int >= 1`
+  Default:  `50`
+
+  Controls the z-index of the floating statusline. See the zindex section of
+  |api-win_config| for more information.
+
+                                        *incline-config-ignore*
                                         *incline-config-ignore.unlisted_buffers*
 ignore.unlisted_buffers~
   Type:     `bool`
@@ -265,6 +338,7 @@ ignore.wintypes~
   - If a function, it should accept two arguments, `winid` and `wintype`, and
     return `true` if the window should be ignored.
 
+                                               *incline-config-hide*
                                                *incline-config-hide.focused_win*
 hide.focused_win~
   Type:     `bool`
@@ -272,19 +346,53 @@ hide.focused_win~
 
   If `true`, Incline will hide the statusline for the focused window.
 
+                                               *incline-config-highlight*
+                                               *incline-config-highlight.groups*
+highlight.groups~
+  Type:      `table`
+  Valid:     `map[string](string | hl_args)`
+  Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
+  Default: >
+    {
+      InclineNormal = 'NormalFloat',
+      InclineNormalNC = 'NormalFloat',
+    }
+<
+  Map of highlight groups to define when initializing Incline. This is a
+  utility option, you could alternatively define highlight groups yourself
+  with |:highlight|.
+
+  Map keys are the names of the new groups; map values are be the new group's
+  arguments.
+
+  If a map entry's value is a string, it is treated as a highlight group name,
+  and the new highlight group becomes a link to that group.
+
+  If a map entry's value is a table, it can contain any valid |highlight-args|
+  argument:
+>
+    hl_args: {
+      start: string,
+      stop: string,
+      cterm: string,
+      ctermfg: string,
+      ctermbg: string,
+      gui: string,
+      guifg: string,
+      guibg: string,
+      guisp: string,
+      blend: string | int,
+      font: string,
+    }
+<
+
+  Note that, when setting this option, the list that you pass extends the
+  default values, rather than replacing them. See |incline-config-transforms|.
+
 ------------------------------------------------------------------------------
 2.3 Default Configuration                               *incline-default-config*
 >
   {
-    debounce_threshold = { falling = 50, rising = 10 },
-    hide = { focused_win = false, },
-    ignore = {
-      buftypes = "special",
-      filetypes = {},
-      floating_wins = true,
-      unlisted_buffers = true,
-      wintypes = "special",
-    },
     render = function(props)
       local bufname = vim.api.nvim_buf_get_name(props.buf)
       if bufname == '' then
@@ -295,20 +403,51 @@ hide.focused_win~
       return bufname
     end,
     window = {
+      width = "fit",
+      placement = { horizontal = "right", vertical = "top" },
       margin = {
         horizontal = { left = 1, right = 1 },
         vertical = { bottom = 0, top = 1 },
       },
-      options = {
-        signcolumn = "no",
-        winhighlight = "Search:None,EndOfBuffer:None",
-        wrap = false
-      },
       padding = { left = 1, right = 1 },
       padding_char = " ",
-      placement = { horizontal = "right", vertical = "top", },
-      width = "fit",
+      options = {
+        signcolumn = "no",
+        wrap = false
+      },
+      winhighlight = {
+        focused = {
+          EndOfBuffer = "None",
+          Normal = "InclineNormal",
+          Search = "None"
+        },
+        unfocused = {
+          EndOfBuffer = "None",
+          Normal = "InclineNormalNC",
+          Search = "None"
+        },
+      },
       zindex = 50,
+    },
+    highlight = {
+      groups = {
+        InclineNormal = "NormalFloat",
+        InclineNormalNC = "NormalFloat"
+      },
+    },
+    hide = {
+      focused_win = false,
+    },
+    ignore = {
+      buftypes = "special",
+      filetypes = {},
+      floating_wins = true,
+      unlisted_buffers = true,
+      wintypes = "special",
+    },
+    debounce_threshold = {
+      falling = 50,
+      rising = 10
     },
   }
 <
@@ -434,11 +573,7 @@ extend~
 ==============================================================================
 4. License                                                     *incline-license*
 >
-  MIT License
-
   © 2022 Maddison Hellstrom <github.com/b0o>
-
-  Full license information is available in the LICENSE file at the root of
-  this repository.
+  Released under the MIT license.
 <
  vim:tw=78:ts=8:ft=help:norl:

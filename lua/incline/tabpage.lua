@@ -38,14 +38,12 @@ function Tabpage:update(changes)
   end
   if changes.focus then
     if self.focused_win and self.children[self.focused_win] then
-      self.children[self.focused_win]:show()
+      self.children[self.focused_win]:blur()
     end
-    if config.hide.focused_win then
-      local foc = a.nvim_get_current_win()
-      if self.children[foc] then
-        self.children[foc]:hide()
-        self.focused_win = foc
-      end
+    local foc = a.nvim_get_current_win()
+    if self.children[foc] then
+      self.children[foc]:focus()
+      self.focused_win = foc
     end
   end
   for _, winline in pairs(self.children) do
