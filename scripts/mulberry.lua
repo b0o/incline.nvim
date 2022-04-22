@@ -509,6 +509,12 @@ local function log(ctx, ...)
   print(indent(ctx.level - 1, table.concat { ... }))
 end
 
+local function traceback(...)
+  return vim.tbl_map(function(l)
+    return string.gsub(l, '\t', '  ')
+  end, vim.split(debug.traceback(...), '\n'))
+end
+
 -- TODO: Return a 'result' table, delegate formatting to a Formatter
 local function compare(op, actual, expected, name, desc, ctx)
   local res = op(actual, unpack(expected))
@@ -539,12 +545,7 @@ local function compare(op, actual, expected, name, desc, ctx)
 
   local s = indent(4, ('%s<%s> = %s'):format(name, type(actual), inspect(actual)), '  ')
   vim.list_extend(msg, { '      but got', s })
-  vim.list_extend(
-    msg,
-    vim.tbl_map(function(l)
-      return string.gsub(l, '\t', '  ')
-    end, vim.split(debug.traceback('', 2), '\n'))
-  )
+  vim.list_extend(msg, traceback('', 2))
   table.insert(msg, '')
   log(ctx, indent(1, table.concat(msg, '\n')))
 
@@ -846,18 +847,21 @@ end
 
 function Runner.runFn(fn, ...)
   local args = { ... }
-  local ok, res = pcall(function()
+  local ok, res = xpcall(function()
     local ctx = Context.new()
     local scope = Scope.open()
     scope:assign('Describe', DescribeFactory(ctx))
+    scope:assign('traceback', traceback)
     fn(unpack(args))
     scope:close()
     return ctx
-  end)
+  end, debug.traceback)
 
   if not ok then
     if type(res) == 'string' then
       print(res)
+    elseif type(res) == 'table' then
+      print(table.concat(res, '\n'))
     end
     vim.cmd 'cquit'
   end
@@ -886,7 +890,24 @@ function Runner.runFile(file)
     assert(#ops > 0, 'File not found: ' .. file)
     foundFile = table.remove(ops, 1)()
   end
-  Runner.runFn(dofile, foundFile)
+  Runner.runFn(function()
+    local lines = { 'return {xpcall(function()', unpack(vim.fn.readfile(foundFile)) }
+    table.insert(lines, 'end, traceback)}')
+    local i = 1
+    local f = load(function()
+      local l = lines[i]
+      if l == nil then
+        return
+      end
+      i = i + 1
+      return l .. '\n'
+    end)
+    local ok, res = unpack(f())
+    if not ok then
+      error(res)
+    end
+    return res
+  end, foundFile)
 end
 
 function Runner.runFiles(files)
