@@ -4,7 +4,7 @@ local tx = require 'incline.config.transform'
 
 local M = {}
 
-M.schema = Schema('config', function(s)
+M.schema = Schema(function(s)
   return {
     render = s:entry(function(props)
       local bufname = vim.api.nvim_buf_get_name(props.buf)
@@ -149,7 +149,15 @@ end)
 
 return setmetatable({
   setup = function(config)
-    M.config = M.schema:parse(config, M.config)
+    local schema, err = M.schema:parse(config, M.config)
+    if not schema then
+      vim.notify('[Incline.nvim] Config error: ' .. err, vim.log.levels.ERROR)
+      return
+    end
+    M.config = schema
+  end,
+  reset = function()
+    M.config = nil
   end,
   schema = M.schema,
 }, {

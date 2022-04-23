@@ -8,7 +8,7 @@ function Schema:entry(default, validate, opts)
     opts = { transform = opts }
   end
   if type(opts.transform) == 'string' then
-    assert(tx[opts.transform] ~= nil, 'unknown transformer: ' .. opts.transform)
+    assert(tx[opts.transform] ~= nil, 'unknown transform: ' .. opts.transform)
     opts.transform = tx[opts.transform]
   end
   return {
@@ -50,11 +50,19 @@ local function _parse(self, data, fallback, schema, path)
   end
   local res = {}
   for k in pairs(keys) do
-    local p = path ~= '' and (path .. '.' .. k) or k
+    local pk
+    if type(k) == 'string' then
+      pk = (path ~= '' and '.' or '') .. k
+    else
+      pk = '[' .. tostring(k) .. ']'
+    end
+    local p = path ~= '' and path .. pk or pk
     local val_data = data[k]
     local val_schema = schema[k]
     local val_fallback = fallback[k]
-    assert(type(val_schema) == 'table', 'invalid field: ' .. p)
+    if type(val_schema) ~= 'table' then
+      return nil, 'invalid field "' .. p .. '"'
+    end
     if val_schema.parent == self then
       if val_data ~= nil then
         local transform
@@ -68,7 +76,9 @@ local function _parse(self, data, fallback, schema, path)
         if transform then
           val_data = transform(val_data, val_schema, self)
         end
-        assert(val_schema.validate(val_data), 'invalid value for field ' .. p)
+        if not val_schema.validate(val_data) then
+          return nil, 'invalid value for field "' .. p .. '"'
+        end
         res[k] = val_data
       elseif val_fallback ~= nil then
         res[k] = val_fallback
@@ -76,12 +86,16 @@ local function _parse(self, data, fallback, schema, path)
         res[k] = val_schema.default
       end
     else
-      res[k] = _parse(self, val_data, val_fallback, val_schema, p)
+      local err
+      res[k], err = _parse(self, val_data, val_fallback, val_schema, p)
+      if res[k] == nil then
+        return nil, err
+      end
     end
   end
   return setmetatable(res, {
     __index = function(_, k)
-      error(('%s: invalid key: %s'):format(self.name, k))
+      error(('invalid key: ' .. k))
     end,
   })
 end
@@ -94,8 +108,8 @@ function Schema:default()
   return self:parse()
 end
 
-local make = function(name, schema)
-  local self = setmetatable({ name = name }, { __index = Schema })
+local make = function(schema)
+  local self = setmetatable({}, { __index = Schema })
   self.transforms = vim.tbl_map(function(t)
     return function(...)
       return self:transform(t, ...)

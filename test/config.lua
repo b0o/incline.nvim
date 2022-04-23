@@ -246,32 +246,37 @@ Describe('the incline.config module', function()
       end)
 
       It('should throw an error if passed a config with an invalid value', function()
-        Expect(function()
-          c.schema:parse {
-            window = { placement = { vertical = 'downunder' } },
-          }
-        end).To.ThrowError()
-        Expect(function()
-          c.schema:parse { debounce_threshold = -2 }
-        end).To.ThrowError()
-        Expect(function()
-          c.schema:parse { debounce_threshold = 2.2 }
-        end).To.ThrowError()
+        local s, err
+        s, err = c.schema:parse { window = { placement = { vertical = 'downunder' } } }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid value for field "window.placement.vertical"'
+
+        s, err = c.schema:parse { debounce_threshold = -2 }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid value for field "debounce_threshold"'
+
+        s, err = c.schema:parse { debounce_threshold = 2.2 }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid value for field "debounce_threshold"'
       end)
 
       It('should throw an error if passed a config with an invalid field', function()
-        Expect(function()
-          c.schema:parse { window = { placement = { Vertical = 'bottom' } } }
-        end).To.ThrowError()
-        Expect(function()
-          c.schema:parse { window = { lacement = { vertical = 'bottom' } } }
-        end).To.ThrowError()
-        Expect(function()
-          c.schema:parse { 'foo' }
-        end).To.ThrowError()
-        Expect(function()
-          c.schema:parse { window = { 'foo' } }
-        end).To.ThrowError()
+        local s, err
+        s, err = c.schema:parse { window = { placement = { Vertical = 'bottom' } } }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid field "window.placement.Vertical"'
+
+        s, err = c.schema:parse { window = { lacement = { vertical = 'bottom' } } }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid field "window.lacement"'
+
+        s, err = c.schema:parse { 'foo' }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid field "[1]"'
+
+        s, err = c.schema:parse { window = { 'foo' } }
+        Expect(s).To.Be.Nil()
+        Expect(err).To.Equal 'invalid field "window[1]"'
       end)
 
       Describe('fields with default "extend" transformers', function()
@@ -314,6 +319,7 @@ Describe('the incline.config module', function()
       local default = c.schema:default()
       Expect(c.config).To.DeepEqual(default)
       Expect(c.ignore.unlisted_buffers).To.Equal(default.ignore.unlisted_buffers)
+      c.reset()
     end)
 
     It('should update the config when setup is called', function()
@@ -323,6 +329,7 @@ Describe('the incline.config module', function()
       Expect(c.config).To.Not.DeepEqual(default)
       Expect(c.config.ignore.wintypes).To.DeepEqual(cfg.ignore.wintypes)
       Expect(c.config.window).To.DeepEqual(default.window)
+      c.reset()
     end)
 
     It('should use the previous config as the fallback', function()
@@ -348,6 +355,19 @@ Describe('the incline.config module', function()
       Expect(c.config.ignore.wintypes).To.Not.DeepEqual(default.ignore.wintypes)
       Expect(c.config.debounce_threshold).To.Not.Equal(cfgs[1].debounce_threshold)
       Expect(c.config.debounce_threshold).To.Equal(cfgs[2].debounce_threshold)
+      c.reset()
+    end)
+
+    It('should display a notification if there is an error in the config', function()
+      local notify_called = false
+      vim.notify = function()
+        notify_called = true
+      end
+      local default = c.schema:default()
+      c.setup { non_existant_key = 123 }
+      Expect(notify_called).To.Be.True()
+      Expect(c.config).To.DeepEqual(default)
+      c.reset()
     end)
   end)
 end)
