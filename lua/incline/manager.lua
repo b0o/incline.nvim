@@ -16,6 +16,7 @@ local M = {
 
 local state = M.state
 
+-- TODO: Certain events like CursorHold/CursorMoved should only re-render the focused winline
 local update = Debounce(function(opts)
   opts = opts or {}
   local events = state.events
