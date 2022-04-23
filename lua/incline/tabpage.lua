@@ -16,9 +16,9 @@ function Tabpage:load_wins()
   local children = {}
   local wins = a.nvim_tabpage_list_wins(self.tab)
   for _, win in ipairs(wins) do
-    local child = self.children[win]
-    self.children[win] = nil
     if not util.is_ignored_win(win) then
+      local child = self.children[win]
+      self.children[win] = nil
       if child == nil then
         child = Winline(win)
       end
