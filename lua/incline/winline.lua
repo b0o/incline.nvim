@@ -79,7 +79,7 @@ end
 
 function Winline:get_win_opts()
   local winhl = {}
-  for k, v in pairs(config.window.winhighlight[self.focused and 'focused' or 'unfocused']) do
+  for k, v in pairs(config.window.winhighlight[self.focused and 'active' or 'inactive']) do
     table.insert(winhl, k .. ':' .. v)
   end
   return vim.tbl_extend('force', config.window.options, {

@@ -65,8 +65,8 @@ config~
 │  │  ├─ vertical          |incline-config-window.margin.vertical|
 │  │  └─ horizontal        |incline-config-window.margin.horizontal|
 │  ├─ winhighlight         |incline-config-window.winhighlight|
-│  │  ├─ focused           |incline-config-window.winhighlight.focused|
-│  │  └─ unfocused         |incline-config-window.winhighlight.unfocused|
+│  │  ├─ active            |incline-config-window.winhighlight.active|
+│  │  └─ inactive          |incline-config-window.winhighlight.inactive|
 │  ├─ width                |incline-config-window.width|
 │  ├─ padding              |incline-config-window.padding|
 │  ├─ padding_char         |incline-config-window.padding_char|
@@ -191,9 +191,9 @@ window.margin.horizontal~
   - If an `int`, the value is used for both the left and right margin.
   - If a table, both `left` and `right` fields must be present.
 
-                                    *incline-config-window.winhighlight*
-                                    *incline-config-window.winhighlight.focused*
-window.winhighlight.focused~
+                                     *incline-config-window.winhighlight*
+                                     *incline-config-window.winhighlight.active*
+window.winhighlight.active~
   Type:      `table`
   Valid:     `map[string]string`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
@@ -211,8 +211,8 @@ window.winhighlight.focused~
   Note that, when setting this option, the list that you pass extends the
   default values, rather than replacing them. See |incline-config-transforms|.
 
-                                  *incline-config-window.winhighlight.unfocused*
-window.winhighlight.unfocused~
+                                   *incline-config-window.winhighlight.inactive*
+window.winhighlight.inactive~
   Type:      `table`
   Valid:     `map[string]string`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
@@ -418,12 +418,12 @@ highlight.groups~
         wrap = false
       },
       winhighlight = {
-        focused = {
+        active = {
           EndOfBuffer = "None",
           Normal = "InclineNormal",
           Search = "None"
         },
-        unfocused = {
+        inactive = {
           EndOfBuffer = "None",
           Normal = "InclineNormalNC",
           Search = "None"
