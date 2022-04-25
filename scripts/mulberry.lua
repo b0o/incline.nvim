@@ -937,6 +937,7 @@ function Runner.run(files)
   else
     Runner.runDir(Runner.opts.rootdir .. '/' .. Runner.opts.testdir)
   end
+  print 'All passed!'
   vim.cmd 'quit'
 end
 
