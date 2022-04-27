@@ -4,6 +4,10 @@ local a = vim.api
 
 local Winline = {}
 
+local function strlen(str)
+  return a.nvim_strwidth(str)
+end
+
 function Winline:is_alive()
   return a.nvim_win_is_valid(self.target_win)
 end
@@ -119,12 +123,12 @@ function Winline:render(opts)
     content = content .. pad
   end
 
-  if self.content and #content ~= #self.content then
+  if self.content and strlen(content) ~= strlen(self.content) then
     opts.refresh = true
   end
 
   self.content = content
-  self:win { refresh = opts.refresh, content_len = #self.content }
+  self:win { refresh = opts.refresh, content_len = strlen(self.content) }
   a.nvim_buf_set_lines(self:buf(), 0, -1, false, { self.content })
 end
 
