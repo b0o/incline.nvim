@@ -86,16 +86,20 @@ config~
 
                                          *incline-render*  *incline-config-render*
 render~
-  Type:     `function`
-  Default:  See |incline-default-config|
-  Valid:    `function({ buf = number, win = number }) -> result`
+  Type:    `function` | `string`
+  Default: `"basic"`
+  Valid:   `function(render_props) -> render_result` | `render_preset_name`
 
-  The `render` function is evaluated on each update and its return value is
-  displayed in the Incline statusline.
+  See |incline-render-spec| for more details.
 
-  The function is called for each Incline statusline in the current |tabpage|.
-  It is passed a single argument, `props`, which is a table containing the
-  following fields:
+  The `render` function is called on each update to get the content and
+  highlights to be displayed in each Incline statusline.
+
+  If the value of `render` is a `string`, Incline will attempt to load the
+  built-in preset with the corresponding name. See |incline-presets|.
+
+  The `render` function is passed a single argument, `props`, which is a table
+  containing the following fields:
 
     Field     Type     Description
     `buf`       `number`   The buffer handle for the target window.
@@ -103,27 +107,90 @@ render~
     `focused`   `bool`     `true` if the target window is focused,
                        else `false`.
 
-  The return value can take several forms:
-  a. A string. The string will be rendered literally.
-  b. A table where the value at index `1` is a string and the rest of the
-     keys are |highlight-args| and their values. The string at index `1` will
-     be rendered with the 'highlight' defined by the other keys.
-  c. A table where the value at index `1` is a string and the key `group` is
-     the name of an existing highlight group.
-  d. A list containing any combination of elements as specified in a-c above.
+  The `render` function is expected to return a `render_result`, which is a
+  recursive tree-like data structure. A `result` can be `nil`, a `string`, a
+  `number`, or a `table` of nested `result` entries along with highlight
+  arguments.
 
-  For example, to render `"foo"` with a blue foreground followed by `"bar"`
-  with a red background and italic font, followed by `"baz"` with no special
-  highlighting:
+  If a result is a `table`:
+  - Its contiguous integer keys from 1 to n (i.e. the keys that would be
+    iterated by `ipairs`) should themselves be `result` types.
+  - The rest of its keys can be either (but not both):
+    - A single key, `"group"`, the value of which is the name of a highlight
+      group.
+    - Zero or more valid |highlight-args| pairs.
+
+  Expressed in psuedocode, a loose specification of the `render` option:
 >
-  render = function()
-    return {
-      { "foo", guifg = "blue" },
-      { "bar", guibg = "red", gui = "italic" },
-      "baz",
+    type render_props = {
+      buf: number,
+      win: number,
     }
-  end
+
+    type render_result =
+      | string
+      | number
+      | {
+          -- All fields are optional
+          <ipairs keys>: render_result,
+
+          -- See :help highlight-args
+          start:   string,
+          stop:    string,
+          cterm:   string,
+          ctermfg: string,
+          ctermbg: string,
+          gui:     string,
+          guifg:   string,
+          guibg:   string,
+          guisp:   string,
+          font:    string,
+          blend:   string | int,
+
+          -- If a 'group' field is present, none of the highlight-args listed
+          -- above will have any effect.
+          group: string
+        }
+
+    type render_fn = function(render_props) -> render_result
+
+    type render_preset_name =
+      | "basic"
+      | "powerline"
+
+    type render =
+      | render_fn
+      | render_preset_name
 <
+  For example: >
+    render = function()
+      return {
+        { "foo", guifg = "blue" },
+        { "bar", guibg = "red", gui = "italic" },
+        {
+          "baz",
+          "qux",
+          {
+            1,
+            2,
+            guibg = 'black',
+            gui = 'undercurl',
+          },
+          guibg = 'green',
+          guifg = 'yellow',
+        },
+        "hello",
+        "world",
+        {
+          "and",
+          "goodnight",
+          blend = 10,
+        },
+      }
+    end
+<
+  The above would render `"foobarbazqux12helloworldandgoodnight"` with some
+  very bizarre highlighting.
 
                                              *incline-config-debounce_threshold*
 debounce_threshold~
