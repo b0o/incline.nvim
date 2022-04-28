@@ -17,18 +17,19 @@ local M = {
 local state = M.state
 
 -- TODO: Certain events like CursorHold/CursorMoved should only re-render the focused winline
-local update = Debounce(function(opts)
+M.update = Debounce(function(opts)
   opts = opts or {}
   local events = state.events
+  local changes = {}
 
   if not state.current_tab or events.TabEnter then
     state.current_tab = a.nvim_get_current_tabpage()
   end
   if not state.tabpages[state.current_tab] then
     state.tabpages[state.current_tab] = Tabpage(state.current_tab)
+    changes = { layout = true, windows = true, focus = true, render = true }
   end
 
-  local changes = {}
   if opts.refresh then
     changes = { layout = true, windows = true, focus = true, render = true }
   end
@@ -42,7 +43,14 @@ local update = Debounce(function(opts)
   if events.WinEnter or events.WinLeave or events.TabEnter or events.TabNewEntered then
     changes.focus = true
   end
-  if events.CursorHold or events.CursorHoldI or events.CursorMoved or events.CursorMovedI then
+  if
+    events.CursorHold
+    or events.CursorHoldI
+    or events.CursorMoved
+    or events.CursorMovedI
+    or events.FileWritePost
+    or events.BufWritePost
+  then
     changes.render = true
   end
 
@@ -85,8 +93,8 @@ end
 
 M.setup = function()
   if state.initialized then
-    update.threshold = config.debounce_threshold
-    update:immediate { refresh = true }
+    M.update.threshold = config.debounce_threshold
+    M.update:immediate { refresh = true }
     return
   end
   local events = {
@@ -103,14 +111,16 @@ M.setup = function()
     'CursorHoldI',
     'CursorMoved',
     'CursorMovedI',
+    'FileWritePost',
+    'BufWritePost',
   }
   util.autocmd(events, {
     callback = function(e)
       state.events[e.event] = true
-      update()
+      M.update()
     end,
   })
-  update:immediate { refresh = true }
+  M.update:immediate { refresh = true }
   state.initialized = true
 end
 
