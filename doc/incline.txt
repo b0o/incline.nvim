@@ -263,7 +263,7 @@ window.margin.horizontal~
                                      *incline-config-window.winhighlight.active*
 window.winhighlight.active~
   Type:      `table`
-  Valid:     `map[string]string`
+  Valid:     `map[string](string | hl_args)`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
   Default: >
     {
@@ -273,8 +273,12 @@ window.winhighlight.active~
     }
 <
   Map of 'winhighlight' entries to be applied to the Incline window for the
-  focused window. Map keys should be the builtin highlight group name to be
-  overridden, map values are any highlight group to use as the override.
+  focused window.
+
+  Map keys should be the builtin highlight group name to be overridden.
+
+  Map values are a highlight group name to use as the override, or a table of
+  |highlight-args|.
 
   Note that, when setting this option, the list that you pass extends the
   default values, rather than replacing them. See |incline-config-transforms|.
@@ -282,7 +286,7 @@ window.winhighlight.active~
                                    *incline-config-window.winhighlight.inactive*
 window.winhighlight.inactive~
   Type:      `table`
-  Valid:     `map[string]string`
+  Valid:     `map[string](string | hl_args)`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
   Default: >
     {
@@ -292,8 +296,12 @@ window.winhighlight.inactive~
     }
 <
   Map of 'winhighlight' entries to be applied to the Incline windows for
-  unfocused windows. Map keys should be the builtin highlight group name to be
-  overridden, map values are any highlight group to use as the override.
+  unfocused windows.
+
+  Map keys should be the builtin highlight group name to be overridden.
+
+  Map values are a highlight group name to use as the override, or a table of
+  |highlight-args|.
 
   Note that, when setting this option, the list that you pass extends the
   default values, rather than replacing them. See |incline-config-transforms|.

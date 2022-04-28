@@ -72,12 +72,12 @@ M.schema = Schema(function(s)
           Search = 'None',
           EndOfBuffer = 'None',
           Normal = 'InclineNormal',
-        }, vx.map(vx.string, vx.string), { transform = tx.extend }),
+        }, vx.map(vx.string, vx.any { vx.highlight.any, vx.string }), { transform = tx.extend }),
         inactive = s:entry({
           Search = 'None',
           EndOfBuffer = 'None',
           Normal = 'InclineNormalNC',
-        }, vx.map(vx.string, vx.string), { transform = tx.extend }),
+        }, vx.map(vx.string, vx.any { vx.highlight.any, vx.string }), { transform = tx.extend }),
       },
       options = s:entry(
         { wrap = false, signcolumn = 'no' },
@@ -137,7 +137,7 @@ M.schema = Schema(function(s)
       groups = s:entry({
         InclineNormal = 'NormalFloat',
         InclineNormalNC = 'NormalFloat',
-      }, vx.map(vx.string, vx.any { vx.highlight_args, vx.string }), { transform = tx.extend }),
+      }, vx.map(vx.string, vx.any { vx.highlight.args, vx.string }), { transform = tx.extend }),
     },
   }
 end)
