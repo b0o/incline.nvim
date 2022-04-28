@@ -101,4 +101,14 @@ M.autocmd = function(event, opts)
   )
 end
 
+M.tbl_onlykeys = function(tbl)
+  local res = {}
+  for k, v in pairs(tbl) do
+    if type(k) ~= 'number' then
+      res[k] = v
+    end
+  end
+  return res
+end
+
 return M

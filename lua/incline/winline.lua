@@ -1,7 +1,44 @@
 local config = require 'incline.config'
 local highlight = require 'incline.highlight'
+local util = require 'incline.util'
 
 local a = vim.api
+
+local M = {}
+
+function M.parse_render_result(node, offset)
+  if type(node) == 'string' or type(node) == 'number' then
+    return { text = tostring(node), hls = {} }
+  end
+  assert(type(node) == 'table', 'expected render result node to be string or table')
+  offset = offset or 0
+  local res = {
+    text = '',
+    hls = {},
+  }
+  for _, child in ipairs(node) do
+    local inner_content = M.parse_render_result(child, offset + #res.text)
+    local new_text = inner_content.text or ''
+    if #new_text > 0 then
+      res.text = res.text .. new_text
+      vim.list_extend(res.hls, inner_content.hls)
+    end
+  end
+  local group = node.group
+  if not group then
+    local keys = util.tbl_onlykeys(node)
+    if not vim.tbl_isempty(keys) then
+      group = highlight.register(keys)
+    end
+  end
+  if group then
+    table.insert(res.hls, 1, {
+      group = group,
+      range = { offset, offset + #res.text },
+    })
+  end
+  return res
+end
 
 local Winline = {}
 
@@ -114,46 +151,6 @@ function Winline:win(opts)
   return self._win
 end
 
-function Winline:parse_content(content)
-  if type(content) == 'string' then
-    content = { content }
-  end
-
-  if config.window.padding.left > 0 then
-    local pad = string.rep(config.window.padding_char, config.window.padding.left)
-    table.insert(content, 1, pad)
-  end
-  if config.window.padding.right > 0 then
-    local pad = string.rep(config.window.padding_char, config.window.padding.right)
-    table.insert(content, pad)
-  end
-
-  local res = { text = '', hls = {} }
-
-  for _, part in ipairs(content) do
-    local text
-    if type(part) == 'table' then
-      text = part[1] or part.text
-      part[1] = nil
-      part.text = nil
-    else
-      assert(type(part) == 'string', 'expected table or string')
-      text = part
-      part = {}
-    end
-    assert(type(text) == 'string', 'expected text')
-    if not vim.tbl_isempty(part) then
-      local reslen = #res.text
-      table.insert(res.hls, {
-        group = part.group or highlight.register(part),
-        range = { reslen, reslen + #text },
-      })
-    end
-    res.text = res.text .. text
-  end
-  return res
-end
-
 -- TODO: Avoid unnecessary renders after :focus()/:blur()/:hide()/:show() are called
 function Winline:render(opts)
   if self.hidden or not self:is_alive() then
@@ -161,20 +158,54 @@ function Winline:render(opts)
   end
   opts = opts or {}
 
-  local target_buf = a.nvim_win_get_buf(self.target_win)
-  local content = self:parse_content(config.render { buf = target_buf, win = self.target_win, focused = self.focused })
-
-  if self.content and not vim.deep_equal(content, self.content) then
-    opts.refresh = true
+  local render_result = config.render {
+    buf = a.nvim_win_get_buf(self.target_win),
+    win = self.target_win,
+    focused = self.focused,
+  }
+  if type(render_result) ~= 'table' then
+    render_result = { render_result }
   end
 
+  local offset = 0
+  if config.window.padding.left > 0 then
+    offset = config.window.padding.left
+  end
+
+  local content = M.parse_render_result(render_result, offset)
+
+  if config.window.padding.left > 0 then
+    local pad = string.rep(config.window.padding_char, config.window.padding.left)
+    content.text = pad .. content.text
+  end
+  if config.window.padding.right > 0 then
+    local pad = string.rep(config.window.padding_char, config.window.padding.right)
+    content.text = content.text .. pad
+  end
+  if config.window.padding.right > 0 then
+    table.insert(render_result, string.rep(config.window.padding_char, config.window.padding.right))
+  end
+
+  local prev_content_len = (self.content and self.content.text) and #self.content.text or 0
+  local content_text_changed = prev_content_len ~= content.text
+  local content_text_len_changed = not self.content or not self.content.text or #self.content.text ~= #content.text
+  local content_hls_changed = not self.content
+    or not self.content.hls
+    or not vim.deep_equal(self.content.hls, content.hls)
+
   self.content = content
-  self:win { refresh = opts.refresh }
+
+  self:win { refresh = opts.refresh or content_text_len_changed }
   local buf = self:buf()
-  a.nvim_buf_clear_namespace(buf, highlight.namespace, 0, -1)
-  a.nvim_buf_set_lines(buf, 0, -1, false, { self.content.text })
-  for _, hl in ipairs(content.hls) do
-    a.nvim_buf_add_highlight(buf, highlight.namespace, hl.group, 0, unpack(hl.range))
+
+  if content_text_changed then
+    a.nvim_buf_set_lines(buf, 0, -1, false, { self.content.text })
+  end
+  if content_text_changed or content_hls_changed then
+    a.nvim_buf_clear_namespace(buf, highlight.namespace, 0, -1)
+    for _, hl in ipairs(content.hls) do
+      a.nvim_buf_add_highlight(buf, highlight.namespace, hl.group, 0, unpack(hl.range))
+    end
   end
 end
 
@@ -236,4 +267,9 @@ local function make(target_win)
   }, { __index = Winline })
 end
 
-return make
+return setmetatable({}, {
+  __index = M,
+  __call = function(_, ...)
+    return make(...)
+  end,
+})

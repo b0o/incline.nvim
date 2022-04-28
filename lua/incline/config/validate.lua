@@ -203,7 +203,8 @@ M.list.of = function(of)
   end
 end
 
-M.highlight_args = M.table.of_any {
+M.highlight = {}
+M.highlight.args = M.table.of_any {
   start = M.string,
   stop = M.string,
   cterm = M.string,
@@ -216,5 +217,11 @@ M.highlight_args = M.table.of_any {
   blend = M.any { M.string, M.number.int },
   font = M.string,
 }
+
+M.highlight.link = M.table.of_all {
+  group = M.string,
+}
+
+M.highlight.any = M.any { M.highlight.args, M.highlight.link }
 
 return M
