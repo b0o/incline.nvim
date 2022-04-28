@@ -19,7 +19,7 @@ function Winline:buf()
 end
 
 function Winline:get_content_len()
-  return self.content and vim.fn.strchars(self.content.text) or 0
+  return self.content and self.content.text and a.nvim_strwidth(self.content.text) or 0
 end
 
 function Winline:get_win_config(opts)
