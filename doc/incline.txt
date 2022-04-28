@@ -14,6 +14,7 @@ CONTENTS                                                      *incline-contents*
     2.2. Configuration .......................... |incline-config|
     2.3. Default Configuration .................. |incline-default-config|
     2.4. Configuration Field Transforms ......... |incline-config-transforms|
+    2.5. Presets ................................ |incline-presets|
   3. Changelog .................................. |incline-changelog|
   4. License .................................... |incline-license|
 
@@ -626,6 +627,19 @@ extend~
 >
     require'incline.config'.extend
 <
+------------------------------------------------------------------------------
+2.5 Presets                                                    *incline-presets*
+
+Incline includes a few built-in presets for |incline-config.render| functions.
+You can use them as-is, but you should consider using them as a starting point
+and tweaking them to make your own.
+
+                                                          *incline-preset-basic*
+basic~
+  Mimics vim's default statusline format.
+  Includes the filename as well as a `[+]` if the buffer is modified.
+  Looks like: `filename.txt [+]`
+
 ==============================================================================
 3. Changelog                                                 *incline-changelog*
 

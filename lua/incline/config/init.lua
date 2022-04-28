@@ -1,18 +1,13 @@
 local Schema = require 'incline.config.schema'
 local vx = require 'incline.config.validate'
 local tx = require 'incline.config.transform'
+local presets = require 'incline.presets'
 
 local M = {}
 
 M.schema = Schema(function(s)
   return {
-    render = s:entry(function(props)
-      local bufname = vim.api.nvim_buf_get_name(props.buf)
-      if bufname == '' then
-        return '[No name]'
-      end
-      return vim.fn.fnamemodify(bufname, ':t')
-    end, vx.func),
+    render = s:entry(presets.basic, vx.callable),
     debounce_threshold = s:entry(
       { rising = 10, falling = 50 },
       vx.any {
