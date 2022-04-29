@@ -145,8 +145,14 @@ end)
 return setmetatable({
   setup = function(config)
     local schema, err = M.schema:parse(config, M.config)
-    if not schema then
-      vim.notify('[Incline.nvim] Config error: ' .. err, vim.log.levels.ERROR)
+    if err then
+      local prefix = ({
+        [Schema.result.INVALID_FIELD] = 'Invalid field',
+        [Schema.result.INVALID_VALUE] = 'Invalid value',
+        [Schema.result.INVALID_LEAF] = 'Invalid value: Expected table',
+        [Schema.result.DEPRECATED] = 'Deprecated',
+      })[schema]
+      vim.notify(('[Incline.nvim] %s: %s'):format(prefix, err), vim.log.levels.ERROR)
       return
     end
     M.config = schema

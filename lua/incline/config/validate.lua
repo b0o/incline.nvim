@@ -34,6 +34,10 @@ local wrapped = function(base, tbl)
   })
 end
 
+M.notNil = function(val)
+  return val ~= nil
+end
+
 M.any = function(accepted)
   return function(val)
     for _, acc in ipairs(accepted) do
@@ -88,6 +92,17 @@ M.table.of_any = function(fields)
   return function(val)
     for k, v in pairs(val) do
       if not fields[k] or not fields[k](v) then
+        return false
+      end
+    end
+    return true
+  end
+end
+
+M.table.including = function(fields)
+  return function(val)
+    for k, v in pairs(fields) do
+      if not val[k] or not v(val[k]) then
         return false
       end
     end

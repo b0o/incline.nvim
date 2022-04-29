@@ -1,5 +1,27 @@
 local tx = require 'incline.config.transform'
 
+local function join_path(...)
+  local res = ''
+  for _, p in ipairs { ... } do
+    local sep = res == '' and '' or '.'
+    if type(p) ~= 'string' then
+      sep = ''
+      p = '[' .. tostring(p) .. ']'
+    end
+    res = res .. sep .. p
+  end
+  return res
+end
+
+local M = {
+  result = {
+    INVALID_FIELD = 1,
+    INVALID_VALUE = 2,
+    INVALID_LEAF = 3,
+    DEPRECATED = 4,
+  },
+}
+
 local Schema = {}
 
 function Schema:entry(default, validate, opts)
@@ -27,96 +49,141 @@ function Schema:transform(transform, val)
   }
 end
 
-function Schema:validate(path, val)
-  local target = self.schema
-  for _, k in ipairs(path) do
-    target = target[k]
-    if type(target) ~= 'table' then
-      break
-    end
+function Schema:validate_entry(data, schema, path)
+  if not schema.validate(data) then
+    return false, M.result.INVALID_VALUE, path
   end
-  assert(type(target) == 'table' and target.parent == self, 'invalid field: ' .. table.concat(path, '.'))
-  return target.validate(val)
+  local deprecated, msg = self:is_deprecated_val(path, data)
+  if deprecated then
+    return false, M.result.DEPRECATED, msg
+  end
+  return true
 end
 
-local function _parse(self, data, fallback, schema, path)
+function Schema:parse_entry(data, fallback, schema, path)
+  if data == nil then
+    if fallback ~= nil then
+      return fallback
+    end
+    return schema.default
+  end
+  local transform
+  if type(data) == 'table' and data.parent == self then
+    if data.transform then
+      transform = data.transform
+    end
+    data = data.val
+  end
+  transform = transform or schema.transform
+  if transform then
+    data = transform(data, schema, self)
+  end
+  local ok, result, msg = self:validate_entry(data, schema, path)
+  if not ok then
+    return result, msg
+  end
+  return data
+end
+
+function Schema:get_entry(key, base, path)
+  local target = (base or self.schema)[key]
+  if type(target) ~= 'table' then
+    local deprecated, msg = self:is_deprecated_field(path)
+    if deprecated then
+      return nil, M.result.DEPRECATED, msg
+    end
+    return nil, M.result.INVALID_FIELD, path
+  end
+  return target
+end
+
+function Schema:parse(data, fallback, schema, path)
   data = data or {}
   fallback = fallback or {}
-  schema = schema or {}
   path = path or ''
+  schema = schema or (path == '' and self.schema or {})
+  if type(data) ~= 'table' then
+    return M.result.INVALID_LEAF, path
+  end
   local keys = {}
-  for _, k in ipairs(vim.list_extend(vim.tbl_keys(data), vim.tbl_keys(schema))) do
+  for k, _ in pairs(data) do
+    keys[k] = true
+  end
+  for k, _ in pairs(schema) do
     keys[k] = true
   end
   local res = {}
   for k in pairs(keys) do
-    local pk
-    if type(k) == 'string' then
-      pk = (path ~= '' and '.' or '') .. k
-    else
-      pk = '[' .. tostring(k) .. ']'
+    local inner_data = data[k]
+    local inner_fallback = fallback[k]
+    local inner_path = join_path(path, k)
+    local inner_schema, result, msg = self:get_entry(k, schema, inner_path)
+    if not inner_schema then
+      return result, msg
     end
-    local p = path ~= '' and path .. pk or pk
-    local val_data = data[k]
-    local val_schema = schema[k]
-    local val_fallback = fallback[k]
-    if type(val_schema) ~= 'table' then
-      return nil, 'invalid field "' .. p .. '"'
-    end
-    if val_schema.parent == self then
-      if val_data ~= nil then
-        local transform
-        if type(val_data) == 'table' and val_data.parent == self then
-          if val_data.transform then
-            transform = val_data.transform
-          end
-          val_data = val_data.val
-        end
-        transform = transform or val_schema.transform
-        if transform then
-          val_data = transform(val_data, val_schema, self)
-        end
-        if not val_schema.validate(val_data) then
-          return nil, 'invalid value for field "' .. p .. '"'
-        end
-        res[k] = val_data
-      elseif val_fallback ~= nil then
-        res[k] = val_fallback
-      else
-        res[k] = val_schema.default
-      end
+    local err
+    if inner_schema.parent == self then
+      res[k], err = self:parse_entry(inner_data, inner_fallback, inner_schema, inner_path)
     else
-      local err
-      res[k], err = _parse(self, val_data, val_fallback, val_schema, p)
-      if res[k] == nil then
-        return nil, err
-      end
+      res[k], err = self:parse(inner_data, inner_fallback, inner_schema, inner_path)
+    end
+    if err ~= nil then
+      return res[k], err
     end
   end
   return setmetatable(res, {
-    __index = function(_, k)
-      error(('invalid key: ' .. k))
+    __index = function(_, key)
+      error(('invalid key: ' .. key))
     end,
   })
-end
-
-function Schema:parse(data, fallback)
-  return _parse(self, data, fallback, self.schema)
 end
 
 function Schema:default()
   return self:parse()
 end
 
+function Schema:is_deprecated_field(path)
+  local res = self.deprecated.fields[path]
+  if not res then
+    return false
+  end
+  if type(res) ~= 'boolean' then
+    return true, res
+  end
+  return true, 'field "' .. path .. '"'
+end
+
+function Schema:is_deprecated_val(path, val)
+  local dep_obj = self.deprecated.vals[path]
+  if not dep_obj then
+    return false
+  end
+  for vx, msg in pairs(dep_obj) do
+    if vx(val) then
+      return true, type(msg) == 'string' and msg or ('value for field "' .. path .. '"')
+    end
+  end
+end
+
 local make = function(schema)
-  local self = setmetatable({}, { __index = Schema })
+  local self = setmetatable({
+    deprecated = { fields = {}, vals = {} },
+  }, { __index = Schema })
   self.transforms = vim.tbl_map(function(t)
     return function(...)
       return self:transform(t, ...)
     end
   end, tx)
-  self.schema = schema(self)
+  local opts
+  self.schema, opts = schema(self)
+  opts = opts or {}
+  self.deprecated = vim.tbl_deep_extend('force', self.deprecated, opts.deprecated or {})
   return self
 end
 
-return make
+return setmetatable({}, {
+  __index = M,
+  __call = function(_, ...)
+    return make(...)
+  end,
+})

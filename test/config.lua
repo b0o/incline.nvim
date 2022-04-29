@@ -4,10 +4,20 @@ Describe('the incline.config module', function()
   end)
 
   local c = require 'incline.config'
+  local schema = require 'incline.config.schema'
 
   Describe('the schema', function()
-    local csv = function(...)
-      return c.schema:validate(...)
+    local csv = function(path, val)
+      local tail = table.remove(path)
+      local cfg = {}
+      local target = cfg
+      for _, k in ipairs(path) do
+        target[k] = {}
+        target = target[k]
+      end
+      target[tail] = val
+      local _, err = c.schema:parse(cfg)
+      return err == nil
     end
     Describe('the validate() method', function()
       Describe('should validate config entries', function()
@@ -100,6 +110,11 @@ Describe('the incline.config module', function()
           Expect(csv({ 'window', 'padding_char' }, '')).To.Be.False()
           Expect(csv({ 'window', 'padding_char' }, 1)).To.Be.False()
           Expect(csv({ 'window', 'padding_char' }, {})).To.Be.False()
+        end)
+
+        It('should validate window.options entries', function()
+          Expect(csv({ 'window', 'options' }, { winblend = 30 })).To.Be.True()
+          Expect(csv({ 'window', 'options' }, { winhighlight = 'Normal:Foobar' })).To.Be.False()
         end)
 
         It('should validate ignore.unlisted_buffers entries', function()
@@ -248,35 +263,35 @@ Describe('the incline.config module', function()
       It('should throw an error if passed a config with an invalid value', function()
         local s, err
         s, err = c.schema:parse { window = { placement = { vertical = 'downunder' } } }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid value for field "window.placement.vertical"'
+        Expect(s).To.Equal(schema.result.INVALID_VALUE)
+        Expect(err).To.Equal 'window.placement.vertical'
 
         s, err = c.schema:parse { debounce_threshold = -2 }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid value for field "debounce_threshold"'
+        Expect(s).To.Equal(schema.result.INVALID_VALUE)
+        Expect(err).To.Equal 'debounce_threshold'
 
         s, err = c.schema:parse { debounce_threshold = 2.2 }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid value for field "debounce_threshold"'
+        Expect(s).To.Equal(schema.result.INVALID_VALUE)
+        Expect(err).To.Equal 'debounce_threshold'
       end)
 
       It('should throw an error if passed a config with an invalid field', function()
         local s, err
         s, err = c.schema:parse { window = { placement = { Vertical = 'bottom' } } }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid field "window.placement.Vertical"'
+        Expect(s).To.Equal(schema.result.INVALID_FIELD)
+        Expect(err).To.Equal 'window.placement.Vertical'
 
         s, err = c.schema:parse { window = { lacement = { vertical = 'bottom' } } }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid field "window.lacement"'
+        Expect(s).To.Equal(schema.result.INVALID_FIELD)
+        Expect(err).To.Equal 'window.lacement'
 
         s, err = c.schema:parse { 'foo' }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid field "[1]"'
+        Expect(s).To.Equal(schema.result.INVALID_FIELD)
+        Expect(err).To.Equal '[1]'
 
         s, err = c.schema:parse { window = { 'foo' } }
-        Expect(s).To.Be.Nil()
-        Expect(err).To.Equal 'invalid field "window[1]"'
+        Expect(s).To.Equal(schema.result.INVALID_FIELD)
+        Expect(err).To.Equal 'window[1]'
       end)
 
       Describe('fields with default "extend" transformers', function()
