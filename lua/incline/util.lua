@@ -77,6 +77,12 @@ M.is_ignored_win = function(winid)
   return false
 end
 
+M.tabpage_list_fixed_wins = function(tab)
+  return vim.tbl_filter(function(w)
+    return not M.is_floating_win(w)
+  end, a.nvim_tabpage_list_wins(tab))
+end
+
 local augroup
 M.get_augroup = function()
   if not augroup then

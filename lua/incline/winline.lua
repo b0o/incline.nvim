@@ -210,6 +210,9 @@ function Winline:render(opts)
 end
 
 function Winline:hide()
+  if self.hidden then
+    return
+  end
   self.hidden = true
   if self._win and a.nvim_win_is_valid(self._win) then
     a.nvim_win_close(self._win, false)
@@ -235,6 +238,9 @@ function Winline:blur()
 end
 
 function Winline:show()
+  if not self.hidden then
+    return
+  end
   self.hidden = false
   self:render { refresh = true }
 end

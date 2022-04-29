@@ -99,6 +99,7 @@ M.schema = Schema(function(s)
     },
     hide = {
       focused_win = s:entry(false, vx.bool),
+      only_win = s:entry(false, vx.any { vx.bool, 'count_ignored' }),
     },
     ignore = {
       unlisted_buffers = s:entry(true, vx.bool),

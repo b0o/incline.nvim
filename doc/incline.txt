@@ -81,7 +81,8 @@ config~
 │  ├─ buftypes             |incline-config-ignore.buftypes|
 │  └─ wintypes             |incline-config-ignore.wintypes|
 ├─ hide                    |incline-config-hide|
-│  └─ hide.focused_win     |incline-config-hide.focused_win|
+│  ├─ hide.focused_win     |incline-config-hide.focused_win|
+│  └─ hide.only_win        |incline-config-hide.only_win|
 ├─ highlight               |incline-config-highlight|
 │  └─ groups               |incline-config-highlight.groups|
 └─ debounce_threshold      |incline-config-debounce_threshold|
@@ -470,6 +471,33 @@ hide.focused_win~
   Default:  `false`
 
   If `true`, Incline will hide the statusline for the focused window.
+
+                                                  *incline-config-hide.only_win*
+hide.only_win~
+  Type:     `bool` | `string`
+  Valid:    `bool` | `"count_ignored"`
+  Default:  `false`
+
+  Incline can be hidden if there is only one window in the tabpage.
+  - If `true`, hide the statusline if there is only one window that is not
+    ignored. See |incline-config-ignore|
+  - If `"count_ignored"`, hide the statusline if there is only one window,
+    including ignored windows.
+
+  For example, if window `A` is ignored and window `B` is not ignored:
+    ┌─────────┬─────────────────────┐
+    │         │                     │
+    │         │                     │
+    │         │                     │
+    │    A    │          B          │
+    │         │                     │
+    │         │                     │
+    │         │                     │
+    └─────────┴─────────────────────┘
+  - If `true`, the Incline statusline for window `B` will be hidden.
+  - If `"count_ignored"`, the Incline statusline for window `B` will be shown.
+
+  Floating windows are never counted.
 
                                                *incline-config-highlight*
                                                *incline-config-highlight.groups*
