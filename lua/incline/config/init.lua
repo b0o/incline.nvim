@@ -67,29 +67,35 @@ M.schema = Schema(function(s)
       ),
       padding_char = s:entry(' ', vx.string.length(1)),
       zindex = s:entry(50, vx.number.natural),
-      winhighlight = {
-        active = s:entry({
-          Search = 'None',
-          EndOfBuffer = 'None',
-          Normal = 'InclineNormal',
-        }, vx.map(vx.string, vx.any { vx.highlight.any, vx.string }), { transform = tx.extend }),
-        inactive = s:entry({
-          Search = 'None',
-          EndOfBuffer = 'None',
-          Normal = 'InclineNormalNC',
-        }, vx.map(vx.string, vx.any { vx.highlight.any, vx.string }), { transform = tx.extend }),
-      },
-      options = s:entry(
-        { wrap = false, signcolumn = 'no' },
-        vx.all {
-          vx.table,
-          function(val)
-            assert(val.winhighlight == nil, 'incline.config: use window.winhighlight, not window.options.winhighlight')
-            return true
-          end,
+      winhighlight = s:entry(
+        {
+          active = {
+            Search = 'None',
+            EndOfBuffer = 'None',
+            Normal = 'InclineNormal',
+          },
+          inactive = {
+            Search = 'None',
+            EndOfBuffer = 'None',
+            Normal = 'InclineNormalNC',
+          },
         },
-        { transform = tx.extend }
+        vx.table.of_all {
+          active = vx.map(vx.string, vx.any { vx.highlight.any, vx.string }),
+          inactive = vx.map(vx.string, vx.any { vx.highlight.any, vx.string }),
+        },
+        function(v, entry)
+          if type(v) == 'table' then
+            if not v.active and not v.inactive then
+              v = { active = v, inactive = v }
+            end
+            v.active = tx.extend(v.active or {}, { default = entry.default.active })
+            v.inactive = tx.extend(v.inactive or {}, { default = entry.default.inactive })
+          end
+          return v
+        end
       ),
+      options = s:entry({ wrap = false, signcolumn = 'no' }, vx.table, { transform = tx.extend }),
     },
     hide = {
       focused_win = s:entry(false, vx.bool),
@@ -138,6 +144,15 @@ M.schema = Schema(function(s)
         InclineNormal = 'NormalFloat',
         InclineNormalNC = 'NormalFloat',
       }, vx.map(vx.string, vx.any { vx.highlight.args, vx.string }), { transform = tx.extend }),
+    },
+  }, {
+    deprecated = {
+      fields = {},
+      vals = {
+        ['window.options'] = {
+          [vx.table.including { winhighlight = vx.notNil }] = 'Use window.winhighlight instead of window.options.winhighlight',
+        },
+      },
     },
   }
 end)

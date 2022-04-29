@@ -16,7 +16,8 @@ CONTENTS                                                      *incline-contents*
     2.4. Configuration Field Transforms ......... |incline-config-transforms|
     2.5. Presets ................................ |incline-presets|
   3. Changelog .................................. |incline-changelog|
-  4. License .................................... |incline-license|
+  4. Breaking Changes ........................... |incline-breaking-changes|
+  5. License .................................... |incline-license|
 
 ==============================================================================
 1. Intro                                                         *incline-intro*
@@ -260,6 +261,53 @@ window.margin.horizontal~
   - If a table, both `left` and `right` fields must be present.
 
                                      *incline-config-window.winhighlight*
+window.winhighlight~
+  Type:      `table`
+  Transform: `{ active: extend, inactive: extend }`
+  Valid: >
+    type winhighlight_map = map[string](string | hl_args)
+
+    type winhighlight =
+      | winhighlight_map
+      | { active = winhighlight_map, inactive: winhighlight_map }
+<
+
+  If `winhighlight` is a table with `active` and `inactive` sub-tables, see
+  |incline-config-window.winhighlight.active| and
+  |incline-config-window.winhighlight.inactive|.
+
+  Otherwise if `winhighlight` is a map of 'winhighlight' entries, its value is
+  used as the value of both  |incline-config-window.winhighlight.active| and
+  |incline-config-window.winhighlight.inactive|.
+
+  Map keys should be the builtin highlight group name to be overridden.
+
+  Map values are a highlight group name to use as the override, or a table of
+  |highlight-args|.
+
+  For example, `A` and `B` are equivalent: >
+
+    -- A
+    incline.setup {
+      window = {
+        winhighlight = {
+          Normal = 'Search',
+        }
+      }
+    }
+
+    -- B
+    incline.setup {
+      window = {
+        winhighlight = {
+          active = { Normal = 'Search' },
+          inactive = { Normal = 'Search' },
+        }
+      }
+    }
+<
+  See the following two sections for more information.
+
                                      *incline-config-window.winhighlight.active*
 window.winhighlight.active~
   Type:      `table`
@@ -649,7 +697,40 @@ basic~
   Looks like: `filename.txt [+]`
 
 ==============================================================================
-3. Changelog                                                 *incline-changelog*
+3. Breaking Changes                                   *incline-breaking-changes*
+
+------------------------------------------------------------------------------
+3.1 Configuration                              *incline-breaking-changes-config*
+
+window.options.winhighlight~
+  Commit: `1eb7404`
+  Date:   28 Apr 2022
+
+  Use window.winhighlight instead of window.options.winhighlight.
+  Note that the accepted format has changed as well.
+
+  This: >
+    incline.setup {
+      window = {
+        options = {
+          winhighlight = 'Normal:Search',
+        }
+      }
+    }
+<
+  Becomes this: >
+  incline.setup {
+    window = {
+      winhighlight = {
+        Normal = 'Search',
+      }
+    }
+  }
+<
+  See |incline-config-window.winhighlight|.
+
+==============================================================================
+4. Changelog                                                 *incline-changelog*
 
 14 Apr 2022                                                             v0.0.2
   Add documentation
@@ -662,7 +743,7 @@ basic~
   Initial Release
 
 ==============================================================================
-4. License                                                     *incline-license*
+5. License                                                     *incline-license*
 >
   © 2022 Maddison Hellstrom <github.com/b0o>
   Released under the MIT license.
