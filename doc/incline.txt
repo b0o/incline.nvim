@@ -228,7 +228,7 @@ window.placement.vertical~
 
   Controls the vertical placement of Incline statuslines.
 
-                                     *incline-config-window.placement.horizontal*
+                                    *incline-config-window.placement.horizontal*
 window.placement.horizontal~
   Type:    `string`
   Valid:   `"left"` | `"center"` | `"right"`
@@ -444,8 +444,8 @@ ignore.buftypes~
   an ignored 'buftype'.
   - If the string `"special"`, Incline will only display statuslines on windows
     containing normal buffers (buffers that have a buftype of `""`).
-  - If a table, the table should be a list of buftypes to ignore. See 'buftype'
-    for accepted values.
+  - If a table, the table should be a list of buftypes to ignore. See
+    'buftype' for accepted values.
   - If a function, it should accept two arguments, `bufnr` and `buftype`, and
     return `true` if the buffer should be ignored.
 
