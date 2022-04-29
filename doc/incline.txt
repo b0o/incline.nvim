@@ -158,7 +158,6 @@ render~
 
     type render_preset_name =
       | "basic"
-      | "powerline"
 
     type render =
       | render_fn
