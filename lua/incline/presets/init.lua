@@ -1,5 +1,11 @@
-return setmetatable({}, {
+local M = {}
+
+M.load = function(preset)
+  return require('incline.presets.' .. preset)
+end
+
+return setmetatable(M, {
   __index = function(_, k)
-    return require('incline.presets.' .. k)
+    return M.load(k)
   end,
 })

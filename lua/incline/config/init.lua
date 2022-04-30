@@ -7,7 +7,15 @@ local M = {}
 
 M.schema = Schema(function(s)
   return {
-    render = s:entry(presets.basic, vx.callable),
+    render = s:entry(presets.basic, vx.callable, function(v)
+      if type(v) == 'string' then
+        local ok, preset = pcall(presets.load, v)
+        if ok then
+          return preset
+        end
+      end
+      return v
+    end),
     debounce_threshold = s:entry(
       { rising = 10, falling = 50 },
       vx.any {
