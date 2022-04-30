@@ -92,10 +92,13 @@ function Winline:get_win_config(opts)
   if placement.vertical == 'bottom' then
     cfg.row = win_height - cw.margin.vertical.bottom
   elseif placement.vertical == 'top' then
-    -- TODO: detect if window is below tabline and, if so, avoid overlapping it
-    -- Then, users can set margin.vertical.top to 0 and let the winline overlap
-    -- the window separator but not the tabline.
-    cfg.row = cw.margin.vertical.top
+    -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
+    -- statusline if laststatus is not 3
+    if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] == 1) then
+      cfg.row = 1
+    else
+      cfg.row = cw.margin.vertical.top
+    end
   end
 
   if placement.horizontal == 'left' then

@@ -249,6 +249,10 @@ window.margin.vertical~
   - If an `int >= 0`, the value is used for both the top and bottom margin.
   - If a table, both `top` and `bottom` fields must be present.
 
+  If `window.placement.vertical` is `top` and 'laststatus' is `3`, you can set
+  `window.margin.vertical.top` to `0` to allow Incline statuslines to overlap
+  window borders.
+
                                        *incline-config-window.margin.horizontal*
 window.margin.horizontal~
   Type:    `number` | `table`
