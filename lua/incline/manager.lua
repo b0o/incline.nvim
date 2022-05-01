@@ -22,12 +22,13 @@ M.update = Debounce(function(opts)
   local events = state.events
   local changes = {}
 
-  if not state.current_tab or events.TabEnter then
+  if not state.current_tab or events.TabEnter or events.TabNewEntered then
     state.current_tab = a.nvim_get_current_tabpage()
+    opts.refresh = true
   end
   if not state.tabpages[state.current_tab] then
     state.tabpages[state.current_tab] = Tabpage(state.current_tab)
-    changes = { layout = true, windows = true, focus = true, render = true }
+    opts.refresh = true
   end
 
   if opts.refresh then
@@ -40,7 +41,7 @@ M.update = Debounce(function(opts)
   if events.WinScrolled or events.BufWinEnter or events.BufWinLeave or events.OptionSet then
     changes.layout = true
   end
-  if events.WinEnter or events.WinLeave or events.TabEnter or events.TabNewEntered then
+  if events.WinEnter or events.WinLeave then
     changes.focus = true
   end
   if
