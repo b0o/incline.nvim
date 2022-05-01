@@ -2,11 +2,13 @@ local config = require 'incline.config'
 
 local Debounce = {}
 
-function Debounce:cancel()
+function Debounce:reset()
   if self.timer then
     self.timer:stop()
     self.timer = nil
   end
+  self.phase = 0
+  self.waiting = false
 end
 
 function Debounce:call(...)
@@ -19,9 +21,9 @@ function Debounce:call(...)
       self.timer = vim.defer_fn(function()
         if self.waiting then
           self:immediate(unpack(args))
+        else
+          self:reset()
         end
-        self.waiting = false
-        self.phase = 0
       end, config.debounce_threshold.falling)
     end, config.debounce_threshold.rising)
   elseif self.phase == 2 then
@@ -30,7 +32,7 @@ function Debounce:call(...)
 end
 
 function Debounce:immediate(...)
-  self:cancel()
+  self:reset()
   self.fn(...)
 end
 
