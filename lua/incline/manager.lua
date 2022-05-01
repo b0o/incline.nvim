@@ -94,7 +94,7 @@ end
 M.setup = function()
   if state.initialized then
     M.update.threshold = config.debounce_threshold
-    M.update:immediate { refresh = true }
+    M.update { refresh = true }
     return
   end
   local events = {
@@ -120,7 +120,7 @@ M.setup = function()
       M.update()
     end,
   })
-  M.update:immediate { refresh = true }
+  M.update { refresh = true }
   state.initialized = true
 end
 
