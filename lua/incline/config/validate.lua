@@ -239,6 +239,6 @@ M.highlight.link = M.table.of_all {
   default = M.bool,
 }
 
-M.highlight.any = M.any { M.highlight.args, M.highlight.link }
+M.highlight.any = M.any { M.highlight.args, M.highlight.link, M.string }
 
 return M
