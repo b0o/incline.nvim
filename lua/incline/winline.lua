@@ -138,9 +138,7 @@ function Winline:refresh()
   else
     a.nvim_win_set_config(self._win, self:get_win_config())
   end
-  for opt, val in pairs(self:get_win_opts()) do
-    a.nvim_win_set_option(self._win, opt, val)
-  end
+  util.win_set_local_options(self._win, self:get_win_opts())
 end
 
 function Winline:win(opts)
