@@ -12,34 +12,44 @@ M.clear = function()
   cache = {}
 end
 
-M.link = function(from, to, opts)
-  if opts.force or not cache[from] or cache[from] ~= to then
-    vim.cmd(string.format('highlight! link %s %s', from, to))
-    cache[from] = to
-  end
-  return from
-end
-
 M.register = function(hl, group, opts)
   if type(group) == 'table' and opts == nil then
     opts = group
     group = nil
   end
   opts = opts or {}
+
   if type(hl) == 'string' then
-    return M.link(group, hl, opts)
+    hl = { group = hl }
   end
   if group == nil then
     group = M.get_pseudonym(hl)
   end
-  if opts.force or not cache[group] or not vim.deep_equal(hl, cache[group]) then
-    local hi = 'highlight! default ' .. group
-    for opt, val in pairs(hl) do
-      hi = hi .. ' ' .. opt .. '=' .. val
-    end
-    vim.cmd(hi)
-    cache[group] = hl
+
+  local cmd = { 'highlight' }
+  if hl.default then
+    table.insert(cmd, 'default')
+    hl.default = nil
   end
+  if hl.group then
+    table.insert(cmd, 'link')
+  end
+  table.insert(cmd, group)
+  if hl.group then
+    table.insert(cmd, hl.group)
+    hl.group = nil
+  end
+
+  for opt, val in pairs(hl) do
+    table.insert(cmd, opt .. '=' .. val)
+  end
+
+  local cmd_str = vim.cmd(table.concat(cmd, ' '))
+  if opts.force or not cache[group] or cmd_str ~= cache[group] then
+    cache[group] = cmd_str
+    vim.cmd(cmd_str)
+  end
+
   return group
 end
 

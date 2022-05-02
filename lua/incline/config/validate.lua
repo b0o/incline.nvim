@@ -231,10 +231,12 @@ M.highlight.args = M.table.of_any {
   guisp = M.string,
   blend = M.any { M.string, M.number.int },
   font = M.string,
+  default = M.bool,
 }
 
 M.highlight.link = M.table.of_all {
   group = M.string,
+  default = M.bool,
 }
 
 M.highlight.any = M.any { M.highlight.args, M.highlight.link }
