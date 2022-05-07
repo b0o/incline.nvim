@@ -104,7 +104,7 @@ function Winline:get_win_config(opts)
   if placement.horizontal == 'left' then
     cfg.col = cw.margin.horizontal.left
   elseif placement.horizontal == 'right' then
-    cfg.col = win_width - self:get_content_len() - cw.margin.horizontal.right
+    cfg.col = win_width - cfg.width - cw.margin.horizontal.right
   elseif placement.horizontal == 'center' then
     cfg.col = math.floor((win_width / 2) - (cfg.width / 2))
   end
