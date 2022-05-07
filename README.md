@@ -9,7 +9,7 @@ Incline is still sparse on features, but it should now be stable enough for basi
 Once `v0.1.0` is reached, breaking changes will be limited to major releases. Until then, breaking changes may occur on patch-level versions.
 I recommend pinning the version in your plugin manager so that you're not surprised by a breaking change at an inconvenient time.
 
-![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/162644089-7f1ff22b-dedf-4bbf-a0ac-6dc6bf2f602b.png)
+![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
 ## Installation
 
