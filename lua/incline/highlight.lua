@@ -44,7 +44,7 @@ M.register = function(hl, group, opts)
     table.insert(cmd, opt .. '=' .. val)
   end
 
-  local cmd_str = vim.cmd(table.concat(cmd, ' '))
+  local cmd_str = table.concat(cmd, ' ')
   if opts.force or not cache[group] or cmd_str ~= cache[group] then
     cache[group] = cmd_str
     vim.cmd(cmd_str)
