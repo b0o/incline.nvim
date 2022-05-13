@@ -1,3 +1,3 @@
 .PHONY: test
 test:
-	./scripts/test
+	./scripts/test.sh
