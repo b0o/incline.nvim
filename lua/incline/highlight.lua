@@ -70,6 +70,14 @@ M.get_pseudonym = function(hl)
   return name
 end
 
+M.buf_add_highlight = function(buf, ...)
+  return a.nvim_buf_add_highlight(buf, M.namespace, ...)
+end
+
+M.buf_clear = function(buf)
+  return a.nvim_buf_clear_namespace(buf, M.namespace, 0, -1)
+end
+
 M.setup = function()
   M.clear()
   M.namespace = a.nvim_create_namespace 'incline'

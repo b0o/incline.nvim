@@ -203,9 +203,9 @@ function Winline:render(opts)
     a.nvim_buf_set_lines(buf, 0, -1, false, { self.content.text })
   end
   if content_text_changed or content_hls_changed then
-    a.nvim_buf_clear_namespace(buf, highlight.namespace, 0, -1)
+    highlight.buf_clear(buf)
     for _, hl in ipairs(content.hls) do
-      a.nvim_buf_add_highlight(buf, highlight.namespace, hl.group, 0, unpack(hl.range))
+      highlight.buf_add_highlight(buf, hl.group, 0, unpack(hl.range))
     end
   end
 end
