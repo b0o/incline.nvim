@@ -18,9 +18,12 @@ M.register = function(hl, group, opts)
     group = nil
   end
   opts = opts or {}
+  local skip_cache = false
 
   if type(hl) == 'string' then
     hl = { group = hl }
+  else
+    hl = vim.deepcopy(hl)
   end
   if group == nil then
     group = M.get_pseudonym(hl)
@@ -30,6 +33,7 @@ M.register = function(hl, group, opts)
   if hl.default then
     table.insert(cmd, 'default')
     hl.default = nil
+    skip_cache = true
   end
   if hl.group then
     table.insert(cmd, 'link')
@@ -46,7 +50,9 @@ M.register = function(hl, group, opts)
 
   local cmd_str = table.concat(cmd, ' ')
   if opts.force or not cache[group] or cmd_str ~= cache[group] then
-    cache[group] = cmd_str
+    if not skip_cache then
+      cache[group] = cmd_str
+    end
     vim.cmd(cmd_str)
   end
 
