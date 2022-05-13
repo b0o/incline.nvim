@@ -13,12 +13,8 @@ M.clear = function()
 end
 
 M.register = function(hl, group_name)
-  if type(hl) == 'string' then
-    hl = { group = hl }
-  end
-  if group_name == nil then
-    group_name = M.get_pseudonym(hl)
-  end
+  hl = type(hl) == 'table' and hl or { group = hl }
+  group_name = group_name or M.get_pseudonym(hl)
 
   local cmd = { lhs = { 'highlight' }, rhs = {} }
   for key, val in pairs(hl) do
