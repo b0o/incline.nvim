@@ -12,51 +12,37 @@ M.clear = function()
   cache = {}
 end
 
-M.register = function(hl, group, opts)
-  if type(group) == 'table' and opts == nil then
-    opts = group
-    group = nil
-  end
-  opts = opts or {}
-  local skip_cache = false
-
+M.register = function(hl, group_name)
   if type(hl) == 'string' then
     hl = { group = hl }
-  else
-    hl = vim.deepcopy(hl)
   end
-  if group == nil then
-    group = M.get_pseudonym(hl)
+  if group_name == nil then
+    group_name = M.get_pseudonym(hl)
   end
 
-  local cmd = { 'highlight' }
-  if hl.default then
-    table.insert(cmd, 'default')
-    hl.default = nil
-    skip_cache = true
-  end
-  if hl.group then
-    table.insert(cmd, 'link')
-  end
-  table.insert(cmd, group)
-  if hl.group then
-    table.insert(cmd, hl.group)
-    hl.group = nil
+  local cmd = { lhs = { 'highlight' }, rhs = {} }
+  for key, val in pairs(hl) do
+    if key == 'default' then
+      table.insert(cmd.lhs, 2, 'default')
+    elseif key == 'group' then
+      table.insert(cmd.lhs, 'link')
+      table.insert(cmd.rhs, val)
+    else
+      table.insert(cmd.rhs, key .. '=' .. val)
+    end
   end
 
-  for opt, val in pairs(hl) do
-    table.insert(cmd, opt .. '=' .. val)
-  end
+  table.insert(cmd.lhs, group_name)
 
-  local cmd_str = table.concat(cmd, ' ')
-  if opts.force or not cache[group] or cmd_str ~= cache[group] then
-    if not skip_cache then
-      cache[group] = cmd_str
+  local cmd_str = table.concat(cmd.lhs, ' ') .. ' ' .. table.concat(cmd.rhs, ' ')
+  if not cache[group_name] or cmd_str ~= cache[group_name] then
+    if not hl.default then
+      cache[group_name] = cmd_str
     end
     vim.cmd(cmd_str)
   end
 
-  return group
+  return group_name
 end
 
 M.get_pseudonym = function(hl)
