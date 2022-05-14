@@ -3,7 +3,7 @@
 Author:         Maddison Hellstrom <https://github.com/b0o>
 Licence:        MIT
 Homepage:       https://github.com/b0o/incline.nvim
-Version:        
+Version:        v0.0.3
 
 ==============================================================================
 CONTENTS                                                      *incline-contents*
@@ -804,7 +804,7 @@ window.options.winhighlight~
 ==============================================================================
 5. License                                                     *incline-license*
 >
-  © 2022 b0o
+  © 2022 Maddison Hellstrom and contributors
   Released under the MIT license.
 <
  vim:tw=78:ts=8:ft=help:norl:
