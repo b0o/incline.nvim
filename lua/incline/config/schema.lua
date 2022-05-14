@@ -63,9 +63,10 @@ end
 function Schema:parse_entry(data, fallback, schema, path)
   if data == nil then
     if fallback ~= nil then
-      return fallback
+      data = fallback
+    else
+      data = schema.default
     end
-    return schema.default
   end
   local transform
   if type(data) == 'table' and data.parent == self then
