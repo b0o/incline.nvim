@@ -1,0 +1,43 @@
+name: docs
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.TOKEN }}
+
+      - name: Setup neovim
+        uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: nightly
+
+      - name: Re-generate docs
+        shell: bash
+        run: make docs
+
+      - name: Run tests
+        shell: bash
+        run: make test
+
+      - name: Commit and Push Changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          message: |
+            Re-generate docs
+
+            This commit was performed automatically by GitHub Actions.
