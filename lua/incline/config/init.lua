@@ -1,7 +1,6 @@
 local Schema = require 'incline.config.schema'
 local vx = require 'incline.config.validate'
 local tx = require 'incline.config.transform'
-local presets = require 'incline.presets'
 
 local M = {}
 
@@ -9,7 +8,7 @@ M.schema = Schema(function(s)
   return {
     render = s:entry('basic', vx.callable, function(v)
       if type(v) == 'string' then
-        local ok, preset = pcall(presets.load, v)
+        local ok, preset = pcall(require('incline.presets').load, v)
         if ok then
           return preset
         end
