@@ -39,10 +39,6 @@ require('incline').setup {
     falling = 50,
     rising = 10
   },
-  hide = {
-    focused_win = false,
-    only_win = false
-  },
   highlight = {
     groups = {
       InclineNormal = {
@@ -54,6 +50,10 @@ require('incline').setup {
         group = "NormalFloat"
       }
     }
+  },
+  hide = {
+    focused_win = false,
+    only_win = false
   },
   ignore = {
     buftypes = "special",
