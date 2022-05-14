@@ -1,4 +1,4 @@
-# Incline.nvim [![Version](https://img.shields.io/github/v/tag/b0o/incline.nvim?style=flat&color=yellow&label=version&sort=semver)](https://github.com/b0o/incline.nvim/releases) [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/workflow/status/b0o/incline.nvim/test?label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
+# Incline.nvim [![Version v0.0.3](https://img.shields.io/github/v/tag/b0o/incline.nvim?style=flat&color=yellow&label=version&sort=semver)](https://github.com/b0o/incline.nvim/releases) [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/workflow/status/b0o/incline.nvim/test?label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
 
 Lightweight floating statuslines, intended for use with Neovim's new global statusline (`set laststatus=3`).
 
@@ -31,29 +31,38 @@ require('incline').setup()
 
 Incline's default configuration:
 
+<!--DEFAULT_CONFIG-->
+
 ```lua
 require('incline').setup {
-  render = "basic",
   debounce_threshold = {
     falling = 50,
     rising = 10
   },
   hide = {
     focused_win = false,
+    only_win = false
   },
   highlight = {
     groups = {
-      InclineNormal = "NormalFloat",
-      InclineNormalNC = "NormalFloat"
-    },
+      InclineNormal = {
+        default = true,
+        group = "NormalFloat"
+      },
+      InclineNormalNC = {
+        default = true,
+        group = "NormalFloat"
+      }
+    }
   },
   ignore = {
     buftypes = "special",
     filetypes = {},
     floating_wins = true,
     unlisted_buffers = true,
-    wintypes = "special",
+    wintypes = "special"
   },
+  render = "basic",
   window = {
     margin = {
       horizontal = {
@@ -63,7 +72,7 @@ require('incline').setup {
       vertical = {
         bottom = 0,
         top = 1
-      },
+      }
     },
     options = {
       signcolumn = "no",
@@ -76,7 +85,7 @@ require('incline').setup {
     padding_char = " ",
     placement = {
       horizontal = "right",
-      vertical = "top",
+      vertical = "top"
     },
     width = "fit",
     winhighlight = {
@@ -91,10 +100,12 @@ require('incline').setup {
         Search = "None"
       }
     },
-    zindex = 50,
-  },
+    zindex = 50
+  }
 }
 ```
+
+<!--/DEFAULT_CONFIG-->
 
 See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt) for full documentation of all configuration options.
 
@@ -131,6 +142,6 @@ See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.tx
 
 ## License
 
-&copy; 2022 Maddison Hellstrom
+&copy; <!--COPYRIGHT-->2022 Maddison Hellstrom and contributors<!--/COPYRIGHT-->
 
 Released under the MIT License.
