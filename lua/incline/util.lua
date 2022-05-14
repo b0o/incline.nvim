@@ -138,4 +138,15 @@ M.win_set_local_options = function(win, opts)
   end)
 end
 
+-- Return a deep copy of tbl with no metatables
+-- WARNING: Will overflow if tbl contains any circular references
+M.tbl_plain = function(tbl)
+  return vim.tbl_map(function(v)
+    if type(v) == 'table' then
+      return M.tbl_plain(v)
+    end
+    return v
+  end, tbl)
+end
+
 return M

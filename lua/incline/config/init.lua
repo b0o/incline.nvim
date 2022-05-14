@@ -7,7 +7,7 @@ local M = {}
 
 M.schema = Schema(function(s)
   return {
-    render = s:entry(presets.basic, vx.callable, function(v)
+    render = s:entry('basic', vx.callable, function(v)
       if type(v) == 'string' then
         local ok, preset = pcall(presets.load, v)
         if ok then
@@ -187,7 +187,7 @@ return setmetatable({
   end,
   schema = M.schema,
 }, {
-  __index = function(_, k)
+  __index = function(self, k)
     if M[k] then
       return M[k]
     end
@@ -199,6 +199,9 @@ return setmetatable({
     end
     if k == 'config' then
       return M.config
+    end
+    if k == 'plain' then
+      return require('incline.util').tbl_plain(self.config)
     end
     return M.config[k]
   end,
