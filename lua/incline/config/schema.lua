@@ -60,13 +60,17 @@ function Schema:validate_entry(data, schema, path)
   return true
 end
 
-function Schema:parse_entry(data, fallback, schema, path)
+function Schema:parse_entry(data, fallback, schema, path, opts)
+  opts = opts or {}
   if data == nil then
     if fallback ~= nil then
       data = fallback
     else
       data = schema.default
     end
+  end
+  if opts.raw then
+    return data
   end
   local transform
   if type(data) == 'table' and data.parent == self then
@@ -98,7 +102,7 @@ function Schema:get_entry(key, base, path)
   return target
 end
 
-function Schema:parse(data, fallback, schema, path)
+function Schema:parse(data, fallback, schema, path, opts)
   data = data or {}
   fallback = fallback or {}
   path = path or ''
@@ -124,9 +128,9 @@ function Schema:parse(data, fallback, schema, path)
     end
     local err
     if inner_schema.parent == self then
-      res[k], err = self:parse_entry(inner_data, inner_fallback, inner_schema, inner_path)
+      res[k], err = self:parse_entry(inner_data, inner_fallback, inner_schema, inner_path, opts)
     else
-      res[k], err = self:parse(inner_data, inner_fallback, inner_schema, inner_path)
+      res[k], err = self:parse(inner_data, inner_fallback, inner_schema, inner_path, opts)
     end
     if err ~= nil then
       return res[k], err
@@ -139,8 +143,12 @@ function Schema:parse(data, fallback, schema, path)
   })
 end
 
-function Schema:default()
-  return self:parse()
+function Schema:default(opts)
+  return self:parse(nil, nil, nil, nil, opts)
+end
+
+function Schema:raw()
+  return require('incline.util').tbl_plain(self:default { raw = true })
 end
 
 function Schema:is_deprecated_field(path)

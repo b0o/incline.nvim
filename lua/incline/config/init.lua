@@ -186,7 +186,7 @@ return setmetatable({
   end,
   schema = M.schema,
 }, {
-  __index = function(self, k)
+  __index = function(_, k)
     if M[k] then
       return M[k]
     end
@@ -198,9 +198,6 @@ return setmetatable({
     end
     if k == 'config' then
       return M.config
-    end
-    if k == 'plain' then
-      return require('incline.util').tbl_plain(self.config)
     end
     return M.config[k]
   end,

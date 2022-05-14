@@ -27,7 +27,7 @@ function get_default_config() {
   nvim --headless -u NORC --noplugin \
     --cmd "set runtimepath+=$PWD" \
     +'lua vim.fn.writefile(
-        vim.split(vim.inspect(require"incline.config".plain), "\n"),
+      vim.split(vim.inspect(require"incline.config".schema:raw()), "\n"),
         "/proc/" .. vim.fn.getpid() .. "/fd/1"
       )' \
     +q
