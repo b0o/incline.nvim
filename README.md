@@ -142,6 +142,6 @@ See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.tx
 
 ## License
 
-&copy; <!--COPYRIGHT-->2022 Maddison Hellstrom<!--/COPYRIGHT-->
+&copy; <!--COPYRIGHT-->2022 b0o<!--/COPYRIGHT-->
 
 Released under the MIT License.
