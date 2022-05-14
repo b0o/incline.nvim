@@ -1,4 +1,4 @@
-# Incline.nvim [![Version v0.0.3](https://img.shields.io/github/v/tag/b0o/incline.nvim?style=flat&color=yellow&label=version&sort=semver)](https://github.com/b0o/incline.nvim/releases) [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/workflow/status/b0o/incline.nvim/test?label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
+# Incline.nvim [![Version ](https://img.shields.io/github/v/tag/b0o/incline.nvim?style=flat&color=yellow&label=version&sort=semver)](https://github.com/b0o/incline.nvim/releases) [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/workflow/status/b0o/incline.nvim/test?label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
 
 Lightweight floating statuslines, intended for use with Neovim's new global statusline (`set laststatus=3`).
 
@@ -39,6 +39,10 @@ require('incline').setup {
     falling = 50,
     rising = 10
   },
+  hide = {
+    focused_win = false,
+    only_win = false
+  },
   highlight = {
     groups = {
       InclineNormal = {
@@ -50,10 +54,6 @@ require('incline').setup {
         group = "NormalFloat"
       }
     }
-  },
-  hide = {
-    focused_win = false,
-    only_win = false
   },
   ignore = {
     buftypes = "special",
@@ -142,6 +142,6 @@ See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.tx
 
 ## License
 
-&copy; <!--COPYRIGHT-->2022 Maddison Hellstrom and contributors<!--/COPYRIGHT-->
+&copy; <!--COPYRIGHT-->2022 Maddison Hellstrom<!--/COPYRIGHT-->
 
 Released under the MIT License.
