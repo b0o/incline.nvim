@@ -95,35 +95,35 @@ render~
 
   See |incline-render-spec| for more details.
 
-  The `render` function is called on each update to get the content and
-  highlights to be displayed in each Incline statusline.
+  The `render` function is called frequently to get the content and highlights
+  to be displayed in each Incline statusline.
 
-  If the value of `render` is a `string`, Incline will attempt to load the
-  built-in preset with the corresponding name. See |incline-presets|.
+  If `render` is a `string`, Incline will attempt to load the built-in preset
+  with the corresponding name. See |incline-presets|.
 
-  The `render` function is passed a single argument, `props`, which is a table
-  containing the following fields:
+  If `render` is a function, it is called for each Incline instance to obtain
+  the content and highlights to be displayed. It is passed a single argument,
+  `props`, which is a table containing the following fields:
 
     Field     Type     Description
     `buf`       `number`   The buffer handle for the target window.
     `win`       `number`   The window handle for the target window.
-    `focused`   `bool`     `true` if the target window is focused,
-                       else `false`.
+    `focused`   `bool`     If the target window is focused then `true`, else `false`.
 
-  The `render` function is expected to return a `render_result`, which is a
-  recursive tree-like data structure. A `result` can be `nil`, a `string`, a
-  `number`, or a `table` of nested `result` entries along with highlight
-  arguments.
+  The `render` function should return a `render_result`, which is a recursive
+  tree-like data structure. A `render_result` can be `nil`, a `string`, a
+  `number`, or a `table` of nested `render_result` entries along with
+  highlight arguments.
 
   If a result is a `table`:
   - Its contiguous integer keys from 1 to n (i.e. the keys that would be
-    iterated by `ipairs`) should themselves be `result` types.
+    iterated by `ipairs`) should themselves be `render_result` types.
   - The rest of its keys can be either (but not both):
     - A single key, `"group"`, the value of which is the name of a highlight
       group.
     - Zero or more valid |highlight-args| pairs.
 
-  Expressed in psuedocode, a loose specification of the `render` option:
+  Expressed in psuedocode, a loose specification of the `config.render` option:
 >
     type render_props = {
       buf: number,
@@ -200,24 +200,30 @@ debounce_threshold~
   Valid:    `int >= 0` | `table { rising: int >= 0, falling: int >= 0 }`
   Default:  `{ rising = 10, falling = 50 }`
 
-  When certain events occur, like opening a file, Incline re-renders all of
-  the floating statuslines on the current tabpage. Additionally, certain
-  events like resizing or opening windows cause Incline to re-calculate the
-  size and layout of the floating statuslines in the current tabpage.
+  When certain events occur, like opening a file or focusing a window, Incline
+  re-renders all of the floating statuslines on the current tabpage.
+  Additionally, certain events like resizing or opening windows cause Incline
+  to re-calculate the size and layout of the floating statuslines in the
+  current tabpage.
 
   If multiple events occur within a short period of time, they are batched
   together into a single update. The `debounce_threshold` option controls the
-  minimum amount of time between updates.
+  minimum amount of time between updates, which is a table containing two
+  integers: `rising` and `falling`.
 
-  When the first event arrives, Incline waits `debounce_threshold.rising`
-  milliseconds and then performs the update. If an event occurs sooner than
-  `debounce_threshold.falling` milliseconds after an update, Incline waits
-  `debounce_threshold.falling` milliseconds before performing another update.
+  When the first event arrives, Incline waits `rising` milliseconds and then
+  performs the update. If another event occurs before `rising` milliseconds
+  has elapsed, it is batched into the pending update.
 
-  If `debounce_threshold` is set to an integer, that value is used for both
-  `rising` and `falling`.
-  If `debounce_threshold` is set to a table, both `rising` and `falling`
-  fields must be present.
+  Immediately after an update finishes, if an event occurs within `falling`
+  milliseconds, Incline waits `falling` milliseconds before performing
+  another update.
+
+  If `debounce_threshold` is an integer, that value is used for both `rising`
+  and `falling`.
+
+  If `debounce_threshold` is a table, both `rising` and `falling` fields must
+  be present.
 
                                       *incline-config-window*
                                       *incline-config-window.placement*
@@ -275,6 +281,9 @@ window.winhighlight~
       | winhighlight_map
       | { active = winhighlight_map, inactive: winhighlight_map }
 <
+  The `winhighlight` option can be used to override default highlight groups
+  for incline windows. See 'winhighlight' for an explanation of how the option
+  works.
 
   If `winhighlight` is a table with `active` and `inactive` sub-tables, see
   |incline-config-window.winhighlight.active| and
@@ -519,8 +528,8 @@ highlight.groups~
   utility option, you could alternatively define highlight groups yourself
   with |:highlight|.
 
-  Map keys are the names of the new groups; map values are be the new group's
-  arguments.
+  Map keys are the names of the new groups.
+  Map values are the new group's |highlight-args|.
 
   If a map entry's value is a string, it is treated as a highlight group name,
   and the new highlight group becomes a link to that group.
@@ -622,8 +631,8 @@ highlight.groups~
 ------------------------------------------------------------------------------
 2.4 Configuration Field Transforms                   *incline-config-transforms*
 
-NOTE: Most users do not need to worry about transforms. The defaults will work
-fine for most cases.
+NOTE: Most users should not need to use transforms. The defaults should work
+fine in most cases.
 
 When assigning to configuration fields, the way your options are applied
 varies depending on the field. Some fields are replaced entirely by the value
@@ -667,6 +676,22 @@ replacing them. For example:
     wrap = false
   }
 <
+                                                    *incline-builtin-transforms*
+Built-in transforms~
+                                                     *incline-transform-replace*
+replace~
+  Fully replaces the default value of the configuration option. This is the
+  default transform if none is specified in the option's documentation.
+>
+    require'incline.config'.replace
+<
+                                                     *incline-transform-replace*
+extend~
+  Extends the default value of the option. Only valid for options with default
+  values that are list-like or dict-like tables.
+>
+    require'incline.config'.extend
+<
                                                     *incline-transform-override*
 Overriding default transforms~
 It is possible to override the default transform by explicity specifying the
@@ -708,22 +733,6 @@ Another example, following the example from the previous section:
   {
     winblend = 10,
   }
-<
-                                                    *incline-builtin-transforms*
-Built-in transforms~
-                                                     *incline-transform-replace*
-replace~
-  Fully replaces the default value of the configuration option. This is the
-  default transform if none is specified in the option's documentation.
->
-    require'incline.config'.replace
-<
-                                                     *incline-transform-replace*
-extend~
-  Extends the default value of the option. Only valid for options with default
-  values that are list-like or dict-like tables.
->
-    require'incline.config'.extend
 <
 ------------------------------------------------------------------------------
 2.5 Presets                                                    *incline-presets*
