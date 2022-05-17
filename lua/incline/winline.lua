@@ -59,62 +59,73 @@ function Winline:get_content_len()
   return self.content and self.content.text and a.nvim_strwidth(self.content.text) or 0
 end
 
-function Winline:get_win_config(opts)
-  opts = opts or {}
-  local cfg = {
-    win = self.target_win,
-    relative = 'win',
-    style = 'minimal',
-    focusable = false,
+function Winline:get_win_geom()
+  local cw = config.window
+  local geom = {
     height = 1,
-    zindex = config.window.zindex,
-    anchor = 'SW',
-    col = 0,
+    width = nil,
+    row = nil,
+    col = nil,
   }
 
   local win_height = a.nvim_win_get_height(self.target_win)
   local win_width = a.nvim_win_get_width(self.target_win)
-  local cw = config.window
 
   if cw.width == 'fill' then
-    cfg.width = win_width
+    geom.width = win_width
   elseif cw.width == 'fit' then
-    cfg.width = math.min(self:get_content_len(), win_width)
+    geom.width = math.min(self:get_content_len(), win_width)
   elseif type(cw.width) == 'number' then
     if cw.width > 0 and cw.width <= 1 then
-      cfg.width = math.floor(cw.width * win_width)
+      geom.width = math.floor(cw.width * win_width)
     else
-      cfg.width = cw.width
+      geom.width = cw.width
     end
   end
 
   local placement = cw.placement
   if placement.vertical == 'bottom' then
-    cfg.row = win_height - cw.margin.vertical.bottom
+    geom.row = win_height - cw.margin.vertical.bottom
   elseif placement.vertical == 'top' then
     -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
     -- statusline if laststatus is not 3
     if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] == 1) then
-      cfg.row = 1
+      geom.row = 1
     else
-      cfg.row = cw.margin.vertical.top
+      geom.row = cw.margin.vertical.top
     end
   end
 
   if placement.horizontal == 'left' then
-    cfg.col = cw.margin.horizontal.left
+    geom.col = cw.margin.horizontal.left
   elseif placement.horizontal == 'right' then
-    cfg.col = win_width - cfg.width - cw.margin.horizontal.right
+    geom.col = win_width - geom.width - cw.margin.horizontal.right
   elseif placement.horizontal == 'center' then
-    cfg.col = math.floor((win_width / 2) - (cfg.width / 2))
+    geom.col = math.floor((win_width / 2) - (geom.width / 2))
   end
 
-  cfg.col = math.max(cfg.col, cw.margin.horizontal.left)
+  geom.col = math.max(geom.col, cw.margin.horizontal.left)
 
-  cfg.width = math.min(cfg.width, win_width - (cw.margin.horizontal.left + cw.margin.horizontal.right))
-  cfg.width = math.max(cfg.width, 1)
+  geom.width = math.min(geom.width, win_width - (cw.margin.horizontal.left + cw.margin.horizontal.right))
+  geom.width = math.max(geom.width, 1)
 
-  return cfg
+  return geom
+end
+
+function Winline:get_win_config()
+  local geom = self:get_win_geom()
+  return {
+    win = self.target_win,
+    zindex = config.window.zindex,
+    width = geom.width,
+    height = geom.height,
+    row = geom.row,
+    col = geom.col,
+    relative = 'win',
+    style = 'minimal',
+    focusable = false,
+    anchor = 'SW',
+  }
 end
 
 function Winline:get_win_opts()
