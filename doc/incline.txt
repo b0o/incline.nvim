@@ -123,6 +123,9 @@ render~
       group.
     - Zero or more valid |highlight-args| pairs.
 
+  If `render` returns `nil`, the Incline statusline is temporalily hidden. It
+  will be shown again as soon as `render` returns a non-nil result.
+
   Expressed in psuedocode, a loose specification of the `config.render` option:
 >
     type render_props = {
@@ -131,6 +134,7 @@ render~
     }
 
     type render_result =
+      | nil
       | string
       | number
       | {

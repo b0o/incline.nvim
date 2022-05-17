@@ -6,6 +6,9 @@ local a = vim.api
 
 local M = {}
 
+local HIDE_PERSIST = 1
+local HIDE_TEMP = 2
+
 function M.parse_render_result(node, offset)
   if type(node) == 'string' or type(node) == 'number' then
     return { text = tostring(node), hls = {} }
@@ -153,9 +156,6 @@ function Winline:refresh()
 end
 
 function Winline:win(opts)
-  if self.hidden then
-    return
-  end
   opts = opts or {}
   if opts.refresh or not (self._win and a.nvim_win_is_valid(self._win)) then
     self:refresh()
@@ -165,7 +165,7 @@ end
 
 -- TODO: Avoid unnecessary renders after :focus()/:blur()/:hide()/:show() are called
 function Winline:render(opts)
-  if self.hidden or not self:is_alive() then
+  if self.hidden == HIDE_PERSIST or not self:is_alive() then
     return
   end
   opts = opts or {}
@@ -175,6 +175,15 @@ function Winline:render(opts)
     win = self.target_win,
     focused = self.focused,
   }
+
+  if not render_result then
+    self:hide(HIDE_TEMP)
+    return
+  end
+  if self.hide == HIDE_TEMP then
+    self:show()
+  end
+
   if type(render_result) ~= 'table' then
     render_result = { render_result }
   end
@@ -221,13 +230,27 @@ function Winline:render(opts)
   end
 end
 
-function Winline:hide()
-  if self.hidden then
-    return
-  end
-  self.hidden = true
+function Winline:hide(mode)
+  self.hidden = mode or HIDE_PERSIST
   if self._win and a.nvim_win_is_valid(self._win) then
     a.nvim_win_close(self._win, false)
+    self._win = nil
+  end
+end
+
+function Winline:show()
+  if not self.hidden then
+    return
+  end
+  self.hidden = false
+  self:refresh()
+end
+
+function Winline:toggle()
+  if self.hidden then
+    self:show()
+  else
+    self:hide()
   end
 end
 
@@ -246,22 +269,6 @@ function Winline:blur()
     self:show()
   else
     self:refresh()
-  end
-end
-
-function Winline:show()
-  if not self.hidden then
-    return
-  end
-  self.hidden = false
-  self:render { refresh = true }
-end
-
-function Winline:toggle()
-  if self.hidden then
-    self:show()
-  else
-    self:hide()
   end
 end
 
