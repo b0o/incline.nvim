@@ -176,15 +176,12 @@ function Winline:render(opts)
   if self.hidden == HIDE_PERSIST or not self:is_alive() then
     return
   end
-  if config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused) then
-    local row_rel = self:get_win_geom_row()
-    local row_first = vim.fn.line('w0', self.target_win) ---@diagnostic disable-line: redundant-parameter
-    local row_abs = row_first + row_rel - 1
-    local row_cur = a.nvim_win_get_cursor(self.target_win)[1]
-    if row_cur == row_abs then
-      self:hide(HIDE_TEMP)
-      return
-    end
+  if
+    (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
+    and self:get_win_geom_row() == a.nvim_win_call(self.target_win, vim.fn.winline)
+  then
+    self:hide(HIDE_TEMP)
+    return
   end
 
   local render_result = config.render {
