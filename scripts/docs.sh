@@ -25,7 +25,7 @@ function get_authors() {
 
 function get_default_config() {
   nvim --headless -u NORC --noplugin \
-    --cmd "set runtimepath+=$PWD" \
+    --cmd "set runtimepath+=$reporoot" \
     +'lua vim.fn.writefile(
       vim.split(vim.inspect(require"incline.config".schema:raw()), "\n"),
         "/proc/" .. vim.fn.getpid() .. "/fd/1"
