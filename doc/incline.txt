@@ -81,8 +81,9 @@ config~
 │  ├─ buftypes             |incline-config-ignore.buftypes|
 │  └─ wintypes             |incline-config-ignore.wintypes|
 ├─ hide                    |incline-config-hide|
-│  ├─ hide.focused_win     |incline-config-hide.focused_win|
-│  └─ hide.only_win        |incline-config-hide.only_win|
+│  ├─ cursorline           |incline-config-hide.cursorline|
+│  ├─ focused_win          |incline-config-hide.focused_win|
+│  └─ only_win             |incline-config-hide.only_win|
 ├─ highlight               |incline-config-highlight|
 │  └─ groups               |incline-config-highlight.groups|
 └─ debounce_threshold      |incline-config-debounce_threshold|
@@ -480,6 +481,17 @@ ignore.wintypes~
     See |win_gettype()| for accepted values.
   - If a function, it should accept two arguments, `winid` and `wintype`, and
     return `true` if the window should be ignored.
+
+                                                *incline-config-hide.cursorline*
+hide.cursorline~
+  Type:     `bool` | `string`
+  Valid:    `bool` | `"focused_win"`
+  Default:  `false`
+
+  Incline can be hidden if the cursor is on the same line.
+  - If `true`, Incline statuslines on the same line as the cursor is hidden.
+  - If `"focused_win"`, the Incline statusline for the focused window will be
+    hidden if the cursor is on the same line.
 
                                                *incline-config-hide*
                                                *incline-config-hide.focused_win*

@@ -171,10 +171,21 @@ end
 
 -- TODO: Avoid unnecessary renders after :focus()/:blur()/:hide()/:show() are called
 function Winline:render(opts)
+  opts = opts or {}
+
   if self.hidden == HIDE_PERSIST or not self:is_alive() then
     return
   end
-  opts = opts or {}
+  if config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused) then
+    local row_rel = self:get_win_geom_row()
+    local row_first = vim.fn.line('w0', self.target_win) ---@diagnostic disable-line: redundant-parameter
+    local row_abs = row_first + row_rel - 1
+    local row_cur = a.nvim_win_get_cursor(self.target_win)[1]
+    if row_cur == row_abs then
+      self:hide(HIDE_TEMP)
+      return
+    end
+  end
 
   local render_result = config.render {
     buf = a.nvim_win_get_buf(self.target_win),
