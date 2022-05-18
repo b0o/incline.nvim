@@ -89,8 +89,6 @@ local function make(tab)
   end
   return setmetatable({
     tab = tab,
-    -- NOTE: do not maintain a persistent reference to the children table.
-    -- The table is discarded and re-created after each call to load_wins().
     children = {},
     focused_win = nil,
     only_win_hidden = nil,
