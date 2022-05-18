@@ -580,6 +580,7 @@ highlight.groups~
       rising = 10
     },
     hide = {
+      cursorline = false,
       focused_win = false,
       only_win = false
     },
