@@ -62,56 +62,62 @@ function Winline:get_content_len()
   return self.content and self.content.text and a.nvim_strwidth(self.content.text) or 0
 end
 
-function Winline:get_win_geom()
+function Winline:get_win_geom_row()
   local cw = config.window
-  local geom = {
-    height = 1,
-    width = nil,
-    row = nil,
-    col = nil,
-  }
-
-  local win_height = a.nvim_win_get_height(self.target_win)
-  local win_width = a.nvim_win_get_width(self.target_win)
-
-  if cw.width == 'fill' then
-    geom.width = win_width
-  elseif cw.width == 'fit' then
-    geom.width = math.min(self:get_content_len(), win_width)
-  elseif type(cw.width) == 'number' then
-    if cw.width > 0 and cw.width <= 1 then
-      geom.width = math.floor(cw.width * win_width)
-    else
-      geom.width = cw.width
-    end
-  end
-
   local placement = cw.placement
-  if placement.vertical == 'bottom' then
-    geom.row = win_height - cw.margin.vertical.bottom
-  elseif placement.vertical == 'top' then
+  if placement.vertical == 'top' then
     -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
     -- statusline if laststatus is not 3
     if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] == 1) then
-      geom.row = 1
+      return 1
+    end
+    return cw.margin.vertical.top
+  elseif placement.vertical == 'bottom' then
+    return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+  end
+  assert(false, 'invalid value for placement.vertical: ' .. tostring(placement.vertical))
+end
+
+function Winline:get_win_geom_col(win_width, width)
+  local cw = config.window
+  local placement = cw.placement
+  local col
+  if placement.horizontal == 'left' then
+    col = cw.margin.horizontal.left
+  elseif placement.horizontal == 'right' then
+    col = win_width - width - cw.margin.horizontal.right
+  elseif placement.horizontal == 'center' then
+    col = math.floor((win_width / 2) - (width / 2))
+  end
+  return math.max(col, cw.margin.horizontal.left)
+end
+
+function Winline:get_win_geom_width(win_width)
+  local cw = config.window
+  local width
+  if cw.width == 'fill' then
+    width = win_width
+  elseif cw.width == 'fit' then
+    width = math.min(self:get_content_len(), win_width)
+  elseif type(cw.width) == 'number' then
+    if cw.width > 0 and cw.width <= 1 then
+      width = math.floor(cw.width * win_width)
     else
-      geom.row = cw.margin.vertical.top
+      width = cw.width
     end
   end
+  width = math.min(width, win_width - (cw.margin.horizontal.left + cw.margin.horizontal.right))
+  width = math.max(width, 1)
+  return width
+end
 
-  if placement.horizontal == 'left' then
-    geom.col = cw.margin.horizontal.left
-  elseif placement.horizontal == 'right' then
-    geom.col = win_width - geom.width - cw.margin.horizontal.right
-  elseif placement.horizontal == 'center' then
-    geom.col = math.floor((win_width / 2) - (geom.width / 2))
-  end
-
-  geom.col = math.max(geom.col, cw.margin.horizontal.left)
-
-  geom.width = math.min(geom.width, win_width - (cw.margin.horizontal.left + cw.margin.horizontal.right))
-  geom.width = math.max(geom.width, 1)
-
+function Winline:get_win_geom()
+  local win_width = a.nvim_win_get_width(self.target_win)
+  local geom = {}
+  geom.height = 1
+  geom.width = self:get_win_geom_width(win_width)
+  geom.row = self:get_win_geom_row()
+  geom.col = self:get_win_geom_col(win_width, geom.width)
   return geom
 end
 
