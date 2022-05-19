@@ -66,23 +66,14 @@ require('incline').setup {
   render = "basic",
   window = {
     margin = {
-      horizontal = {
-        left = 1,
-        right = 1
-      },
-      vertical = {
-        bottom = 0,
-        top = 1
-      }
+      horizontal = 1,
+      vertical = 1
     },
     options = {
       signcolumn = "no",
       wrap = false
     },
-    padding = {
-      left = 1,
-      right = 1
-    },
+    padding = 1,
     padding_char = " ",
     placement = {
       horizontal = "right",

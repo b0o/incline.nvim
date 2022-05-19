@@ -36,7 +36,7 @@ M.schema = Schema(function(s)
       },
       margin = {
         horizontal = s:entry(
-          { left = 1, right = 1 },
+          1,
           vx.any {
             vx.number.whole,
             vx.table.of_all { left = vx.number.whole, right = vx.number.whole },
@@ -49,7 +49,7 @@ M.schema = Schema(function(s)
           end
         ),
         vertical = s:entry(
-          { top = 1, bottom = 0 },
+          1,
           vx.any { vx.number.whole, vx.table.of_all { top = vx.number.whole, bottom = vx.number.whole } },
           function(v)
             if type(v) == 'number' then
@@ -60,7 +60,7 @@ M.schema = Schema(function(s)
         ),
       },
       padding = s:entry(
-        { left = 1, right = 1 },
+        1,
         vx.any {
           vx.number.whole,
           vx.table.of_all { left = vx.number.whole, right = vx.number.whole },
