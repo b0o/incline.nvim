@@ -190,7 +190,7 @@ function Winline:render(opts)
     focused = self.focused,
   }
 
-  if not render_result then
+  if not render_result or render_result == '' then
     self:hide(HIDE_TEMP)
     return
   end
@@ -208,6 +208,11 @@ function Winline:render(opts)
   end
 
   local content = M.parse_render_result(render_result, offset)
+
+  if content.text == '' then
+    self:hide(HIDE_TEMP)
+    return
+  end
 
   if config.window.padding.left > 0 then
     local pad = string.rep(config.window.padding_char, config.window.padding.left)
