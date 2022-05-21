@@ -235,7 +235,6 @@ function Winline:render(opts)
 
   self.content = content
 
-  self:win { refresh = opts.refresh or content_text_len_changed }
   local buf = self:buf()
 
   if content_text_changed then
@@ -247,6 +246,8 @@ function Winline:render(opts)
       highlight.buf_add_highlight(buf, hl.group, 0, unpack(hl.range))
     end
   end
+
+  self:win { refresh = opts.refresh or content_text_len_changed }
 end
 
 function Winline:hide(mode)

@@ -56,7 +56,15 @@ M.update = Debounce(function(opts)
   end
 
   if changes.layout or changes.windows or changes.focus or changes.render then
-    state.tabpages[state.current_tab]:update(changes)
+    local ok, res = pcall(function()
+      state.tabpages[state.current_tab]:update(changes)
+    end)
+    if not ok and string.match(res, 'E523: Not allowed here$') then
+      vim.schedule(function()
+        M.update { refresh = true }
+      end)
+      return
+    end
   end
   state.events = {}
 end)
