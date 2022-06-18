@@ -694,7 +694,7 @@ replace~
 >
     require'incline.config'.replace
 <
-                                                     *incline-transform-replace*
+                                                     *incline-transform-extend*
 extend~
   Extends the default value of the option. Only valid for options with default
   values that are list-like or dict-like tables.
