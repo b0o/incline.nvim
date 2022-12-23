@@ -1,19 +1,12 @@
 # incline.nvim [![Version v0.0.3](https://img.shields.io/github/v/tag/b0o/incline.nvim?style=flat&color=yellow&label=version&sort=semver)](https://github.com/b0o/incline.nvim/releases) [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/actions/workflow/status/b0o/incline.nvim/test.yaml?branch=main&label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
 
-Lightweight floating statuslines, intended for use with Neovim's new global statusline (`set laststatus=3`).
-
-#### This plugin is still early in development &mdash; Please expect frequent breaking changes!
-
-Incline is still sparse on features, but it should now be stable enough for basic usage. New features are being added regularly.
-
-Once `v0.1.0` is reached, breaking changes will be limited to major releases. Until then, breaking changes may occur on patch-level versions.
-I recommend pinning the version in your plugin manager so that you're not surprised by a breaking change at an inconvenient time.
+Lightweight floating statuslines, best used with Neovim's global statusline (`set laststatus=3`).
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
-## Installation
+View more screenshots and share your own in the [showcase](https://github.com/b0o/incline.nvim/discussions/categories/showcase).
 
-**Note:** Incline requires Neovim v0.7 or [Neovim nightly](https://github.com/neovim/neovim/releases/tag/nightly).
+## Installation
 
 [Packer](https://github.com/wbthomason/packer.nvim):
 
