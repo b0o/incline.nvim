@@ -4,7 +4,7 @@ Lightweight floating statuslines, best used with Neovim's global statusline (`se
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
-View more screenshots and share your own in the [showcase](https://github.com/b0o/incline.nvim/discussions/categories/showcase).
+See more screenshots and share your own in the [showcase](https://github.com/b0o/incline.nvim/discussions/categories/showcase).
 
 ## Installation
 
