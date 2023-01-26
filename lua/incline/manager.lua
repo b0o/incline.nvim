@@ -112,6 +112,7 @@ M.setup = function()
     'WinEnter',
     'WinLeave',
     'WinScrolled', -- WinScrolled is used to detect window resizes
+    'VimResized', -- VimResized detects changes in the overall terminal size
     'TabEnter',
     'TabNewEntered',
     'BufWinEnter',
