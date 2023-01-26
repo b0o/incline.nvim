@@ -822,7 +822,7 @@ window.options.winhighlight~
 ==============================================================================
 5. License                                                     *incline-license*
 >
-  © 2022 Maddison Hellstrom and contributors
+  © 2022-2023 Maddison Hellstrom and contributors
   Released under the MIT license.
 <
  vim:tw=78:ts=8:ft=help:norl:
