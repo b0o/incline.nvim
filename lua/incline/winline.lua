@@ -176,9 +176,20 @@ function Winline:render(opts)
   if self.hidden == HIDE_PERSIST or not self:is_alive() then
     return
   end
-  if
-    (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
-    and self:get_win_geom_row() == a.nvim_win_call(self.target_win, vim.fn.winline)
+
+  local row = self:get_win_geom_row()
+
+  -- get_win_geom_row starts at 0 when there is no tabline while vim.fn.winline starts at 1
+  local tabline_hidden = vim.g.showtabline == 0 or (
+      (vim.g.showtabline == 1 or vim.g.showtabline == nil) and vim.fn.tabpagenr("$") == 1)
+
+  if tabline_hidden then
+    row = row + 1
+  end
+
+  local window_line = a.nvim_win_call(self.target_win, vim.fn.winline)
+  if (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
+      and row == window_line
   then
     self:hide(HIDE_TEMP)
     return
@@ -230,8 +241,8 @@ function Winline:render(opts)
   local content_text_changed = prev_content_len ~= content.text
   local content_text_len_changed = not self.content or not self.content.text or #self.content.text ~= #content.text
   local content_hls_changed = not self.content
-    or not self.content.hls
-    or not vim.deep_equal(self.content.hls, content.hls)
+      or not self.content.hls
+      or not vim.deep_equal(self.content.hls, content.hls)
 
   self.content = content
 
