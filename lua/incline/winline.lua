@@ -69,9 +69,13 @@ function Winline:get_win_geom_row()
     -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
     -- statusline if laststatus is not 3
     if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] <= 1) then
-      return 1
+      if config.window.overlap.tabline then
+        return -1
+      else
+        return config.window.overlap.winbar and 0 or 1
+      end
     end
-    return cw.margin.vertical.top
+    return cw.margin.vertical.top - 1
   elseif placement.vertical == 'bottom' then
     return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
   end
@@ -113,27 +117,26 @@ end
 
 function Winline:get_win_geom()
   local win_width = a.nvim_win_get_width(self.target_win)
+  local win_pos = a.nvim_win_get_position(self.target_win)
   local geom = {}
   geom.height = 1
   geom.width = self:get_win_geom_width(win_width)
-  geom.row = self:get_win_geom_row()
-  geom.col = self:get_win_geom_col(win_width, geom.width)
+  geom.row = win_pos[1] + self:get_win_geom_row()
+  geom.col = win_pos[2] + self:get_win_geom_col(win_width, geom.width)
   return geom
 end
 
 function Winline:get_win_config()
   local geom = self:get_win_geom()
   return {
-    win = self.target_win,
     zindex = config.window.zindex,
     width = geom.width,
     height = geom.height,
     row = geom.row,
     col = geom.col,
-    relative = 'win',
+    relative = 'editor',
     style = 'minimal',
     focusable = false,
-    anchor = 'SW',
   }
 end
 
