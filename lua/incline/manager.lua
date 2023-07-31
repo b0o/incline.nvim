@@ -22,7 +22,7 @@ M.update = Debounce(function(opts)
   local events = state.events
   local changes = {}
 
-  if not state.current_tab or events.TabEnter or events.TabNewEntered then
+  if not state.current_tab or events.TabEnter or events.TabNewEntered or events.FocusLost or events.FocusGained then
     state.current_tab = a.nvim_get_current_tabpage()
     opts.refresh = true
   end
@@ -123,6 +123,8 @@ M.setup = function()
     'CursorMovedI',
     'FileWritePost',
     'BufWritePost',
+    'FocusLost',
+    'FocusGained',
   }
   util.autocmd(events, {
     callback = function(e)
