@@ -1,4 +1,4 @@
----- Mulberry v0.0.1
+---- Mulberry v0.0.3
 --
 -- https://github.com/b0o/mulberry
 --
@@ -6,7 +6,7 @@
 -- It's still alpha software. Don't rely on it, it's not fully tested and
 -- surely has bugs. You've been warned.
 --
--- Copyright 2021-2022 Maddison Hellstrom
+-- Copyright 2021-2023 Maddison Hellstrom
 -- Released under the MIT License
 
 local operators = {}
@@ -125,15 +125,21 @@ operators.An = operators.A
 
 -- A table that only has integer keys
 -- The empty table is a ListLike
-operators.A.ListLike = function(actual)
-  return vim.tbl_islist(actual)
-end
+operators.A.ListLike = {
+  operators.A.Table,
+  function(actual)
+    return vim.tbl_islist(actual)
+  end,
+}
 
 -- A table that only has kv pairs
 -- The empty table is not DictLike
-operators.A.DictLike = function(actual)
-  return not runMatcher(operators.A.ListLike, actual)
-end
+operators.A.DictLike = {
+  operators.A.Table,
+  function(actual)
+    return not runMatcher(operators.A.ListLike, actual)
+  end,
+}
 
 operators.An.Int = {
   operators.A.Number,
@@ -418,9 +424,22 @@ end
 
 ---- Tables and Strings
 
+local function list_contains(t, value)
+  if vim.list_contains then
+    return vim.list_contains(t, value)
+  end
+  -- for nvim < v0.10
+  for _, v in ipairs(t) do
+    if v == value then
+      return true
+    end
+  end
+  return false
+end
+
 matchers.In = function(actual, expected)
   if type(expected) == 'table' then
-    return expected[actual] ~= nil or vim.tbl_contains(expected, actual)
+    return expected[actual] ~= nil or list_contains(expected, actual)
   end
   if type(expected) == 'string' or type(expected) == 'userdata' then
     return runMatcher(matchers.Match, expected, actual)
