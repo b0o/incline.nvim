@@ -1,0 +1,20 @@
+---
+base: lua52
+globals:
+  vim:
+    any: true
+  Describe:
+    args:
+      - type: string
+      - type: function
+  It:
+    args:
+      - type: string
+      - type: function
+  Expect:
+    args:
+      - type: ...
+    returns:
+      - type: table
+  Which:
+    any: true
