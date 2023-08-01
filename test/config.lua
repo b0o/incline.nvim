@@ -209,19 +209,19 @@ Describe('the incline.config module', function()
     Describe('the default() method', function()
       It('should return a table matching the schema', function()
         local default = c.schema:default()
-        Expect(default).To.Be.A.DictLike()
+        Expect(default).To.Be.A.Table()
         Expect(default).To.HaveFieldPaths {
           { 'render', Which.Is.A.Function },
-          { 'debounce_threshold', Which.Is.A.DictLike },
-          { 'window', Which.Is.A.DictLike },
-          { 'window.placement', Which.Is.A.DictLike },
+          { 'debounce_threshold', Which.Is.A.Table },
+          { 'window', Which.Is.A.Table },
+          { 'window.placement', Which.Is.A.Table },
           { 'window.placement.vertical' },
           { 'window.placement.horizontal' },
           { 'window.width' },
-          { 'window.margin', Which.Is.A.DictLike },
-          { 'window.padding', Which.Is.A.DictLike },
+          { 'window.margin', Which.Is.A.Table },
+          { 'window.padding', Which.Is.A.Table },
           { 'window.padding_char', Which.Is.A.String },
-          { 'ignore', Which.Is.A.DictLike },
+          { 'ignore', Which.Is.A.Table },
           { 'ignore.unlisted_buffers', Which.Is.A.Boolean },
           { 'ignore.floating_wins', Which.Is.A.Boolean },
           { 'ignore.filetypes', Which.Is.A.ListLike },
@@ -234,19 +234,19 @@ Describe('the incline.config module', function()
     Describe('the parse() method', function()
       It('should return a table matching the schema when passed a value', function()
         local parsed = c.schema:parse { window = { placement = { vertical = 'bottom' } } }
-        Expect(parsed).To.Be.A.DictLike()
+        Expect(parsed).To.Be.A.Table()
         Expect(parsed).To.HaveFieldPaths {
           { 'render', Which.Is.A.Function },
-          { 'debounce_threshold', Which.Is.A.DictLike },
-          { 'window', Which.Is.A.DictLike },
-          { 'window.placement', Which.Is.A.DictLike },
+          { 'debounce_threshold', Which.Is.A.Table },
+          { 'window', Which.Is.A.Table },
+          { 'window.placement', Which.Is.A.Table },
           { 'window.placement.vertical' },
           { 'window.placement.horizontal' },
           { 'window.width' },
-          { 'window.margin', Which.Is.A.DictLike },
-          { 'window.padding', Which.Is.A.DictLike },
+          { 'window.margin', Which.Is.A.Table },
+          { 'window.padding', Which.Is.A.Table },
           { 'window.padding_char', Which.Is.A.String },
-          { 'ignore', Which.Is.A.DictLike },
+          { 'ignore', Which.Is.A.Table },
           { 'ignore.unlisted_buffers', Which.Is.A.Boolean },
           { 'ignore.floating_wins', Which.Is.A.Boolean },
           { 'ignore.filetypes', Which.Is.A.ListLike },
