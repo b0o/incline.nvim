@@ -10,7 +10,7 @@ on:
       - main
       - develop
 jobs:
-  generate:
+  docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
