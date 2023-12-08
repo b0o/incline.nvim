@@ -184,11 +184,15 @@ function Winline:render(opts)
     return
   end
 
-  local render_result = config.render {
+  local ok, render_result = pcall(config.render, {
     buf = a.nvim_win_get_buf(self.target_win),
     win = self.target_win,
     focused = self.focused,
-  }
+  })
+  if not ok then
+    vim.notify_once('Incline.nvim: ' .. render_result, vim.log.levels.ERROR)
+    return
+  end
 
   if not render_result or render_result == '' then
     self:hide(HIDE_TEMP)
