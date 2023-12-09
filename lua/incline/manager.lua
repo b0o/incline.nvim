@@ -125,6 +125,7 @@ M.setup = function()
     'BufWritePost',
     'FocusLost',
     'FocusGained',
+    -- TODO: Support user-configurable events
   }
   util.autocmd(events, {
     callback = function(e)
