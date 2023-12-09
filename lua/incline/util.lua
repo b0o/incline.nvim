@@ -20,11 +20,11 @@ end
 M.is_ignored_buf = function(bufnr)
   bufnr = bufnr or 0
   local ignore = config.ignore
-  if ignore.unlisted_buffers and not a.nvim_buf_get_option(bufnr, 'buflisted') then
+  if ignore.unlisted_buffers and not a.nvim_get_option_value('buflisted', { buf = bufnr }) then
     return true
   end
   if ignore.buftypes then
-    local buftype = a.nvim_buf_get_option(bufnr, 'buftype')
+    local buftype = a.nvim_get_option_value('buftype', { buf = bufnr })
     if ignore.buftypes == 'special' and buftype ~= '' then
       return true
     elseif type(ignore.buftypes) == 'table' then
@@ -38,7 +38,7 @@ M.is_ignored_buf = function(bufnr)
     end
   end
   if ignore.filetypes then
-    local filetype = a.nvim_buf_get_option(bufnr, 'filetype')
+    local filetype = a.nvim_get_option_value('filetype', { buf = bufnr })
     if M.is_ignored_filetype(filetype) then
       return true
     end
