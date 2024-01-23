@@ -190,7 +190,7 @@ function Winline:render(opts)
     focused = self.focused,
   })
   if not ok then
-    vim.notify_once('Incline.nvim: ' .. render_result, vim.log.levels.ERROR)
+    vim.notify_once('[Incline.nvim] render error: ' .. render_result, vim.log.levels.ERROR)
     return
   end
 
