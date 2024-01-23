@@ -86,7 +86,7 @@ M.win_get_winline = function(win)
   return tab:get_winline(win)
 end
 
-M.destroy = function()
+local function destroy()
   if not state.initialized then
     return
   end
@@ -98,6 +98,10 @@ M.destroy = function()
   state.tabpages = {}
   state.events = {}
   state.initialized = false
+end
+
+M.destroy = function()
+  vim.schedule(destroy)
 end
 
 M.setup = function()
