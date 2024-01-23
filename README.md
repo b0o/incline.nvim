@@ -8,6 +8,17 @@ See more screenshots and share your own in the [showcase](https://github.com/b0o
 
 ## Installation
 
+[Lazy.nvim](https://github.com/folke/lazy.nvim):
+
+```lua
+{
+  'b0o/incline.nvim',
+  opts = {},
+  -- Optional: Lazy load Incline
+  event = 'VeryLazy',
+},
+```
+
 [Packer](https://github.com/wbthomason/packer.nvim):
 
 ```lua
