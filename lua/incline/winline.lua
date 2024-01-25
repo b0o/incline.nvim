@@ -297,11 +297,11 @@ function Winline:blur()
 end
 
 function Winline:destroy()
-  if self._buf and a.nvim_buf_is_valid(self._buf) then
-    a.nvim_buf_delete(self._buf, { unload = false })
-  end
   if self._win and a.nvim_win_is_valid(self._win) then
     a.nvim_win_close(self._win, false)
+  end
+  if self._buf and a.nvim_buf_is_valid(self._buf) then
+    a.nvim_buf_delete(self._buf, { unload = false })
   end
 end
 
