@@ -33,7 +33,7 @@ M.schema = Schema(function(s)
       overlap = {
         winbar = s:entry(false, vx.bool),
         tabline = s:entry(false, vx.bool),
-        borders = s:entry(false, vx.bool),
+        borders = s:entry(true, vx.bool),
       },
       placement = {
         vertical = s:entry('top', vx.any { 'top', 'bottom' }),
