@@ -93,6 +93,7 @@ M.destroy = function()
   if not state.initialized then
     return
   end
+  M.update:reset()
   util.clear_augroup()
   for _, tabpage in ipairs(state.tabpages) do
     tabpage:destroy()
