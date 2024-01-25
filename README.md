@@ -70,6 +70,7 @@ require('incline').setup {
   render = "basic",
   window = {
     overlap = {
+      statusline = false,
       winbar = false,
       tabline = false,
       borders = true,
