@@ -18,6 +18,9 @@ local state = M.state
 
 -- TODO: Certain events like CursorHold/CursorMoved should only re-render the focused winline
 M.update = Debounce(function(opts)
+  if not state.initialized then
+    return
+  end
   opts = opts or {}
   local events = state.events
   local changes = {}
@@ -86,7 +89,7 @@ M.win_get_winline = function(win)
   return tab:get_winline(win)
 end
 
-local function destroy()
+M.destroy = function()
   if not state.initialized then
     return
   end
@@ -98,10 +101,6 @@ local function destroy()
   state.tabpages = {}
   state.events = {}
   state.initialized = false
-end
-
-M.destroy = function()
-  vim.schedule(destroy)
 end
 
 M.setup = function()
