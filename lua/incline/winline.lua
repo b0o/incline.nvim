@@ -68,13 +68,21 @@ function Winline:get_win_geom_row()
   if placement.vertical == 'top' then
     -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
     -- statusline if laststatus is not 3
-    if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] <= 1) then
-      if config.window.overlap.tabline then
-        return -1
+    if vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] <= 1 then
+      if cw.margin.vertical.top == 0 then
+        if config.window.overlap.tabline then
+          return cw.margin.vertical.top - 1
+          -- only overlap winbar if it exists and is configured to overlap
+        elseif config.window.overlap.winbar or vim.wo[self.target_win].winbar == '' then
+          return cw.margin.vertical.top
+        else
+          return cw.margin.vertical.top + 1
+        end
+      -- ensure we skip the winbar if we are overlapping it
       elseif config.window.overlap.winbar or vim.wo[self.target_win].winbar == '' then
-        return 0
+        return cw.margin.vertical.top - 1
       else
-        return 1
+        return cw.margin.vertical.top
       end
     end
     return cw.margin.vertical.top - 1
