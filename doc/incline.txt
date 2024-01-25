@@ -262,7 +262,7 @@ window.margin.vertical~
   - If a table, both `top` and `bottom` fields must be present.
 
   If `window.placement.vertical` is `top` and 'laststatus' is `3`, you can set
-  `window.margin.vertical.top` to `0` to allow Incline statuslines to overlap
+  `window.overlap.borders` to `true` to allow Incline statuslines to overlap
   window borders.
 
                                        *incline-config-window.margin.horizontal*
@@ -275,6 +275,17 @@ window.margin.horizontal~
   window.
   - If an `int`, the value is used for both the left and right margin.
   - If a table, both `left` and `right` fields must be present.
+
+                                       *incline-config-window.overlap*
+window.overlap~
+  Type:    `table`
+  Valid:   `table { tabline: bool, winbar: bool, borders: bool }`
+  Default: `{ tabline: false, winbar: false, borders: true }`
+
+  Controls which bars and lines the inline windows are allowed to overlap.
+  - `tabline` takes priority over `winbar` for windows at the top of the tabpage,
+    if both are set.
+  - `borders` takes priority for windows below the top of the tabpage.
 
                                      *incline-config-window.winhighlight*
 window.winhighlight~
