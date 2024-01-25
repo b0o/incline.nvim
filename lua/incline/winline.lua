@@ -96,7 +96,26 @@ function Winline:get_win_geom_row()
       return cw.margin.vertical.top
     end
   elseif placement.vertical == 'bottom' then
-    return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    if
+      vim.o.laststatus ~= 3
+      or (
+        (
+          a.nvim_win_get_position(self.target_win)[1]
+          + a.nvim_win_get_height(self.target_win)
+          + 1 -- for global status
+        ) == vim.o.lines
+      )
+    then
+      if config.window.overlap.statusline then
+        return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+      else
+        return a.nvim_win_get_height(self.target_win) - (cw.margin.vertical.bottom + 1)
+      end
+    elseif vim.o.laststatus == 3 and config.window.overlap.borders then
+      return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    end
+
+    return a.nvim_win_get_height(self.target_win) - (cw.margin.vertical.bottom + 1)
   end
   assert(false, 'invalid value for placement.vertical: ' .. tostring(placement.vertical))
 end

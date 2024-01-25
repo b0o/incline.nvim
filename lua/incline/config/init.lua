@@ -34,6 +34,7 @@ M.schema = Schema(function(s)
         winbar = s:entry(false, vx.bool),
         tabline = s:entry(false, vx.bool),
         borders = s:entry(true, vx.bool),
+        statusline = s:entry(false, vx.bool),
       },
       placement = {
         vertical = s:entry('top', vx.any { 'top', 'bottom' }),
