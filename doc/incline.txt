@@ -15,6 +15,7 @@ CONTENTS                                                      *incline-contents*
     2.3. Default Configuration .................. |incline-default-config|
     2.4. Configuration Field Transforms ......... |incline-config-transforms|
     2.5. Presets ................................ |incline-presets|
+    2.6. Helpers ................................ |incline-helpers|
   3. Changelog .................................. |incline-changelog|
   4. Breaking Changes ........................... |incline-breaking-changes|
   5. License .................................... |incline-license|
@@ -755,6 +756,57 @@ basic~
   Mimics vim's default statusline format.
   Includes the filename as well as a `[+]` if the buffer is modified.
   Looks like: `filename.txt [+]`
+
+------------------------------------------------------------------------------
+2.6 Helpers                                                    *incline-helpers*
+
+Incline includes a few helper functions that you can use in your
+|incline-config.render| function. To use them, import them from the
+`incline.helpers` module.
+
+Color Helpers
+
+`incline.helpers.hex_to_rgb(hex)`                   *incline.helpers.hex_to_rgb()*
+  Converts a hex color string to a table of RGB values in the range [0, 1].
+  Leading `#` is optional.
+
+  Example: >
+    incline.helpers.hex_to_rgb('#ff00cc') -- { 0.8, 0.0, 1.0 }
+
+
+`incline.helpers.rgb_to_hex(rgb)`                   *incline.helpers.rgb_to_hex()*
+  Converts a table of RGB values in the range [0, 1] to a hex color string.
+
+  Example: >
+    incline.helpers.rgb_to_hex({ 0.8, 0.0, 1.0 }) -- '#ff00cc'
+
+
+`incline.helpers.relative_luminance(color)` *incline.helpers.relative_luminance()*
+  Calculates the relative luminance of a color. Color can be a hex string or a
+  table of RGB values in the range [0, 1], like those returned by
+  |incline.helpers.hex_to_rgb()|.
+
+  Example: >
+    incline.helpers.relative_luminance('#ff00cc') -- 0.25619...
+
+
+`incline.helpers.contrast_color(color, [opts])` *incline.helpers.contrast_color()*
+  Returns a color that contrasts with the given color. Color can be a hex
+  string or a table of RGB values in the range [0, 1], like those returned by
+  |incline.helpers.hex_to_rgb()|.
+
+  Opts can be a table containing the following fields:
+    Field     Type     Description
+    dark      `Color`    The dark color to use when the input color is light.
+                       Default: `'#000000'`
+    light     `Color`    The light color to use when the input color is dark.
+                       Default: `'#ffffff'`
+    `threshold` `number`   The threshold for determining whether to return a
+                       light or dark color. Must be in the range [0, 1].
+                       Default: 0.179, as per the W3C recommendation.
+
+  Example: >
+    incline.helpers.contrast_color('#ff00cc') -- '#00ff33'
 
 ==============================================================================
 3. Breaking Changes                                   *incline-breaking-changes*
