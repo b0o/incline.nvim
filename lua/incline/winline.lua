@@ -220,7 +220,8 @@ function Winline:render(opts)
   if
     (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
     and (
-        self:get_win_geom_row() + ((config.window.overlap.winbar or vim.wo[self.target_win].winbar == '') and 1 or 0)
+        self:get_win_geom_row()
+        + ((config.window.overlap.winbar == false or vim.wo[self.target_win].winbar == '') and 1 or 0)
       )
       == a.nvim_win_call(self.target_win, vim.fn.winline)
   then
