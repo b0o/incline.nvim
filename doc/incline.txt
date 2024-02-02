@@ -279,7 +279,7 @@ window.margin.horizontal~
 window.overlap~
   Type:    `table`
   Valid:   `table { tabline: bool, winbar: bool, borders: bool }`
-  Default: `{ tabline: false, winbar: false, borders: true, statusline: false }`
+  Default: `{ tabline = false, winbar = false, borders = true, statusline = false }`
 
   Controls which bars and lines the inline windows are allowed to overlap.
   - `tabline` takes priority over `winbar` for windows at the top of the tabpage,
