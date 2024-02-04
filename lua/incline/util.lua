@@ -133,7 +133,13 @@ M.win_set_local_options = function(win, opts)
       else
         arg = opt .. '=' .. val
       end
-      vim.cmd('setlocal ' .. arg)
+      local ok, res = pcall(vim.cmd.setlocal, arg)
+      if not ok then
+        vim.notify_once(
+          string.format("Incline.nvim: Failed to set window option '%s' to '%s': %s", opt, val, res),
+          vim.log.levels.ERROR
+        )
+      end
     end
   end)
 end
