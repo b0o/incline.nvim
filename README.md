@@ -12,6 +12,8 @@ Why use Incline instead of Neovim's built-in winbar? Incline:
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
+As opposed to other statusline plugins, Incline's appearance is not pre-configured. You're encouraged to configure the content and appearance of your Incline statusline yourself.
+
 ## Example Configurations
 
 Incline is highly flexible, but by default it looks very plain. The core of an Incline configuration is the render function, which is a Lua function that Incline runs for each visible window. You can think of the render function like a React component - it is passed some props, and returns a tree-like data structure that describes the content and visual style of the result. Here's an example of a config with a simple render function that displays a colored filetype icon and filename:
