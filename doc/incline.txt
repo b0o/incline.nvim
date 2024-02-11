@@ -129,7 +129,7 @@ render~
   statusline will be temporalily hidden. It will be shown again as soon as
   `render` returns a non-nil result.
 
-  Expressed in psuedocode, a loose specification of the `config.render` option:
+  Expressed in pseudocode, a loose specification of the `config.render` option:
 >
     type render_props = {
       buf: number,
@@ -704,7 +704,7 @@ extend~
 <
                                                     *incline-transform-override*
 Overriding default transforms~
-It is possible to override the default transform by explicity specifying the
+It is possible to override the default transform by explicitly specifying the
 one you want to use. To do this, use one of the transform functions exported
 by `incline.config`.
 
