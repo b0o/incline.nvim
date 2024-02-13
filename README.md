@@ -8,7 +8,7 @@ Why use Incline instead of Neovim's built-in winbar? Incline:
 - Is highly configurable and themeable using Lua.
 - Can be shown/hidden dynamically based on cursor position, focus, buffer type, or any other condition.
 - Can be positioned at the top or bottom, left or right side of each window.
-- Can even be used in combination with winbar, if you really want!
+- Can even be used in combination with the winbar, if you really want!
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
