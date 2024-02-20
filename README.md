@@ -1,24 +1,45 @@
-# incline.nvim [![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/actions/workflow/status/b0o/incline.nvim/test.yaml?branch=main&label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
+# 🎈 incline.nvim
 
-Incline is a plugin for creating lightweight floating statuslines. It's best used with Neovim's global statusline (`set laststatus=3`). 
+[![License: MIT](https://img.shields.io/github/license/b0o/incline.nvim?style=flat&color=green)](https://mit-license.org) [![Test Status](https://img.shields.io/github/actions/workflow/status/b0o/incline.nvim/test.yaml?branch=main&label=tests)](https://github.com/b0o/incline.nvim/actions/workflows/test.yaml)
+
+Incline is a plugin for creating lightweight floating statuslines. It works great with Neovim's global statusline (`:set laststatus=3`).
 
 Why use Incline instead of Neovim's built-in winbar? Incline:
 
-- Takes up only the amount of space it needs, leaving the rest of the line available for your code.
+- Only takes up the amount of space it needs, leaving the rest of the line available for your code.
 - Is highly configurable and themeable using Lua.
 - Can be shown/hidden dynamically based on cursor position, focus, buffer type, or any other condition.
 - Can be positioned at the top or bottom, left or right side of each window.
-- Can even be used in combination with the winbar, if you really want!
 
 ![Screenshot of Incline.nvim running in Neovim](https://user-images.githubusercontent.com/21299126/167235114-d562ea45-155c-4d82-aaf1-95abb56398b7.png)
 
-As opposed to other statusline plugins, Incline's appearance is not pre-configured. You're encouraged to configure the content and appearance of your Incline statusline yourself.
+## Configuration
 
-## Example Configurations
+The render function is the most important part of an Incline configuration. As the name suggests, it's called for each window in order to render the Incline statusline. You can think of it like a React component, in that it's passed a table of props and returns a tree-like data structure describing the the content and appearance of the statusline, akin to JSX or HTML. For example:
 
-Incline is highly flexible, but by default it looks very plain. The core of an Incline configuration is the render function, which is a Lua function that Incline runs for each visible window. You can think of the render function like a React component - it is passed some props, and returns a tree-like data structure that describes the content and visual style of the result. Here's an example of a config with a simple render function that displays a colored filetype icon and filename:
+```lua
+function(props)
+  local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
+  local modified = vim.bo[props.buf].modified
+  return {
+    filename,
+    modified and { '*', guifg = '#888888', gui = 'bold' } or '',
+    guibg = '#111111',
+    guifg = '#eeeeee',
+  }
+end
+```
+
+The returned value can be a string or a table which can include strings, highlight properties like foreground/background color, or even nested tables. Nested tables can contain the same sorts of things, including more nested tables. For more on the render function, see [`:help incline-render`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt#L92).
+
+Below are some examples to get you started.
+
+### Icon + Filename
 
 ![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/f8c2c7d5-e14f-465d-a308-c5128c8ed4eb)
+
+Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons).
+
 <details>
   <summary>View Code</summary>
 
@@ -46,13 +67,11 @@ require('incline').setup {
 ```
 </details>
 
-For more details on the render function, see [`:help incline-render`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt#L92). Below, you'll find some more example configurations for inspiration.
-
 ### Icon + Filename + Navic
 
 ![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/3fc2560a-927e-4bc2-88cc-0fb68561a2ca)
 
-Requires [nvim-navic](https://github.com/SmiteshP/nvim-navic).
+Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) and [nvim-navic](https://github.com/SmiteshP/nvim-navic).
 
 <details>
   <summary>View Code</summary>
@@ -94,6 +113,8 @@ require('incline').setup {
 ### Diagnostics + Git Diff + Filename 
 
 ![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/db581ae7-66b9-468a-9a8c-511539fe1cb0)
+
+Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons).
 
 Credit: [@lkhphuc](https://github.com/lkhphuc) ([Discussion](https://github.com/b0o/incline.nvim/discussions/32))
 
