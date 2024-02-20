@@ -18,7 +18,7 @@ As opposed to other statusline plugins, Incline's appearance is not pre-configur
 
 Incline is highly flexible, but by default it looks very plain. The core of an Incline configuration is the render function, which is a Lua function that Incline runs for each visible window. You can think of the render function like a React component - it is passed some props, and returns a tree-like data structure that describes the content and visual style of the result. Here's an example of a config with a simple render function that displays a colored filetype icon and filename:
 
-![2024-01-26_20-07-50_region](https://github.com/b0o/incline.nvim/assets/21299126/f8c2c7d5-e14f-465d-a308-c5128c8ed4eb)
+![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/f8c2c7d5-e14f-465d-a308-c5128c8ed4eb)
 <details>
   <summary>View Code</summary>
 
@@ -50,7 +50,7 @@ For more details on the render function, see [`:help incline-render`](https://gi
 
 ### Icon + Filename + Navic
 
-![2024-02-19_16-25-11_region](https://github.com/b0o/incline.nvim/assets/21299126/3fc2560a-927e-4bc2-88cc-0fb68561a2ca)
+![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/3fc2560a-927e-4bc2-88cc-0fb68561a2ca)
 
 Requires [nvim-navic](https://github.com/SmiteshP/nvim-navic).
 
@@ -93,7 +93,7 @@ require('incline').setup {
 
 ### Diagnostics + Git Diff + Filename 
 
-![Screenshot](https://user-images.githubusercontent.com/12573521/200856241-d936bd21-bdb3-4348-9108-94fc72d4f2de.png)
+![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/db581ae7-66b9-468a-9a8c-511539fe1cb0)
 
 Credit: [@lkhphuc](https://github.com/lkhphuc) ([Discussion](https://github.com/b0o/incline.nvim/discussions/32))
 
