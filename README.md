@@ -18,12 +18,14 @@ Why use Incline instead of Neovim's built-in winbar? Incline:
 The render function is the most important part of an Incline configuration. As the name suggests, it's called for each window in order to render its statusline. You can think of it like a React component: it's passed a table of props and returns a tree-like data structure describing the content and appearance of the statusline. For example:
 
 ```lua
-function(props)
+render = function(props)
   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
   local modified = vim.bo[props.buf].modified
   return {
+    ' ',
     filename,
-    modified and { '*', guifg = '#888888', gui = 'bold' } or '',
+    modified and { ' *', guifg = '#888888', gui = 'bold' } or '',
+    ' ',
     guibg = '#111111',
     guifg = '#eeeeee',
   }
