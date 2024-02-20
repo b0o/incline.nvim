@@ -97,7 +97,7 @@ require('incline').setup {
     if props.focused then
       for _, item in ipairs(navic.get_data(props.buf) or {}) do
         table.insert(res, {
-          { ' > ', group = 'NavicSeparator' } or '',
+          { ' > ', group = 'NavicSeparator' },
           { item.icon, group = 'NavicIcons' .. item.type },
           { item.name, group = 'NavicText' },
         })
