@@ -15,7 +15,7 @@ Why use Incline instead of Neovim's built-in winbar? Incline:
 
 ## Configuration
 
-The render function is the most important part of an Incline configuration. As the name suggests, it's called for each window in order to render the Incline statusline. You can think of it like a React component, in that it's passed a table of props and returns a tree-like data structure describing the the content and appearance of the statusline, akin to JSX or HTML. For example:
+The render function is the most important part of an Incline configuration. As the name suggests, it's called for each window in order to render its statusline. You can think of it like a React component: it's passed a table of props and returns a tree-like data structure describing the content and appearance of the statusline. For example:
 
 ```lua
 function(props)
