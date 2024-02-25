@@ -188,11 +188,11 @@ See more user-contributed configurations and share your own in the [Showcase](ht
 ```lua
 {
   'b0o/incline.nvim',
-  -- Optional: Lazy load Incline
-  event = 'VeryLazy',
   config = function()
     require('incline').setup()
   end,
+  -- Optional: Lazy load Incline
+  event = 'VeryLazy',
 },
 ```
 
