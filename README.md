@@ -188,9 +188,11 @@ See more user-contributed configurations and share your own in the [Showcase](ht
 ```lua
 {
   'b0o/incline.nvim',
-  opts = {},
   -- Optional: Lazy load Incline
   event = 'VeryLazy',
+  config = function()
+    require('incline').setup()
+  end,
 },
 ```
 
@@ -280,36 +282,6 @@ require('incline').setup {
 
 See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt) for full documentation of all configuration options.
 
-## Changelog
-
-```
-29 Apr 2022                                                             v0.0.3
-  Breaking: window.options.winhighlight is deprecated
-  Feat: Add highlight support
-  Feat: Support hiding Incline on the only window in a tabpage
-  Feat: Support hiding Incline on the focused window
-  Feat: Allow tables of highlight args as winhighlight values
-  Feat: Add preset render functions
-  Feat: Add functions to globally enable/disable/toggle Incline
-  Feat: Add config.window.options
-  Feat: Add configuration transforms
-  Tweak: Display notification upon invalid config rather than throwing error
-  Tweak: Allow rising & falling debounce threshold to be configured separately
-  Fix: Destroy child when an existing win becomes ignored
-  Fix: Handle when manager.win_get_tabpage passed nil or 0
-  Fix: check winline _buf and _win for nil
-  Misc: Refactor, fix bugs, and improve stability
-
-14 Apr 2022                                                             v0.0.2
-  Feat: Make position, size, and content configurable
-  Feat: Validate user configuration against schema
-  Docs: Add documentation
-  Tests: Add tests for configuration and schema
-  Misc: Refactor, fix bugs, and improve stability
-
-07 Apr 2022                                                             v0.0.1
-  Initial Release
-```
 
 ## License
 
