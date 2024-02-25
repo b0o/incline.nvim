@@ -47,6 +47,7 @@ Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons).
 
 ```lua
 local helpers = require 'incline.helpers'
+local devicons = require 'nvim-web-devicons'
 require('incline').setup {
   window = {
     padding = 0,
@@ -54,16 +55,15 @@ require('incline').setup {
   },
   render = function(props)
     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
-    local ft_icon, ft_color = require('nvim-web-devicons').get_icon_color(filename)
+    local ft_icon, ft_color = devicons.get_icon_color(filename)
     local modified = vim.bo[props.buf].modified
-    local buffer = {
+    return {
       ft_icon and { ' ', ft_icon, ' ', guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or '',
       ' ',
       { filename, gui = modified and 'bold,italic' or 'bold' },
       ' ',
       guibg = '#44406e',
     }
-    return buffer
   end,
 }
 ```
@@ -81,6 +81,7 @@ Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) and
 ```lua
 local helpers = require 'incline.helpers'
 local navic = require 'nvim-navic'
+local devicons = require 'nvim-web-devicons'
 require('incline').setup {
   window = {
     padding = 0,
@@ -88,7 +89,7 @@ require('incline').setup {
   },
   render = function(props)
     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
-    local ft_icon, ft_color = require('nvim-web-devicons').get_icon_color(filename)
+    local ft_icon, ft_color = devicons.get_icon_color(filename)
     local modified = vim.bo[props.buf].modified
     local res = {
       ft_icon and { ' ', ft_icon, ' ', guibg = ft_color, guifg = helpers.contrast_color(ft_color) } or '',
@@ -112,11 +113,11 @@ require('incline').setup {
 ```
 </details>
 
-### Diagnostics + Git Diff + Filename 
+### Diagnostics + Git Diff + Icon + Filename 
 
 ![Screenshot](https://github.com/b0o/incline.nvim/assets/21299126/db581ae7-66b9-468a-9a8c-511539fe1cb0)
 
-Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons).
+Requires [nvim-web-devicons](https://github.com/nvim-tree/nvim-web-devicons) and [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim).
 
 Credit: [@lkhphuc](https://github.com/lkhphuc) ([Discussion](https://github.com/b0o/incline.nvim/discussions/32))
 
@@ -124,15 +125,14 @@ Credit: [@lkhphuc](https://github.com/lkhphuc) ([Discussion](https://github.com/
   <summary>View Code</summary>
 
 ```lua
+local devicons = require 'nvim-web-devicons'
 require('incline').setup {
   render = function(props)
     local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ':t')
-    local ft_icon, ft_color = require('nvim-web-devicons').get_icon_color(filename)
-    local modified = vim.bo[props.buf].modified and 'bold,italic' or 'bold'
+    local ft_icon, ft_color = devicons.get_icon_color(filename)
 
     local function get_git_diff()
       local icons = { removed = '', changed = '', added = '' }
-      icons['changed'] = icons.modified
       local signs = vim.b[props.buf].gitsigns_status_dict
       local labels = {}
       if signs == nil then
@@ -148,6 +148,7 @@ require('incline').setup {
       end
       return labels
     end
+
     local function get_diagnostic_label()
       local icons = { error = '', warn = '', info = '', hint = '' }
       local label = {}
@@ -168,7 +169,7 @@ require('incline').setup {
       { get_diagnostic_label() },
       { get_git_diff() },
       { (ft_icon or '') .. ' ', guifg = ft_color, guibg = 'none' },
-      { filename .. ' ', gui = modified },
+      { filename .. ' ', gui = vim.bo[props.buf].modified and 'bold,italic' or 'bold' },
       { '┊  ' .. vim.api.nvim_win_get_number(props.win), group = 'DevIconWindows' },
     }
   end,
