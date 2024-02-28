@@ -6,7 +6,7 @@ Incline is a plugin for creating lightweight floating statuslines. It works grea
 
 Why use Incline instead of Neovim's built-in winbar? Incline:
 
-- Only takes up the amount of space it needs, leaving the rest of the line available for your code.
+- Only takes up the amount of space it needs, leaving more room for your code.
 - Is highly configurable and themeable using Lua.
 - Can be shown/hidden dynamically based on cursor position, focus, buffer type, or any other condition.
 - Can be positioned at the top or bottom, left or right side of each window.
