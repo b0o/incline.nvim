@@ -32,7 +32,7 @@ render = function(props)
 end
 ```
 
-The returned value can be a string or a table which can include strings, highlight properties like foreground/background color, or even nested tables. Nested tables can contain the same sorts of things, including more nested tables. For more on the render function, see [`:help incline-render`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt#L92).
+The returned value can be nil, a string, or a table which can include strings, highlight properties like foreground/background color, or even nested tables. Nested tables can contain the same sorts of things, including more nested tables. If the render function returns nil, the statusline will be hidden until the next time the render function returns a non-nil value. For more on the render function, see [`:help incline-render`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.txt#L92).
 
 Below are some examples to get you started.
 
