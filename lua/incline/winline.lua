@@ -73,7 +73,10 @@ function Winline:get_win_geom_row()
     end
     return cw.margin.vertical.top
   elseif placement.vertical == 'bottom' then
-    return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    if cw.margin.vertical.bottom == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] + a.nvim_win_get_height(self.target_win) >= vim.o.lines - vim.o.cmdheight - 1) then
+      return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    end
+    return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom + 1
   end
   assert(false, 'invalid value for placement.vertical: ' .. tostring(placement.vertical))
 end
