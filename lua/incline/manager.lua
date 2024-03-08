@@ -95,7 +95,7 @@ M.destroy = function()
   end
   M.update:reset()
   util.clear_augroup()
-  for _, tabpage in ipairs(state.tabpages) do
+  for _, tabpage in pairs(state.tabpages) do
     tabpage:destroy()
   end
   state.current_tab = nil
