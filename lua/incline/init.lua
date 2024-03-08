@@ -26,16 +26,16 @@ M.toggle = function()
   end
 end
 
-M.setup = function(_config)
-  config.setup(_config)
-  M.enable()
-end
-
 M.refresh = function()
   if not M.is_enabled() then
     return
   end
   manager.update { refresh = true }
+end
+
+M.setup = function(_config)
+  config.setup(_config)
+  M.enable()
 end
 
 return M
