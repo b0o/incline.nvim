@@ -52,6 +52,9 @@ Incline is disabled by default. To enable it, you must call either
   `incline.is_enabled()`                                    *incline.is_enabled()*
     Returns `true` if Incline is enabled, else `false`.
 
+  `incline.refresh()`                                          *incline.refresh()*
+    Forces a re-render of all Incline statuslines on the current tabpage.
+
 ------------------------------------------------------------------------------
 2.2 Configuration                                               *incline-config*
 

@@ -31,4 +31,11 @@ M.setup = function(_config)
   M.enable()
 end
 
+M.refresh = function()
+  if not M.is_enabled() then
+    return
+  end
+  manager.update { refresh = true }
+end
+
 return M
