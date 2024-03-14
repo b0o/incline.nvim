@@ -54,6 +54,7 @@ M.update = Debounce(function(opts)
     or events.CursorMovedI
     or events.FileWritePost
     or events.BufWritePost
+    or events.ModeChanged
   then
     changes.render = true
   end
@@ -129,6 +130,7 @@ M.setup = function()
     'BufWritePost',
     'FocusLost',
     'FocusGained',
+    'ModeChanged',
     -- TODO: Support user-configurable events
   }
   util.autocmd(events, {
