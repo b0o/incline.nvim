@@ -30,6 +30,12 @@ M.schema = Schema(function(s)
     ),
     window = {
       width = s:entry('fit', vx.any { 'fit', 'fill', vx.number.natural, vx.number.percentage }),
+      overlap = {
+        winbar = s:entry(false, vx.bool),
+        tabline = s:entry(false, vx.bool),
+        borders = s:entry(true, vx.bool),
+        statusline = s:entry(false, vx.bool),
+      },
       placement = {
         vertical = s:entry('top', vx.any { 'top', 'bottom' }),
         horizontal = s:entry('right', vx.any { 'left', 'center', 'right' }),

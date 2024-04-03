@@ -68,12 +68,58 @@ function Winline:get_win_geom_row()
   if placement.vertical == 'top' then
     -- if margin-top is 0, avoid overlapping tabline, and avoid overlapping
     -- statusline if laststatus is not 3
-    if cw.margin.vertical.top == 0 and (vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] <= 1) then
-      return 1
+
+    -- TODO(willothy): this can obviously be simplified a lot, there is a good bit of repetition
+    if a.nvim_win_get_position(self.target_win)[1] <= 1 then
+      if cw.margin.vertical.top == 0 then
+        if
+          config.window.overlap.tabline
+          -- don't try to overlap tabline if it doesn't exist
+          and (vim.o.showtabline > 1 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1))
+        then
+          return cw.margin.vertical.top - 1
+          -- only overlap winbar if it exists and is configured to overlap
+        elseif config.window.overlap.winbar or vim.wo[self.target_win].winbar == '' then
+          return cw.margin.vertical.top
+        else
+          return cw.margin.vertical.top + 1
+        end
+      -- ensure we skip the winbar if we are overlapping it
+      elseif config.window.overlap.winbar or vim.wo[self.target_win].winbar == '' then
+        return cw.margin.vertical.top - 1
+      else
+        return cw.margin.vertical.top
+      end
     end
-    return cw.margin.vertical.top
+    -- only overlap border if user has set it
+    if config.window.overlap.borders then
+      return cw.margin.vertical.top - 1
+    elseif config.window.overlap.winbar == false and vim.wo[self.target_win].winbar ~= '' then
+      return cw.margin.vertical.top + 1
+    else
+      return cw.margin.vertical.top
+    end
   elseif placement.vertical == 'bottom' then
-    return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    if
+      vim.o.laststatus ~= 3
+      or (
+        (
+          a.nvim_win_get_position(self.target_win)[1]
+          + a.nvim_win_get_height(self.target_win)
+          + 1 -- for global status
+        ) == vim.o.lines
+      )
+    then
+      if config.window.overlap.statusline then
+        return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+      else
+        return a.nvim_win_get_height(self.target_win) - (cw.margin.vertical.bottom + 1)
+      end
+    elseif vim.o.laststatus == 3 and config.window.overlap.borders then
+      return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
+    end
+
+    return a.nvim_win_get_height(self.target_win) - (cw.margin.vertical.bottom + 1)
   end
   assert(false, 'invalid value for placement.vertical: ' .. tostring(placement.vertical))
 end
@@ -113,27 +159,26 @@ end
 
 function Winline:get_win_geom()
   local win_width = a.nvim_win_get_width(self.target_win)
+  local win_pos = a.nvim_win_get_position(self.target_win)
   local geom = {}
   geom.height = 1
   geom.width = self:get_win_geom_width(win_width)
-  geom.row = self:get_win_geom_row()
-  geom.col = self:get_win_geom_col(win_width, geom.width)
+  geom.row = win_pos[1] + self:get_win_geom_row()
+  geom.col = win_pos[2] + self:get_win_geom_col(win_width, geom.width)
   return geom
 end
 
 function Winline:get_win_config()
   local geom = self:get_win_geom()
   return {
-    win = self.target_win,
     zindex = config.window.zindex,
     width = geom.width,
     height = geom.height,
     row = geom.row,
     col = geom.col,
-    relative = 'win',
+    relative = 'editor',
     style = 'minimal',
     focusable = false,
-    anchor = 'SW',
   }
 end
 
@@ -178,7 +223,8 @@ function Winline:render(opts)
   end
   if
     (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
-    and self:get_win_geom_row() == a.nvim_win_call(self.target_win, vim.fn.winline)
+    and (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
+      == a.nvim_win_call(self.target_win, vim.fn.winline)
   then
     self:hide(HIDE_TEMP)
     return
