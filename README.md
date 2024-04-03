@@ -255,12 +255,6 @@ require('incline').setup {
   },
   render = "basic",
   window = {
-    overlap = {
-      statusline = false,
-      winbar = false,
-      tabline = false,
-      borders = true,
-    },
     margin = {
       horizontal = 1,
       vertical = 1
@@ -268,6 +262,12 @@ require('incline').setup {
     options = {
       signcolumn = "no",
       wrap = false
+    },
+    overlap = {
+      borders = true,
+      statusline = false,
+      tabline = false,
+      winbar = false
     },
     padding = 1,
     padding_char = " ",

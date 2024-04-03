@@ -628,6 +628,12 @@ highlight.groups~
         signcolumn = "no",
         wrap = false
       },
+      overlap = {
+        borders = true,
+        statusline = false,
+        tabline = false,
+        winbar = false
+      },
       padding = 1,
       padding_char = " ",
       placement = {
