@@ -70,7 +70,7 @@ function Winline:get_win_geom_row()
     -- statusline if laststatus is not 3
 
     -- TODO(willothy): this can obviously be simplified a lot, there is a good bit of repetition
-    if vim.o.laststatus ~= 3 or a.nvim_win_get_position(self.target_win)[1] <= 1 then
+    if a.nvim_win_get_position(self.target_win)[1] <= 1 then
       if cw.margin.vertical.top == 0 then
         if
           config.window.overlap.tabline
@@ -223,10 +223,7 @@ function Winline:render(opts)
   end
   if
     (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
-    and (
-        self:get_win_geom_row()
-        + ((config.window.overlap.winbar == false or vim.wo[self.target_win].winbar == '') and 1 or 0)
-      )
+    and (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
       == a.nvim_win_call(self.target_win, vim.fn.winline)
   then
     self:hide(HIDE_TEMP)
