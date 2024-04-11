@@ -589,7 +589,7 @@ highlight.groups~
 
 ------------------------------------------------------------------------------
 2.3 Default Configuration                               *incline-default-config*
->lua
+>
   {
     debounce_threshold = {
       falling = 50,
