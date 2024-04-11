@@ -132,6 +132,7 @@ render~
   statusline will be temporalily hidden. It will be shown again as soon as
   `render` returns a non-nil result.
 
+                                                           *incline-render-spec*
   Expressed in pseudocode, a loose specification of the `config.render` option:
 >
     type render_props = {
@@ -174,7 +175,7 @@ render~
       | render_fn
       | render_preset_name
 <
-  For example: >
+  For example: >lua
     render = function()
       return {
         { "foo", guifg = "blue" },
@@ -318,7 +319,7 @@ window.winhighlight~
   Map values are a highlight group name to use as the override, or a table of
   |highlight-args|.
 
-  For example, `A` and `B` are equivalent: >
+  For example, `A` and `B` are equivalent: >lua
 
     -- A
     incline.setup {
@@ -346,7 +347,7 @@ window.winhighlight.active~
   Type:      `table`
   Valid:     `map[string](string | hl_args)`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
-  Default: >
+  Default: >lua
     {
       Search = 'None',
       EndOfBuffer = 'None',
@@ -369,7 +370,7 @@ window.winhighlight.inactive~
   Type:      `table`
   Valid:     `map[string](string | hl_args)`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
-  Default: >
+  Default: >lua
     {
       Search = 'None',
       EndOfBuffer = 'None',
@@ -423,7 +424,7 @@ window.options~
   Type:      `table`
   Valid:     `map[string]string`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
-  Default: >
+  Default: >lua
     {
       wrap = false,
       signcolumn = false,
@@ -549,7 +550,7 @@ highlight.groups~
   Type:      `table`
   Valid:     `map[string](string | hl_args)`
   Transform: `extend` (|incline-config-transforms| |incline-transform-extend|)
-  Default: >
+  Default: >lua
     {
       InclineNormal = 'NormalFloat',
       InclineNormalNC = 'NormalFloat',
@@ -588,7 +589,7 @@ highlight.groups~
 
 ------------------------------------------------------------------------------
 2.3 Default Configuration                               *incline-default-config*
->
+>lua
   {
     debounce_threshold = {
       falling = 50,
@@ -676,7 +677,7 @@ default value.
 For example, the `window.options` field has a default transform of `extend`.
 This means that user-configured options extend the default options rather than
 replacing them. For example:
->
+>lua
   > -- Before:
   > -- Print out the default value of window.options
   > print(vim.inspect(require'incline.config'.window.options)
@@ -711,14 +712,14 @@ Built-in transforms~
 replace~
   Fully replaces the default value of the configuration option. This is the
   default transform if none is specified in the option's documentation.
->
+>lua
     require'incline.config'.replace
 <
                                                      *incline-transform-extend*
 extend~
   Extends the default value of the option. Only valid for options with default
   values that are list-like or dict-like tables.
->
+>lua
     require'incline.config'.extend
 <
                                                     *incline-transform-override*
@@ -727,17 +728,17 @@ It is possible to override the default transform by explicitly specifying the
 one you want to use. To do this, use one of the transform functions exported
 by `incline.config`.
 
-That is, instead of: >
+That is, instead of: >lua
   local incline = require'incline'`
   incline.setup { window = { options = { winblend = 10 } }`
 <
-You can use: >
+You can use: >lua
   local incline = require'incline'
   local config = require'incline.config'
   incline.setup { window = { options = config.replace { winblend = 10 } }
 <
 Another example, following the example from the previous section:
->
+>lua
   > -- Before:
   > -- Print out the default value of window.options
   > print(vim.inspect(require'incline.config'.window.options)
@@ -789,15 +790,17 @@ Color Helpers
   Converts a hex color string to a table of RGB values in the range [0, 1].
   Leading `#` is optional.
 
-  Example: >
+  Example: >lua
     incline.helpers.hex_to_rgb('#ff00cc') -- { 0.8, 0.0, 1.0 }
+<
 
 
 `incline.helpers.rgb_to_hex(rgb)`                   *incline.helpers.rgb_to_hex()*
   Converts a table of RGB values in the range [0, 1] to a hex color string.
 
-  Example: >
+  Example: >lua
     incline.helpers.rgb_to_hex({ 0.8, 0.0, 1.0 }) -- '#ff00cc'
+<
 
 
 `incline.helpers.relative_luminance(color)` *incline.helpers.relative_luminance()*
@@ -805,8 +808,9 @@ Color Helpers
   table of RGB values in the range [0, 1], like those returned by
   |incline.helpers.hex_to_rgb()|.
 
-  Example: >
+  Example: >lua
     incline.helpers.relative_luminance('#ff00cc') -- 0.25619...
+<
 
 
 `incline.helpers.contrast_color(color, [opts])` *incline.helpers.contrast_color()*
@@ -824,7 +828,7 @@ Color Helpers
                        light or dark color. Must be in the range [0, 1].
                        Default: 0.179, as per the W3C recommendation.
 
-  Example: >
+  Example: >lua
     incline.helpers.contrast_color('#ff00cc') -- '#00ff33'
 <
 
@@ -915,7 +919,7 @@ window.options.winhighlight~
   Use window.winhighlight instead of window.options.winhighlight.
   Note that the accepted format has changed as well.
 
-  This: >
+  This: >lua
     incline.setup {
       window = {
         options = {
@@ -924,7 +928,7 @@ window.options.winhighlight~
       }
     }
 <
-  Becomes this: >
+  Becomes this: >lua
   incline.setup {
     window = {
       winhighlight = {
