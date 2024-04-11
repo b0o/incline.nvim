@@ -93,4 +93,54 @@ M.contrast_color = function(color, opts)
   end
 end
 
+---Like |nvim_eval_statusline()|, but returns an Incline render result table instead.
+---Same options as |nvim_eval_statusline()|, except that `opts.highlights` defaults to `true`.
+---@param str string
+---@param opts? {winid?: integer, maxwidth?: integer, highlights?: boolean, use_winbar?: boolean, use_tabline?: boolean, use_statuscol_lnum?: boolean}
+---@return {[integer]: string, group?: string}[]
+M.eval_statusline = function(str, opts)
+  local _opts = opts or {}
+  _opts.winid = _opts.winid or 0
+  if _opts.highlights == nil then
+    _opts.highlights = true
+  end
+  local eval_res = vim.api.nvim_eval_statusline(str, _opts)
+  return M.convert_nvim_eval_statusline(eval_res)
+end
+
+---Convert the result of |nvim_eval_statusline()| to an Incline render result table.
+---@param eval_tbl {str: string, highlights?: {start: integer, group: string}[]}
+---@return {[integer]: string, group?: string}[]
+M.convert_nvim_eval_statusline = function(eval_tbl)
+  local stl_hls = eval_tbl.highlights
+  if not stl_hls or #stl_hls == 0 then
+    return { { eval_tbl.str } }
+  end
+  if stl_hls[1].start > 0 then
+    table.insert(stl_hls, 1, { group = nil, start = 0 })
+  end
+
+  local hls = {}
+  for i, hl in ipairs(stl_hls) do
+    local start = hl.start + 1
+    if i > 1 then
+      hls[i - 1].range[2] = start - 1
+    end
+    local cur = { range = { start }, group = hl.group }
+    if i == #stl_hls then
+      cur.range[2] = #eval_tbl.str
+    end
+    table.insert(hls, cur)
+  end
+
+  local res = {}
+  for _, hl in ipairs(hls) do
+    local str = eval_tbl.str:sub(unpack(hl.range))
+    if str ~= '' then
+      table.insert(res, { str, group = hl.group })
+    end
+  end
+  return res
+end
+
 return M
