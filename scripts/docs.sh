@@ -56,7 +56,7 @@ function target_readme() {
 function target_help() {
   regex_inline -n 1 '^Version:\\s+' '$' "$(get_version)" |
     regex_inline -n 1 '^  © ' '$' "$(get_copyright)" |
-    regex_section '\\*incline-default-config\\*$' '^-{78}$' ">\n$(get_default_config | sed 's/^/  /')\n<"
+    regex_section '\\*incline-default-config\\*$' '^-{78}$' ">lua\n$(get_default_config | sed 's/^/  /')\n<"
 }
 
 function target_test() {
