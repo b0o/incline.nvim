@@ -1,18 +1,17 @@
----- Mulberry v0.0.3
+---- Mulberry v0.0.4
 --
 -- https://github.com/b0o/mulberry
 --
 -- Mulberry is a single-file BDD testing library for Lua targeting Neovim.
--- It's still alpha software. Don't rely on it, it's not fully tested and
--- surely has bugs. You've been warned.
 --
--- Copyright 2021-2023 Maddison Hellstrom
+-- Copyright 2021-2024 Maddison Hellstrom
 -- Released under the MIT License
 
 local operators = {}
 local matchers = {}
 
 ---- Helpers
+local islist = vim.islist or vim.tbl_islist
 
 local function runMatcher(matcherFuncs, ...)
   if type(matcherFuncs) ~= 'table' then
@@ -128,7 +127,7 @@ operators.An = operators.A
 operators.A.ListLike = {
   operators.A.Table,
   function(actual)
-    return vim.tbl_islist(actual)
+    return islist(actual)
   end,
 }
 
