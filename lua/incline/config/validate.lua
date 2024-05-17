@@ -12,6 +12,8 @@ M.callable = function(val)
   return false
 end
 
+local islist = vim.islist or vim.tbl_islist
+
 local wrapped = function(base, tbl)
   local newindex_inner
   newindex_inner = function(self, fn)
@@ -205,7 +207,7 @@ M.number.natural = M.all { M.number._int, M.number._ge(1) }
 -- percentages are numbers between 0 and 1, inclusive
 M.number.percentage = M.number._between_r_inc(0, 1)
 
-M.list = wrapped(vim.tbl_islist)
+M.list = wrapped(islist)
 
 M.list.of = function(of)
   return function(val)

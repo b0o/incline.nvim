@@ -1,10 +1,12 @@
 local M = {}
 
+local islist = vim.islist or vim.tbl_islist
+
 M.extend = function(val, entry)
   if type(val) ~= 'table' then
     return val
   end
-  if vim.tbl_islist(entry.default) and vim.tbl_islist(val) then
+  if islist(entry.default) and islist(val) then
     local res = vim.deepcopy(entry.default)
     vim.list_extend(res, val)
     return res
