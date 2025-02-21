@@ -843,7 +843,7 @@ Statusline Helpers
   difference in arguments being that `opts.highlights` defaults to `true`.
 
   Example 1 - Render a standard statusline string in Incline: >lua
-    local helpers = require'include.helpers'
+    local helpers = require'incline.helpers'
     require'incline'.setup {
       render = function()
         return helpers.eval_statusline('%#Statement#Hello%#Number#World')
