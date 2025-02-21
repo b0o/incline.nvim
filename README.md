@@ -300,6 +300,6 @@ See [`incline.txt`](https://github.com/b0o/incline.nvim/blob/main/doc/incline.tx
 
 ## License
 
-&copy; <!--COPYRIGHT-->2022-2024 Maddison Hellstrom and contributors<!--/COPYRIGHT-->
+&copy; <!--COPYRIGHT-->2022-2025 Maddison Hellstrom and contributors<!--/COPYRIGHT-->
 
 Released under the MIT License.
