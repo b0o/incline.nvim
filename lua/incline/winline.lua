@@ -178,6 +178,7 @@ function Winline:get_win_config()
     col = geom.col,
     relative = 'editor',
     style = 'minimal',
+    border = 'none',
     focusable = false,
   }
 end
