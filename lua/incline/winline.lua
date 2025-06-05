@@ -54,7 +54,13 @@ function Winline:buf()
     return self._buf
   end
   self._buf = a.nvim_create_buf(false, true)
+
   a.nvim_buf_set_option(self._buf, 'filetype', 'incline')
+  a.nvim_buf_set_option(self._buf, 'buftype', 'nofile')
+  a.nvim_buf_set_option(self._buf, 'bufhidden', 'wipe')
+  a.nvim_buf_set_option(self._buf, 'buflisted', false)
+  a.nvim_buf_set_option(self._buf, 'swapfile', false)
+
   return self._buf
 end
 
