@@ -176,15 +176,31 @@ end
 
 function Winline:incline_overlaps_buffer_content()
   -- Check if incline is actually overlapping buffer content
-  -- If it's overlapping borders, tabline, etc., it's not hiding buffer text
+  -- If it's overlapping borders, tabline, winbar, statusline, etc., return false
   local geom_row_offset = self:get_win_geom_row()
+  local cw = config.window
 
-  -- If incline is above the window (negative offset), it's overlapping
-  -- non-buffer elements like tabline/border
-  -- Row offset 0 means it's on the first line, which could be winbar or buffer content
-  -- We'll allow that to hide
+  -- If incline is above the window content (negative offset), it's definitely
+  -- overlapping non-buffer elements like tabline or border
   if geom_row_offset < 0 then
     return false
+  end
+
+  -- Check if we're on row 0 and overlapping winbar
+  if geom_row_offset == 0 and cw.placement.vertical == 'top' then
+    -- If winbar exists and we're configured to overlap it, we're overlapping UI not buffer
+    if config.window.overlap.winbar and vim.wo[self.target_win].winbar ~= '' then
+      return false
+    end
+  end
+
+  -- Check if we're at bottom and overlapping statusline
+  if cw.placement.vertical == 'bottom' then
+    local expected_bottom = a.nvim_win_get_height(self.target_win) - (cw.margin.vertical.bottom + 1)
+    -- If we're configured to overlap statusline and positioned to do so
+    if config.window.overlap.statusline and geom_row_offset > expected_bottom then
+      return false
+    end
   end
 
   return true
@@ -227,6 +243,11 @@ function Winline:get_text_offset()
 end
 
 function Winline:cursor_overlaps_incline()
+  -- Don't hide if incline is overlapping UI elements instead of buffer content
+  if not self:incline_overlaps_buffer_content() then
+    return false
+  end
+
   -- Get incline window geometry (already accounts for borders, margins, etc)
   local geom = self:get_win_geom()
 
@@ -251,6 +272,11 @@ function Winline:cursor_overlaps_incline()
 end
 
 function Winline:visual_selection_overlaps_incline()
+  -- Don't hide if incline is overlapping UI elements instead of buffer content
+  if not self:incline_overlaps_buffer_content() then
+    return false
+  end
+
   local mode = a.nvim_win_call(self.target_win, vim.fn.mode)
   -- Check for visual modes: v (character), V (line), \22 (block)
   if mode ~= 'v' and mode ~= 'V' and mode ~= '\22' then
