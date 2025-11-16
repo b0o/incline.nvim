@@ -198,20 +198,21 @@ function Winline:get_text_offset()
   local signcolumn = vim.wo[self.target_win].signcolumn
   if signcolumn == 'yes' then
     offset = offset + 2
-  elseif signcolumn == 'auto' or signcolumn:match('^auto:') then
+  elseif signcolumn == 'auto' then
     -- Check if there are any signs in the buffer
     local signs = vim.fn.sign_getplaced(a.nvim_win_get_buf(self.target_win), { group = '*' })
     if signs and signs[1] and #signs[1].signs > 0 then
       offset = offset + 2
     end
-  elseif signcolumn:match('^yes:(%d+)$') then
-    local width = tonumber(signcolumn:match('^yes:(%d+)$'))
+  elseif signcolumn:match('^yes:(%d+)') then
+    local width = tonumber(signcolumn:match('^yes:(%d+)'))
     offset = offset + (width * 2)
-  elseif signcolumn:match('^auto:(%d+)$') then
+  elseif signcolumn:match('^auto:(%d+)') then
+    -- For auto:1-2, extract the max width (second number)
+    local max_width = tonumber(signcolumn:match('%-(%d+)$')) or tonumber(signcolumn:match('^auto:(%d+)'))
     local signs = vim.fn.sign_getplaced(a.nvim_win_get_buf(self.target_win), { group = '*' })
     if signs and signs[1] and #signs[1].signs > 0 then
-      local width = tonumber(signcolumn:match('^auto:(%d+)$'))
-      offset = offset + (width * 2)
+      offset = offset + (max_width * 2)
     end
   end
 
