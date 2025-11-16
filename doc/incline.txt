@@ -949,6 +949,16 @@ window.options.winhighlight~
 ==============================================================================
 4. Changelog                                                 *incline-changelog*
 
+16 Nov 2025                                                             v0.1.0
+  Feat: Add 'smart' mode for hide.cursorline
+    - Hides incline only when cursor or visual selection actually overlaps
+    - Checks both row and column position (not just row)
+    - Supports all visual modes (character-wise, line-wise, block)
+    - Accounts for line wrapping, horizontal scrolling, and gutters
+    - Doesn't hide when incline overlaps UI elements instead of buffer content
+  Breaking: Default hide.cursorline changed from false to 'smart'
+  Fix: Improve signcolumn width parsing for range formats like 'auto:1-2'
+
 29 Apr 2022                                                             v0.0.3
   Breaking: window.options.winhighlight is deprecated
   Feat: Add highlight support
