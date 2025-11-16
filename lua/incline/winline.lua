@@ -174,6 +174,30 @@ function Winline:get_win_geom()
   return geom
 end
 
+function Winline:cursor_overlaps_incline()
+  -- Get incline window geometry (already accounts for borders, margins, etc)
+  local geom = self:get_win_geom()
+
+  -- Get cursor screen position within the target window
+  local cursor_screen_col = a.nvim_win_call(self.target_win, vim.fn.wincol)
+  local cursor_screen_row = a.nvim_win_call(self.target_win, vim.fn.winline)
+
+  -- Get target window position
+  local win_pos = a.nvim_win_get_position(self.target_win)
+
+  -- Convert cursor position to editor coordinates (winline/wincol are 1-indexed)
+  local cursor_editor_row = win_pos[1] + cursor_screen_row - 1
+  local cursor_editor_col = win_pos[2] + cursor_screen_col - 1
+
+  -- Check row overlap
+  local row_matches = cursor_editor_row == geom.row
+
+  -- Check column overlap (cursor within incline's column range)
+  local col_overlaps = cursor_editor_col >= geom.col and cursor_editor_col < (geom.col + geom.width)
+
+  return row_matches and col_overlaps
+end
+
 function Winline:get_win_config()
   local geom = self:get_win_geom()
   return {
@@ -228,13 +252,20 @@ function Winline:render(opts)
   if self.hidden == HIDE_PERSIST or not self:is_alive() then
     return
   end
-  if
-    (config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused))
-    and (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
-      == a.nvim_win_call(self.target_win, vim.fn.winline)
-  then
-    self:hide(HIDE_TEMP)
-    return
+
+  -- Handle cursorline hiding
+  if config.hide.cursorline == 'smart' then
+    if self.focused and self:cursor_overlaps_incline() then
+      self:hide(HIDE_TEMP)
+      return
+    end
+  elseif config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused) then
+    -- Existing row-only check
+    if (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
+        == a.nvim_win_call(self.target_win, vim.fn.winline) then
+      self:hide(HIDE_TEMP)
+      return
+    end
   end
 
   local ok, render_result = pcall(config.render, {

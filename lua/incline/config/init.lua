@@ -113,7 +113,7 @@ M.schema = Schema(function(s)
     hide = {
       focused_win = s:entry(false, vx.bool),
       only_win = s:entry(false, vx.any { vx.bool, 'count_ignored' }),
-      cursorline = s:entry(false, vx.any { vx.bool, 'focused_win' }),
+      cursorline = s:entry(false, vx.any { vx.bool, 'focused_win', 'smart' }),
     },
     ignore = {
       unlisted_buffers = s:entry(true, vx.bool),
