@@ -230,7 +230,7 @@ require('incline').setup {
     rising = 10
   },
   hide = {
-    cursorline = false,
+    cursorline = "smart",
     focused_win = false,
     only_win = false
   },

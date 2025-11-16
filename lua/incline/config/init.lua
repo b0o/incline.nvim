@@ -113,7 +113,7 @@ M.schema = Schema(function(s)
     hide = {
       focused_win = s:entry(false, vx.bool),
       only_win = s:entry(false, vx.any { vx.bool, 'count_ignored' }),
-      cursorline = s:entry(false, vx.any { vx.bool, 'focused_win', 'smart' }),
+      cursorline = s:entry('smart', vx.any { vx.bool, 'focused_win', 'smart' }),
     },
     ignore = {
       unlisted_buffers = s:entry(true, vx.bool),
@@ -165,7 +165,8 @@ M.schema = Schema(function(s)
       fields = {},
       vals = {
         ['window.options'] = {
-          [vx.table.including { winhighlight = vx.notNil }] = 'Use window.winhighlight instead of window.options.winhighlight',
+          [vx.table.including { winhighlight = vx.notNil }] =
+          'Use window.winhighlight instead of window.options.winhighlight',
         },
       },
     },
