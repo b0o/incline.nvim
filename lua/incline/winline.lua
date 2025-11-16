@@ -55,11 +55,11 @@ function Winline:buf()
   end
   self._buf = a.nvim_create_buf(false, true)
 
-  a.nvim_buf_set_option(self._buf, 'filetype', 'incline')
-  a.nvim_buf_set_option(self._buf, 'buftype', 'nofile')
-  a.nvim_buf_set_option(self._buf, 'bufhidden', 'wipe')
-  a.nvim_buf_set_option(self._buf, 'buflisted', false)
-  a.nvim_buf_set_option(self._buf, 'swapfile', false)
+  vim.bo[self._buf].filetype = 'incline'
+  vim.bo[self._buf].buftype = 'nofile'
+  vim.bo[self._buf].bufhidden = 'wipe'
+  vim.bo[self._buf].buflisted = false
+  vim.bo[self._buf].swapfile = false
 
   return self._buf
 end
@@ -79,9 +79,9 @@ function Winline:get_win_geom_row()
     if a.nvim_win_get_position(self.target_win)[1] <= 1 then
       if cw.margin.vertical.top == 0 then
         if
-          config.window.overlap.tabline
-          -- don't try to overlap tabline if it doesn't exist
-          and (vim.o.showtabline > 1 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1))
+            config.window.overlap.tabline
+            -- don't try to overlap tabline if it doesn't exist
+            and (vim.o.showtabline > 1 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1))
         then
           return cw.margin.vertical.top - 1
           -- only overlap winbar if it exists and is configured to overlap
@@ -90,7 +90,7 @@ function Winline:get_win_geom_row()
         else
           return cw.margin.vertical.top + 1
         end
-      -- ensure we skip the winbar if we are overlapping it
+        -- ensure we skip the winbar if we are overlapping it
       elseif config.window.overlap.winbar or vim.wo[self.target_win].winbar == '' then
         return cw.margin.vertical.top - 1
       else
@@ -107,14 +107,14 @@ function Winline:get_win_geom_row()
     end
   elseif placement.vertical == 'bottom' then
     if
-      vim.o.laststatus ~= 3
-      or (
-        (
-          a.nvim_win_get_position(self.target_win)[1]
-          + a.nvim_win_get_height(self.target_win)
-          + 1 -- for global status
-        ) == vim.o.lines
-      )
+        vim.o.laststatus ~= 3
+        or (
+          (
+            a.nvim_win_get_position(self.target_win)[1]
+            + a.nvim_win_get_height(self.target_win)
+            + 1 -- for global status
+          ) == vim.o.lines
+        )
     then
       if config.window.overlap.statusline then
         return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
@@ -490,8 +490,8 @@ function Winline:render(opts)
   local content_text_changed = prev_content_len ~= content.text
   local content_text_len_changed = not self.content or not self.content.text or #self.content.text ~= #content.text
   local content_hls_changed = not self.content
-    or not self.content.hls
-    or not vim.deep_equal(self.content.hls, content.hls)
+      or not self.content.hls
+      or not vim.deep_equal(self.content.hls, content.hls)
 
   self.content = content
 
