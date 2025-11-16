@@ -302,20 +302,24 @@ function Winline:visual_selection_overlaps_incline()
   -- Get the buffer column range that's selected on this line
   local sel_start_buf_col, sel_end_buf_col
 
-  if incline_buffer_line == start_line and incline_buffer_line == end_line then
-    -- Selection all on one line
+  if mode == '\22' then
+    -- Block mode: same column range on all lines
+    sel_start_buf_col = start_col
+    sel_end_buf_col = end_col
+  elseif incline_buffer_line == start_line and incline_buffer_line == end_line then
+    -- Character-wise: selection all on one line
     sel_start_buf_col = start_col
     sel_end_buf_col = end_col
   elseif incline_buffer_line == start_line then
-    -- On the start line - selected from start_col to end of line
+    -- Character-wise: on the start line - selected from start_col to end of line
     sel_start_buf_col = start_col
     sel_end_buf_col = math.huge
   elseif incline_buffer_line == end_line then
-    -- On the end line - selected from start of line to end_col
+    -- Character-wise: on the end line - selected from start of line to end_col
     sel_start_buf_col = 1
     sel_end_buf_col = end_col
   else
-    -- Middle line - entire line selected in character-wise mode
+    -- Character-wise: middle line - entire line selected
     return true
   end
 
