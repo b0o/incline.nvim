@@ -174,6 +174,57 @@ function Winline:get_win_geom()
   return geom
 end
 
+function Winline:incline_overlaps_buffer_content()
+  -- Check if incline is actually overlapping buffer content
+  -- If it's overlapping borders, tabline, etc., it's not hiding buffer text
+  local geom_row_offset = self:get_win_geom_row()
+
+  -- If incline is above the window (negative offset), it's overlapping
+  -- non-buffer elements like tabline/border
+  -- Row offset 0 means it's on the first line, which could be winbar or buffer content
+  -- We'll allow that to hide
+  if geom_row_offset < 0 then
+    return false
+  end
+
+  return true
+end
+
+function Winline:get_text_offset()
+  -- Get the horizontal offset caused by sign column and line numbers
+  local offset = 0
+
+  -- Sign column width
+  local signcolumn = vim.wo[self.target_win].signcolumn
+  if signcolumn == 'yes' then
+    offset = offset + 2
+  elseif signcolumn == 'auto' or signcolumn:match('^auto:') then
+    -- Check if there are any signs in the buffer
+    local signs = vim.fn.sign_getplaced(a.nvim_win_get_buf(self.target_win), { group = '*' })
+    if signs and signs[1] and #signs[1].signs > 0 then
+      offset = offset + 2
+    end
+  elseif signcolumn:match('^yes:(%d+)$') then
+    local width = tonumber(signcolumn:match('^yes:(%d+)$'))
+    offset = offset + (width * 2)
+  elseif signcolumn:match('^auto:(%d+)$') then
+    local signs = vim.fn.sign_getplaced(a.nvim_win_get_buf(self.target_win), { group = '*' })
+    if signs and signs[1] and #signs[1].signs > 0 then
+      local width = tonumber(signcolumn:match('^auto:(%d+)$'))
+      offset = offset + (width * 2)
+    end
+  end
+
+  -- Line number column width
+  if vim.wo[self.target_win].number or vim.wo[self.target_win].relativenumber then
+    local line_count = a.nvim_buf_line_count(a.nvim_win_get_buf(self.target_win))
+    local num_width = math.max(vim.wo[self.target_win].numberwidth, #tostring(line_count))
+    offset = offset + num_width
+  end
+
+  return offset
+end
+
 function Winline:cursor_overlaps_incline()
   -- Get incline window geometry (already accounts for borders, margins, etc)
   local geom = self:get_win_geom()
@@ -196,6 +247,96 @@ function Winline:cursor_overlaps_incline()
   local col_overlaps = cursor_editor_col >= geom.col and cursor_editor_col < (geom.col + geom.width)
 
   return row_matches and col_overlaps
+end
+
+function Winline:visual_selection_overlaps_incline()
+  local mode = a.nvim_win_call(self.target_win, vim.fn.mode)
+  -- Check for visual modes: v (character), V (line), \22 (block)
+  if mode ~= 'v' and mode ~= 'V' and mode ~= '\22' then
+    return false
+  end
+
+  local geom = self:get_win_geom()
+
+  -- Get visual selection positions in buffer coordinates (in target window context)
+  local v_start_pos = a.nvim_win_call(self.target_win, function()
+    return vim.fn.getpos 'v'
+  end)
+  local v_end_pos = a.nvim_win_call(self.target_win, function()
+    return vim.fn.getpos '.'
+  end)
+
+  local start_line, start_col = v_start_pos[2], v_start_pos[3]
+  local end_line, end_col = v_end_pos[2], v_end_pos[3]
+
+  -- Normalize so start is before end
+  if start_line > end_line or (start_line == end_line and start_col > end_col) then
+    start_line, end_line = end_line, start_line
+    start_col, end_col = end_col, start_col
+  end
+
+  -- Get window position and view info
+  local win_pos = a.nvim_win_get_position(self.target_win)
+  local view = a.nvim_win_call(self.target_win, vim.fn.winsaveview)
+  local topline = view.topline
+  local leftcol = view.leftcol
+
+  -- Calculate which screen row the incline is on relative to the window
+  -- geom.row is in editor coords, win_pos[1] is window's editor row
+  local incline_screen_row = geom.row - win_pos[1] + 1 -- Convert to 1-indexed window row
+
+  -- Check if the incline's screen row is within the visual selection's line range
+  -- We need to check if any line in the selection appears on incline_screen_row
+  local incline_buffer_line = topline + incline_screen_row - 1
+
+  if incline_buffer_line < start_line or incline_buffer_line > end_line then
+    return false
+  end
+
+  -- Line-wise mode selects entire lines
+  if mode == 'V' then
+    return true
+  end
+
+  -- For character-wise and block-wise, check column overlap
+  -- Get the buffer column range that's selected on this line
+  local sel_start_buf_col, sel_end_buf_col
+
+  if incline_buffer_line == start_line and incline_buffer_line == end_line then
+    -- Selection all on one line
+    sel_start_buf_col = start_col
+    sel_end_buf_col = end_col
+  elseif incline_buffer_line == start_line then
+    -- On the start line - selected from start_col to end of line
+    sel_start_buf_col = start_col
+    sel_end_buf_col = math.huge
+  elseif incline_buffer_line == end_line then
+    -- On the end line - selected from start of line to end_col
+    sel_start_buf_col = 1
+    sel_end_buf_col = end_col
+  else
+    -- Middle line - entire line selected in character-wise mode
+    return true
+  end
+
+  -- Get gutter width
+  local text_offset = self:get_text_offset()
+
+  -- Convert buffer columns to screen columns (account for horizontal scroll, tabs, etc)
+  -- For each column in the incline, check if it overlaps with the selection
+  for incline_editor_col = geom.col, geom.col + geom.width - 1 do
+    -- Convert editor column to window screen column
+    local incline_screen_col = incline_editor_col - win_pos[2] + 1 -- 1-indexed window col
+
+    -- Convert window screen column to buffer column (account for leftcol and gutter)
+    local buf_col = leftcol + incline_screen_col - text_offset
+
+    if buf_col >= sel_start_buf_col and buf_col <= sel_end_buf_col then
+      return true
+    end
+  end
+
+  return false
 end
 
 function Winline:get_win_config()
@@ -255,7 +396,7 @@ function Winline:render(opts)
 
   -- Handle cursorline hiding
   if config.hide.cursorline == 'smart' then
-    if self.focused and self:cursor_overlaps_incline() then
+    if self.focused and (self:cursor_overlaps_incline() or self:visual_selection_overlaps_incline()) then
       self:hide(HIDE_TEMP)
       return
     end
