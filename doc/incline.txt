@@ -501,13 +501,20 @@ ignore.wintypes~
                                                 *incline-config-hide.cursorline*
 hide.cursorline~
   Type:     `bool` | `string`
-  Valid:    `bool` | `"focused_win"`
-  Default:  `false`
+  Valid:    `bool` | `"focused_win"` | `"smart"`
+  Default:  `"smart"`
 
-  Incline can be hidden if the cursor is on the same line.
-  - If `true`, Incline statuslines on the same line as the cursor is hidden.
+  Incline can be hidden if the cursor or visual selection overlaps with it.
+  - If `false`, never hide based on cursor position.
+  - If `true`, Incline statuslines on the same line as the cursor are hidden.
   - If `"focused_win"`, the Incline statusline for the focused window will be
     hidden if the cursor is on the same line.
+  - If `"smart"`, the Incline statusline for the focused window will be hidden
+    only when the cursor or visual selection actually overlaps with the Incline
+    window (checking both row and column position). This accounts for line
+    wrapping, horizontal scrolling, and gutters (line numbers, sign column).
+    When the Incline is overlapping UI elements (tabline, winbar, statusline,
+    borders) instead of buffer content, it will not be hidden.
 
                                                *incline-config-hide*
                                                *incline-config-hide.focused_win*
@@ -596,7 +603,7 @@ highlight.groups~
       rising = 10
     },
     hide = {
-      cursorline = false,
+      cursorline = "smart",
       focused_win = false,
       only_win = false
     },
