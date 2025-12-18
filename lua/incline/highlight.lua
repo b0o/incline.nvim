@@ -52,8 +52,14 @@ M.get_pseudonym = function(hl)
   return name
 end
 
-M.buf_add_highlight = function(buf, ...)
-  return a.nvim_buf_add_highlight(buf, M.namespace, ...)
+--- Apply highlight group to range of text.
+---
+---@param bufnr integer Buffer number to apply highlighting to
+---@param higroup string Highlight group to use for highlighting
+---@param start [integer,integer]|string Start of region as a (line, column) tuple or string accepted by |getpos()|
+---@param finish [integer,integer]|string End of region as a (line, column) tuple or string accepted by |getpos()|
+M.buf_add_highlight = function(bufnr, higroup, start, finish)
+  return vim.hl.range(bufnr, M.namespace, higroup, start, finish)
 end
 
 M.buf_clear = function(buf)

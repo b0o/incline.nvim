@@ -503,7 +503,9 @@ function Winline:render(opts)
   if content_text_changed or content_hls_changed then
     highlight.buf_clear(buf)
     for _, hl in ipairs(content.hls) do
-      highlight.buf_add_highlight(buf, hl.group, 0, unpack(hl.range))
+      local hl_start = { 0, hl.range[1] }
+      local hl_end = { 0, hl.range[2] }
+      highlight.buf_add_highlight(buf, hl.group, hl_start, hl_end)
     end
   end
 
