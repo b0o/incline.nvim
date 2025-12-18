@@ -79,9 +79,9 @@ function Winline:get_win_geom_row()
     if a.nvim_win_get_position(self.target_win)[1] <= 1 then
       if cw.margin.vertical.top == 0 then
         if
-            config.window.overlap.tabline
-            -- don't try to overlap tabline if it doesn't exist
-            and (vim.o.showtabline > 1 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1))
+          config.window.overlap.tabline
+          -- don't try to overlap tabline if it doesn't exist
+          and (vim.o.showtabline > 1 or (vim.o.showtabline == 1 and #vim.api.nvim_list_tabpages() > 1))
         then
           return cw.margin.vertical.top - 1
           -- only overlap winbar if it exists and is configured to overlap
@@ -107,14 +107,14 @@ function Winline:get_win_geom_row()
     end
   elseif placement.vertical == 'bottom' then
     if
-        vim.o.laststatus ~= 3
-        or (
-          (
-            a.nvim_win_get_position(self.target_win)[1]
-            + a.nvim_win_get_height(self.target_win)
-            + 1 -- for global status
-          ) == vim.o.lines
-        )
+      vim.o.laststatus ~= 3
+      or (
+        (
+          a.nvim_win_get_position(self.target_win)[1]
+          + a.nvim_win_get_height(self.target_win)
+          + 1 -- for global status
+        ) == vim.o.lines
+      )
     then
       if config.window.overlap.statusline then
         return a.nvim_win_get_height(self.target_win) - cw.margin.vertical.bottom
@@ -220,12 +220,12 @@ function Winline:get_text_offset()
     if signs and signs[1] and #signs[1].signs > 0 then
       offset = offset + 2
     end
-  elseif signcolumn:match('^yes:(%d+)') then
-    local width = tonumber(signcolumn:match('^yes:(%d+)'))
+  elseif signcolumn:match '^yes:(%d+)' then
+    local width = tonumber(signcolumn:match '^yes:(%d+)')
     offset = offset + (width * 2)
-  elseif signcolumn:match('^auto:(%d+)') then
+  elseif signcolumn:match '^auto:(%d+)' then
     -- For auto:1-2, extract the max width (second number)
-    local max_width = tonumber(signcolumn:match('%-(%d+)$')) or tonumber(signcolumn:match('^auto:(%d+)'))
+    local max_width = tonumber(signcolumn:match '%-(%d+)$') or tonumber(signcolumn:match '^auto:(%d+)')
     local signs = vim.fn.sign_getplaced(a.nvim_win_get_buf(self.target_win), { group = '*' })
     if signs and signs[1] and #signs[1].signs > 0 then
       offset = offset + (max_width * 2)
@@ -433,8 +433,10 @@ function Winline:render(opts)
     end
   elseif config.hide.cursorline == true or (config.hide.cursorline == 'focused_win' and self.focused) then
     -- Existing row-only check
-    if (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
-        == a.nvim_win_call(self.target_win, vim.fn.winline) then
+    if
+      (self:get_win_geom_row() + ((vim.wo[self.target_win].winbar == '') and 1 or 0))
+      == a.nvim_win_call(self.target_win, vim.fn.winline)
+    then
       self:hide(HIDE_TEMP)
       return
     end
@@ -490,8 +492,8 @@ function Winline:render(opts)
   local content_text_changed = prev_content_len ~= content.text
   local content_text_len_changed = not self.content or not self.content.text or #self.content.text ~= #content.text
   local content_hls_changed = not self.content
-      or not self.content.hls
-      or not vim.deep_equal(self.content.hls, content.hls)
+    or not self.content.hls
+    or not vim.deep_equal(self.content.hls, content.hls)
 
   self.content = content
 
