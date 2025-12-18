@@ -1,8 +1,9 @@
 local config = require 'incline.config'
+local util = require 'incline.util'
 
 local a = vim.api
 
-local M = { namespace = -1 }
+local M = { namespace = -1, colorscheme_autocmd = nil }
 local cache = {}
 
 M.clear = function()
@@ -71,6 +72,14 @@ M.setup = function()
   M.namespace = a.nvim_create_namespace 'incline'
   for hl_group, hl in pairs(config.highlight.groups) do
     M.register(hl, hl_group)
+  end
+
+  if M.colorscheme_autocmd == nil then
+    M.colorscheme_autocmd = util.autocmd('ColorScheme', {
+      callback = function()
+        M.setup()
+      end,
+    })
   end
 end
 
