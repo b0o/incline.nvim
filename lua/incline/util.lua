@@ -98,6 +98,9 @@ M.clear_augroup = function()
   end
 end
 
+--- @param event vim.api.keyset.events|vim.api.keyset.events[]
+--- @param opts vim.api.keyset.create_autocmd
+--- @return integer # Autocommand id (number)
 M.autocmd = function(event, opts)
   return a.nvim_create_autocmd(
     event,
