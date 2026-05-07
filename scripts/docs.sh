@@ -12,17 +12,6 @@ declare -gA targets=(
   [help]="$reporoot/doc/incline.txt"
 )
 
-function get_authors() {
-  local authors
-  authors="$(git log --max-parents=0 --format=%an)"
-  local -i count
-  count="$(git log --format=%an | sort -u | wc -l)"
-  if [[ $count -gt 1 ]]; then
-    authors+=" and contributors"
-  fi
-  echo "$authors"
-}
-
 function get_default_config() {
   nvim --headless -u NORC --noplugin \
     --cmd "set runtimepath+=$reporoot" \
@@ -37,31 +26,18 @@ function get_version() {
   git describe --tags --abbrev=0
 }
 
-function get_copyright_years() {
-  local copyright_start
-  copyright_start="$(git log --max-parents=0 --max-count=1 --date=format:%Y --format=%cd)" # year of first commit
-  echo "$copyright_start$( (($(date +%Y) == copyright_start)) || date +-%Y)"
-}
-
-function get_copyright() {
-  echo "$(get_copyright_years) $(get_authors)"
-}
-
 function target_readme() {
   regex_inline -n 1 '!\\[Version' '\\]' " $(get_version)" |
-    md_inline COPYRIGHT "$(get_copyright)" |
     md_section DEFAULT_CONFIG -C lua "require('incline').setup $(get_default_config)"
 }
 
 function target_help() {
   regex_inline -n 1 '^Version:\\s+' '$' "$(get_version)" |
-    regex_inline -n 1 '^  © ' '$' "$(get_copyright)" |
     regex_section '\\*incline-default-config\\*$' '^-{78}$' ">lua\n$(get_default_config | sed 's/^/  /')\n<"
 }
 
 function target_test() {
   regex_inline -n 2 '!\\[Version' '\\]' " $(get_version)" |
-    md_inline COPYRIGHT "$(get_copyright)" |
     md_section DEFAULT_CONFIG -C lua "require('incline').setup $(get_default_config)"
 }
 

@@ -4,7 +4,7 @@
 --
 -- Mulberry is a single-file BDD testing library for Lua targeting Neovim.
 --
--- Copyright 2021-2024 Maddison Hellstrom
+-- Copyright 2021-2026 Maddison Cohodas
 -- Released under the MIT License
 
 local operators = {}

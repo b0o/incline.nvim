@@ -1,6 +1,6 @@
 *incline.txt*     Lightweight floating statuslines.         *incline* *incline.nvim*
 
-Author:         Maddison Hellstrom <https://github.com/b0o>
+Author:         Maddison Cohodas <https://github.com/b0o>
 Licence:        MIT
 Homepage:       https://github.com/b0o/incline.nvim
 Version:        v0.1.0
@@ -989,7 +989,7 @@ window.options.winhighlight~
 ==============================================================================
 5. License                                                     *incline-license*
 >
-  © 2022-2025 Maddison Hellstrom and contributors
+  © 2022-2025 Maddison Cohodas and contributors
   Released under the MIT license.
 <
  vim:tw=78:ts=8:ft=help:norl:
