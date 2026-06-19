@@ -68,6 +68,13 @@ function Winline:get_content_len()
   return self.content and self.content.text and a.nvim_strwidth(self.content.text) or 0
 end
 
+-- Height of the target window's winbar in screen rows (1 if present, else 0).
+-- winline()/topline are relative to the first text line and exclude the winbar,
+-- while geom.row is an absolute editor row that includes it; this bridges the two.
+function Winline:winbar_height()
+  return (vim.wo[self.target_win].winbar ~= '') and 1 or 0
+end
+
 function Winline:get_win_geom_row()
   local cw = config.window
   local placement = cw.placement
@@ -258,8 +265,9 @@ function Winline:cursor_overlaps_incline()
   -- Get target window position
   local win_pos = a.nvim_win_get_position(self.target_win)
 
-  -- Convert cursor position to editor coordinates (winline/wincol are 1-indexed)
-  local cursor_editor_row = win_pos[1] + cursor_screen_row - 1
+  -- Convert cursor position to editor coordinates (winline/wincol are 1-indexed).
+  -- Add the winbar height since winline() excludes the winbar but geom.row includes it.
+  local cursor_editor_row = win_pos[1] + self:winbar_height() + cursor_screen_row - 1
   local cursor_editor_col = win_pos[2] + cursor_screen_col - 1
 
   -- Check row overlap
@@ -309,8 +317,9 @@ function Winline:visual_selection_overlaps_incline()
   local leftcol = view.leftcol
 
   -- Calculate which screen row the incline is on relative to the window
-  -- geom.row is in editor coords, win_pos[1] is window's editor row
-  local incline_screen_row = geom.row - win_pos[1] + 1 -- Convert to 1-indexed window row
+  -- geom.row is in editor coords, win_pos[1] is window's editor row. Subtract the
+  -- winbar height since topline maps to the first text row (below any winbar).
+  local incline_screen_row = geom.row - win_pos[1] + 1 - self:winbar_height() -- 1-indexed text row
 
   -- Check if the incline's screen row is within the visual selection's line range
   -- We need to check if any line in the selection appears on incline_screen_row
