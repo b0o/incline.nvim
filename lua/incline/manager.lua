@@ -37,11 +37,11 @@ M.update = Debounce(function(opts)
   if opts.refresh then
     changes = { layout = true, windows = true, focus = true, render = true }
   end
-  if events.WinNew or events.WinClosed then
+  if events.WinNew or events.WinClosed or events.BufWinEnter or events.BufWinLeave then
     changes.windows = true
     changes.layout = true
   end
-  if events.WinScrolled or events.BufWinEnter or events.BufWinLeave or events.OptionSet then
+  if events.WinScrolled or events.OptionSet then
     changes.layout = true
   end
   if events.WinEnter or events.WinLeave then
